@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/02/26 12:24:25 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/02/26 16:21:19 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,8 @@ int Server::initServer(int port)
 	}
 
 	auto addrlen = sizeof(sockaddr);
-	this->_connection = accept(this->_sockfd, (struct sockaddr *)&this->_sockAddr, (socklen_t *)&addrlen);
-	if (this->_connection < 0)
+	this->_connection[0] = accept(this->_sockfd, (struct sockaddr *)&this->_sockAddr, (socklen_t *)&addrlen);
+	if (this->_connection[0] < 0)
 	{
 		std::cout << "Failed to grab connection. errno: " << errno << std::endl;
 		return (1);
@@ -92,12 +92,12 @@ int Server::serverLoop()
 		for (i = 0; i < event_count; i++)
 		{
 			printf("Reading file descriptor '%d' -- ", events[i].data.fd);
-			bytes_read = read(events[i].data.fd, read_buffer, READ_SIZE);
+			bytes_read = read(this->_connection[0], read_buffer, READ_SIZE);
 			printf("%zd bytes read.\n", bytes_read);
 			read_buffer[bytes_read] = '\0';
 			printf("Read '%s'\n", read_buffer);
 
-			if (!strncmp(read_buffer, "stop\n", 5))
+			if (!strncmp(read_buffer, "stop\0", 5))
 				running = 0;
 		}
 	}
