@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/11 16:24:58 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/19 14:21:59 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ private:
 	/* int				_connection[5];
 	struct epoll_event event, events[MAX_EVENTS];
 	int 			_epoll_fd; */
+
+	// std::string		_nickName;
 	
 public:
 	Client();
@@ -38,7 +40,6 @@ public:
 	int			get_fd();
 	void		set_ip(std::string ipAdd);
 	std::string	get_ip();
-
 
 };
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/11 16:12:06 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/19 14:21:52 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,3 +38,8 @@ std::string Client::get_ip()
 {
 	return (this->_ipAdd);
 }
+
+// void	Client::set_Nick(std::string Nick)
+// {
+// 	this->_nickName = Nick;
+// };

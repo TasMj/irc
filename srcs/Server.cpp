@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/11 17:27:35 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/19 15:57:20 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,12 +70,12 @@ int Server::initServer(int port)
 	}
 
 	auto addrlen = sizeof(sockaddr);
-	this->_connection[0] = accept(this->_sockfd, (struct sockaddr *)&this->_sockAddr, (socklen_t *)&addrlen);
-	if (this->_connection[0] < 0)
-	{
-		std::cout << "Failed to grab connection. errno: " << errno << std::endl;
-		return (1);
-	}
+	// this->_polls[0].fd = accept(this->_sockfd, (struct sockaddr *)&this->_sockAddr, (socklen_t *)&addrlen);
+	// if (this->_connection[0] < 0)
+	// {
+	// 	std::cout << "Failed to grab connection. errno: " << errno << std::endl;
+	// 	return (1);s
+	// }
 	new_poll.fd = this->_sockfd;
 	new_poll.events = POLLIN;
 	new_poll.revents = 0;
@@ -90,7 +90,9 @@ void	Server::addNewClient()
 	struct sockaddr_in	cliAdd;
 	struct pollfd	new_poll;
 	socklen_t	len = sizeof(cliAdd);
+	std::string	welcome_msg;
 
+	welcome_msg = ":localhost 001 tmejri :\n\n\n\n\n\n\n Welcome \n\n\n\n\n";
 	int	receiving_fd = accept(this->_sockfd, (sockaddr *)&(cliAdd), &len);
 
 	fcntl(receiving_fd, F_SETFL, O_NONBLOCK);
@@ -104,6 +106,7 @@ void	Server::addNewClient()
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
 
+	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl; 
 }
 
@@ -122,8 +125,18 @@ void Server::receiveData(int fd)
 
  else{ //-> print the received data
   buff[bytes] = '\0';
+  
+  
   std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;
   //here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
+	
+	/***********COMMANDE**************/
+	
+	// if (strncmp("/nick", buff, 5) == 0)
+	// 	std::cout << "oui" << std::endl;
+	// else
+	// 	std::cout << "non" << std::endl;
+  
  }
 }
 

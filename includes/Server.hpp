@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/11 17:28:10 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/19 15:57:52 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ private:
 	int 						_epoll_fd;
 	std::vector<Client>			_clients;
 	std::vector<pollfd>			_polls;
+	
 	Server();
 	
 public:
