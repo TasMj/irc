@@ -1,0 +1,18 @@
+<< CAP LS
+<< NICK tmalless
+<< USER tmalless tmalless localhost :Theo MALLESSON
+>> :localhost 001 tmejri :
+<< MODE tmejri +i
+<< WHOIS tmalless
+>> 
+>> 
+>> 
+>> 
+>> 
+>> 
+>>  Welcome 
+>> 
+>> 
+>> 
+>> 
+<< PING localhost

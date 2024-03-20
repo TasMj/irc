@@ -1,0 +1,73 @@
+<< CAP LS
+<< NICK tmalless
+<< USER tmalless tmalless irc.dal.net :Theo MALLESSON
+>> :bifrost.ca.us.dal.net NOTICE AUTH :*** Looking up your hostname...
+>> :bifrost.ca.us.dal.net NOTICE AUTH :*** Checking Ident
+>> :bifrost.ca.us.dal.net NOTICE AUTH :*** Found your hostname
+>> :bifrost.ca.us.dal.net NOTICE AUTH :*** No Ident response
+>> :bifrost.ca.us.dal.net 001 tmalless :Welcome to the DALnet IRC Network tmalless!~tmalless@62.210.33.126
+<< MODE tmalless +i
+>> :bifrost.ca.us.dal.net 002 tmalless :Your host is bifrost.ca.us.dal.net, running version bahamut-2.2.2
+>> :bifrost.ca.us.dal.net 003 tmalless :This server was created Wed Oct <<<<<<<<<<<<<<<<<< MODE tmalless +i MODE tmalless +i MODE tmalless +i MODE tmalless +i MODE tmalless +i MODE tmalless +i MODE tmalless +i MODE tmalless +i MODE tmalless +i12 2022 at 17:21:47 EDT
+>> :bifrost.ca.us.dal.net 004 tmalless bifrost.ca.us.dal.net bahamut-2.2.2 aAbcCdefFghHiIjkKmnoOPrRsSwxXy AbceiIjklLmMnoOpPrRsStv beIjklov
+>> :bifrost.ca.us.dal.net 005 tmalless NETWORK=DALnet SAFELIST MAXBANS=200 MAXCHANNELS=30 CHANNELLEN=32 KICKLEN=307 NICKLEN=30 TOPICLEN=307 MODES=6 CHANTYPES=# CHANLIMIT=#:30 PREFIX=(ohv)@%+ STATUSMSG=@%+ :are available on this server
+>> :bifrost.ca.us.dal.net 005 tmalless CASEMAPPING=ascii WATCH=128 SILENCE=10 ELIST=cmntu EXCEPTS INVEX CHANMODES=beI,k,jl,ciPAmMnOprRsSt MAXLIST=b:200,e:100,I:100 TARGMAX=DCCALLOW:,JOIN:,KICK:4,KILL:20,NOTICE:20,PART:,PRIVMSG:20,WHOIS:,WHOWAS: :are available on this server
+>> :bifrost.ca.us.dal.net 251 tmalless :There are 70 users and 7432 invisible on 37 servers
+>> :bifrost.ca.us.dal.net 252 tmalless 79 :IRC Operators online
+>> :bifrost.ca.us.dal.net 254 tmalless 3740 :channels formed
+>> :bifrost.ca.us.dal.net 255 tmalless :I have 227 clients and 1 servers
+>> :bifrost.ca.us.dal.net 265 tmalless :Current local users: 227 Max: 601
+>> :bifrost.ca.us.dal.net 266 tmalless :Current global users: 7502 Max: 12060
+>> :bifrost.ca.us.dal.net NOTICE tmalless :*** Notice -- motd was last changed at 9/7/2020 9:20
+>> :bifrost.ca.us.dal.net NOTICE tmalless :*** Notice -- Please read the motd if you haven't read it
+>> :bifrost.ca.us.dal.net 375 tmalless :- bifrost.ca.us.dal.net Message of the Day - 
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :- Welcome to DALnet!
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-   _     _  __               _
+>> :bifrost.ca.us.dal.net 372 tmalless :-  | |__ (_)/ _|_ __ ___  ___| |_
+>> :bifrost.ca.us.dal.net 372 tmalless :-  | '_ \| | |_| '__/ _ \/ __| __|
+>> :bifrost.ca.us.dal.net 372 tmalless :-  | |_) | |  _| | | (_) \__ \ |_
+>> :bifrost.ca.us.dal.net 372 tmalless :-  |_.__/|_|_| |_|  \___/|___/\__|
+>> :bifrost.ca.us.dal.net 372 tmalless :-  -----bifrost.ca.us.dal.net-----
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-   Server Staff
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-  Administrators
+>> :bifrost.ca.us.dal.net 372 tmalless :-  heimdall (heimdall@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  tau (tau@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-  Operators
+>> :bifrost.ca.us.dal.net 372 tmalless :-  Ariel7 (ariel7@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  CaeSpock (caespock@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  chalcedony (chalcedony@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  dros (dros@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  Estella (estella@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  jason (jason@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  jeian (jeian@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  knas (knas@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  Mobscene (mobscene@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  Priyanka (priyanka@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :-  strax (strax@dal.net)
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-   Server Policies
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-  - No malicious bots!
+>> :bifrost.ca.us.dal.net 372 tmalless :-  - No channel fillers of any kind!
+>> :bifrost.ca.us.dal.net 372 tmalless :-  - User and/or operator impersonations will NOT be tolerated.
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-   Help channels
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :-  - #operhelp - IRC operator help
+>> :bifrost.ca.us.dal.net 372 tmalless :-  - #help     - General IRC/services help
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :- By connecting to this network, you agree to abide by
+>> :bifrost.ca.us.dal.net 372 tmalless :- its acceptable use policy (AUP), available on our website:
+>> :bifrost.ca.us.dal.net 372 tmalless :- https://www.dal.net/aup
+>> :bifrost.ca.us.dal.net 372 tmalless :- 
+>> :bifrost.ca.us.dal.net 372 tmalless :- Thank you for connecting to DALnet!
+>> :bifrost.ca.us.dal.net 376 tmalless :End of /MOTD command.
+>> :tmalless MODE tmalless :+iH
+<< PING bifrost.ca.us.dal.net
+>> :bifrost.ca.us.dal.net PONG bifrost.ca.us.dal.net :tmalless
+--> lag pong

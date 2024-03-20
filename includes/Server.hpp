@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/19 15:57:52 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/20 15:55:12 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,16 @@
 # include <arpa/inet.h>
 # include <cstdlib>
 # include <iostream>
+# include <sstream>
 # include <unistd.h>
 # include <string.h>
-#include <fcntl.h>
+# include <fcntl.h>
 # include <poll.h>
 # include <sys/epoll.h>
 # include <vector>
+# include <map>
+# include <deque>
+# include <cerrno>
 
 #define RED "\e[1;31m" //-> for red color
 #define WHI "\e[0;37m" //-> for white color
@@ -60,6 +64,7 @@ public:
 	int		initServer(int port);
 	int		serverLoop();
 	void	addNewClient();
+	void	receiveFirstData(Client *cli);
 	void	receiveData(int fd);
 };
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/19 14:21:59 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/20 17:06:26 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,19 @@
 # define CLIENT_HPP
 
 # include <string>
+# include <map>
+# include <vector>
+# include <deque>
+# include <iostream>
 
 class Client
 {
 private:
 /* 	unsigned int	_port; */
-	int				_fd;
-	std::string		_ipAdd;
+	int						_fd;
+	std::string				_ipAdd;
+	std::multimap<std::string, std::string>	_cmd;
+	std::string				_buff;
 /* 	std::string		_password;
 	sockaddr_in		_sockAddr;
 	int				_sockfd; */
@@ -40,7 +46,9 @@ public:
 	int			get_fd();
 	void		set_ip(std::string ipAdd);
 	std::string	get_ip();
-
+	void		set_cmd(std::string);
+	void		get_cmd();
+	void		set_buff(std::string);
 };
 
 

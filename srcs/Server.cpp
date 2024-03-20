@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/19 15:57:20 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/20 17:26:05 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int Server::initServer(int port)
 		return (1);
 	}
 
-	auto addrlen = sizeof(sockaddr);
+	// auto addrlen = sizeof(sockaddr);
 	// this->_polls[0].fd = accept(this->_sockfd, (struct sockaddr *)&this->_sockAddr, (socklen_t *)&addrlen);
 	// if (this->_connection[0] < 0)
 	// {
@@ -92,7 +92,6 @@ void	Server::addNewClient()
 	socklen_t	len = sizeof(cliAdd);
 	std::string	welcome_msg;
 
-	welcome_msg = ":localhost 001 tmejri :\n\n\n\n\n\n\n Welcome \n\n\n\n\n";
 	int	receiving_fd = accept(this->_sockfd, (sockaddr *)&(cliAdd), &len);
 
 	fcntl(receiving_fd, F_SETFL, O_NONBLOCK);
@@ -103,11 +102,40 @@ void	Server::addNewClient()
 
 	cli.set_fd(receiving_fd);
 	cli.set_ip(inet_ntoa(cliAdd.sin_addr));
-	this->_clients.push_back(cli);
-	this->_polls.push_back(new_poll);
 
+	receiveFirstData(&cli);
+	
+	welcome_msg = ":localhost 001 tmalless :Welcome tmalless!~tmalless@62.210.33.126\n\n\n\n\n";
 	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl; 
+	
+	this->_clients.push_back(cli);
+	this->_polls.push_back(new_poll);
+}
+
+void Server::receiveFirstData(Client *cli)
+{
+	char buff[2]; //-> buffer for the received data
+	std::string cmd;
+ 	memset(buff, 0, sizeof(*(buff))); //-> clear the buffer
+
+ 	ssize_t bytes;// = recv(cli->get_fd(), buff, sizeof(buff) - 1 , 0);
+	while ((bytes = recv(cli->get_fd(), buff, sizeof(buff) - 1 , 0)) > 0)
+	{
+		std::cout << buff << "zeeeebi" << std::endl;
+		cmd = cmd + buff[0];
+		if (buff[0] == '\n')
+		{
+			cli->set_cmd(cmd);
+			cmd.clear();
+		}
+		else if (buff[0] == '\0')
+		{
+			cli->set_buff(cmd);
+			return ;
+		}
+		else
+	}
 }
 
 void Server::receiveData(int fd)
@@ -143,17 +171,18 @@ void Server::receiveData(int fd)
 int Server::serverLoop()
 {
 	int running = 1;
-	int event_count;
+	// int event_count;
 	int i;
-	size_t bytes_read;
-	char read_buffer[READ_SIZE + 1];
+	/* size_t bytes_read;
+	char read_buffer[READ_SIZE + 1]; */
 
 	while (running)
 	{
-		printf("\nPolling for input...\n");
+		//printf("\nPolling for input...\n");
+		std::cout << std::endl <<  "Polling for input..." << std::endl;
 		//event_count = epoll_wait(this->_epoll_fd, events, MAX_EVENTS, 30000);
 		//printf("%d ready events\n", event_count);
-		for (i = 0; i < this->_polls.size(); i++)
+		for (i = 0; i < (int)this->_polls.size(); i++)
 		{
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && running)
 				throw (std::runtime_error("poll() failed"));

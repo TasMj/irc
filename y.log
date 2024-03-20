@@ -1,0 +1,11 @@
+<< CAP LS
+<< PASS 1
+<< NICK tmalless
+<< USER tmalless tmalless localhost :Theo MALLESSON
+>> :localhost 001 tmalless :Welcome tmalless!~tmalless@62.210.33.126
+<< MODE tmalless +i
+>> 
+>> 
+>> 
+>> 
+<< PING localhost
