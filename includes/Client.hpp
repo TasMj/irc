@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/19 14:21:59 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/21 22:31:04 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # define CLIENT_HPP
 
 # include <string>
+#include <sstream>
 
 class Client
 {
@@ -29,7 +30,7 @@ private:
 	struct epoll_event event, events[MAX_EVENTS];
 	int 			_epoll_fd; */
 
-	// std::string		_nickName;
+	std::string		_nickName;
 	
 public:
 	Client();
@@ -40,6 +41,9 @@ public:
 	int			get_fd();
 	void		set_ip(std::string ipAdd);
 	std::string	get_ip();
+	void		set_nickName(std::string nick);
+	void		init_nickName(std::string nick, int fd);
+	std::string	get_nickName();
 
 };
 

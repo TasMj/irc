@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/19 14:21:52 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/21 22:57:31 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,14 @@
 
 Client::Client()
 {
-    
+	// init_nickName("NickDefault_", get_fd());
+	// set_nickName("NickDefault_");
 };
 
-Client::~Client(){};
+Client::~Client()
+{
+	
+};
 
 void	Client::set_fd(int fd)
 {
@@ -39,7 +43,23 @@ std::string Client::get_ip()
 	return (this->_ipAdd);
 }
 
-// void	Client::set_Nick(std::string Nick)
-// {
-// 	this->_nickName = Nick;
-// };
+void	Client::init_nickName(std::string nick, int fd)
+{
+	std::stringstream ss;
+	ss << fd;
+	 
+	std::string fd_str = ss.str();
+	
+	this->_nickName = nick.append(fd_str);
+};
+
+void	Client::set_nickName(std::string nick)
+{
+	this->_nickName = nick;
+};
+
+
+std::string Client::get_nickName()
+{
+	return (this->_nickName);
+}

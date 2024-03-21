@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/19 15:57:52 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/20 23:59:21 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <poll.h>
 # include <sys/epoll.h>
 # include <vector>
+# include <map>
 
 #define RED "\e[1;31m" //-> for red color
 #define WHI "\e[0;37m" //-> for white color
@@ -40,29 +41,36 @@
 
 class Server
 {
-private:
-	unsigned int				_port;
-	std::string					_password;
-	sockaddr_in					_sockAddr;
-	int							_sockfd;
-	int							_connection[5];
-	struct pollfd				_poll;
-	int 						_epoll_fd;
-	std::vector<Client>			_clients;
-	std::vector<pollfd>			_polls;
+	private:
+		unsigned int				_port;
+		std::string					_password;
+		sockaddr_in					_sockAddr;
+		int							_sockfd;
+		int							_connection[5];
+		struct pollfd				_poll;
+		int 						_epoll_fd;
+		std::vector<Client>			_clients;
+		// std::map<int, std::string>	_clients;
+		std::vector<pollfd>			_polls;
+		
+		Server();
+		
+	public:
+		Server(unsigned int port, std::string password);
+		~Server();
 	
-	Server();
-	
-public:
-	Server(unsigned int port, std::string password);
-	~Server();
-
-	int		initServer(int port);
-	int		serverLoop();
-	void	addNewClient();
-	void	receiveData(int fd);
+		int		initServer(int port);
+		int		serverLoop();
+		void	addNewClient();
+		void	receiveData(int fd);
 };
 
 int	checkElt(std::string serverName, int port, std::string psw);
+
+/**************/
+void	execute_cmd(std::vector<Client>& _clients, int fd, std::string buff);
+
+
+
 
 #endif

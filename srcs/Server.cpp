@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/19 15:57:20 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/21 22:59:10 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,24 +45,6 @@ int Server::initServer(int port)
 		return (1);
 	}
 
-/* 	this->_epoll_fd = epoll_create1(0);
-
-	if (this->_epoll_fd == -1)
-	{
-		fprintf(stderr, "Failed to create epoll file descriptor\n");
-		return 1;
-	}
-
-	event.events = EPOLLIN;
-	event.data.fd = 0;
- */
-/* 	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, 0, &event))
-	{
-		fprintf(stderr, "Failed to add file descriptor to epoll\n");
-		close(this->_epoll_fd);
-		return 1;
-	} */
-
 	if (listen(this->_sockfd, 10) < 0)
 	{
 		std::cout << "Failed to listen on socket. errno: " << errno << std::endl;
@@ -70,12 +52,6 @@ int Server::initServer(int port)
 	}
 
 	auto addrlen = sizeof(sockaddr);
-	// this->_polls[0].fd = accept(this->_sockfd, (struct sockaddr *)&this->_sockAddr, (socklen_t *)&addrlen);
-	// if (this->_connection[0] < 0)
-	// {
-	// 	std::cout << "Failed to grab connection. errno: " << errno << std::endl;
-	// 	return (1);s
-	// }
 	new_poll.fd = this->_sockfd;
 	new_poll.events = POLLIN;
 	new_poll.revents = 0;
@@ -92,7 +68,7 @@ void	Server::addNewClient()
 	socklen_t	len = sizeof(cliAdd);
 	std::string	welcome_msg;
 
-	welcome_msg = ":localhost 001 tmejri :\n\n\n\n\n\n\n Welcome \n\n\n\n\n";
+	welcome_msg = ":localhost 001 tmejri :\n\n\n\n\n\n\n Welcome\n\nPlease select a nickname with the command /nick\n\n\n";
 	int	receiving_fd = accept(this->_sockfd, (sockaddr *)&(cliAdd), &len);
 
 	fcntl(receiving_fd, F_SETFL, O_NONBLOCK);
@@ -103,21 +79,29 @@ void	Server::addNewClient()
 
 	cli.set_fd(receiving_fd);
 	cli.set_ip(inet_ntoa(cliAdd.sin_addr));
+	cli.init_nickName("NickDefault_", cli.get_fd());
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
 
 	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl; 
+
+  std::vector<Client>::iterator it;
+  for (it = _clients.begin(); it != _clients.end(); ++it)
+	{
+    std::cout << "fd : " << it->get_fd() << ", Nickname : " << it->get_nickName() << std::endl;
+	}
+
 }
 
 void Server::receiveData(int fd)
 {
- char buff[1024]; //-> buffer for the received data
- memset(buff, 0, sizeof(buff)); //-> clear the buffer
+ char buff[1024];
+ memset(buff, 0, sizeof(buff));
 
- ssize_t bytes = recv(fd, buff, sizeof(buff) - 1 , 0); //-> receive the data
+ ssize_t bytes = recv(fd, buff, sizeof(buff) - 1 , 0);
 
- if(bytes <= 0){ //-> check if the client disconnected
+ if(bytes <= 0){ 
   std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
   //ClearClients(fd); //-> clear the client
   close(fd); //-> close the client socket
@@ -126,16 +110,24 @@ void Server::receiveData(int fd)
  else{ //-> print the received data
   buff[bytes] = '\0';
   
-  
-  std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;
-  //here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
+  // std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;
 	
-	/***********COMMANDE**************/
+	std::vector<Client>::iterator it;
+	std::string tmp;
+  for (it = _clients.begin(); it != _clients.end(); ++it)
+  {
+			// std::cout << RED << it->get_nickName() << WHI << std::endl;
+      if (it->get_fd() == fd)
+			{
+          tmp = it->get_nickName();
+      		break;
+			}
+  }
+	// std::cout << RED << tmp << WHI << std::endl;
+  std::cout << YEL << tmp << ": " << WHI << buff;
 	
-	// if (strncmp("/nick", buff, 5) == 0)
-	// 	std::cout << "oui" << std::endl;
-	// else
-	// 	std::cout << "non" << std::endl;
+	//here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
+	execute_cmd(_clients, fd, buff);
   
  }
 }
