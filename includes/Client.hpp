@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/22 14:27:56 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/22 22:51:35 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@ private:
 	struct epoll_event event, events[MAX_EVENTS];
 	int 			_epoll_fd; */
 
-	std::string		_nickName;
+	std::string			_nickName;
+	std::string			_userName;
+	// std::vector<char>	_canalOperator; //operateurs de canaux -> droit que le client possede sur un canal
+	
 	
 public:
 	Client();
@@ -44,6 +47,8 @@ public:
 	void		set_nickName(std::string nick);
 	void		init_nickName(std::string nick, int fd);
 	std::string	get_nickName();
+	void		set_userName(std::string user);
+	std::string	get_userName();
 
 };
 

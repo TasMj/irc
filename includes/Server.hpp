@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/22 14:31:24 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/22 19:04:34 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,7 @@ class Server
 		void	addNewClient();
 		void	receiveData(int fd);
 
-
-		std::string get_username(std::vector<Client> _clients, char *buff);
+		// std::string get_username(std::vector<Client> _clients, char *buff);
 		
 };
 
@@ -76,6 +75,7 @@ int	checkElt(std::string serverName, int port, std::string psw);
 
 /**************/
 void	execute_cmd(std::vector<Client>& _clients, int fd, std::string buff);
+void	recup_data(std::vector<Client>& _clients, char *buff);
 
 
 

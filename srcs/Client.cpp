@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/22 14:14:15 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/22 22:35:08 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,14 @@ void	Client::set_nickName(std::string nick)
 std::string Client::get_nickName()
 {
 	return (this->_nickName);
+}
+
+void	Client::set_userName(std::string user)
+{
+	this->_userName = user;
+};
+
+std::string Client::get_userName()
+{
+	return (this->_userName);
 }

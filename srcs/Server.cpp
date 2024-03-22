@@ -3,18 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/22 14:59:41 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/22 22:19:05 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-Server::Server(unsigned int port, std::string password) : _port(port), _password(password){
+Server::Server(unsigned int port, std::string password) : _port(port), _password(password)
+{
 
-																	   };
+};
 
 int Server::initServer(int port)
 {
@@ -77,7 +78,7 @@ void Server::addNewClient()
 
 	cli.set_fd(receiving_fd);
 	cli.set_ip(inet_ntoa(cliAdd.sin_addr));
-	cli.init_nickName("NickDefault_", cli.get_fd());
+	// cli.init_nickName("NickDefault_", cli.get_fd());
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
 
@@ -110,27 +111,24 @@ void Server::receiveData(int fd)
 		buff[bytes] = '\0';
 
 		/*first connection*/
-		if (strncmp(buff, "CAP LS", 6) == 0)
+		if (strncmp(buff, "CAP LS", 6) == 0 || strncmp(buff, "USER", 4) == 0)
 		{
 			std::cout << BLU << "1st connection" << WHI << std::endl;
+			recup_data(_clients, buff);
 		}
 
-		// std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;
+	/*just to print / to delet after*/
 		std::vector<Client>::iterator it;
 		std::string tmp;
 		for (it = _clients.begin(); it != _clients.end(); ++it)
 		{
-			// std::cout << RED << it->get_nickName() << WHI << std::endl;
 			if (it->get_fd() == fd)
 			{
 				tmp = it->get_nickName();
 				break;
 			}
 		}
-		// std::cout << RED << tmp << WHI << std::endl;
 		std::cout << YEL << tmp << ": " << WHI << buff;
-			
-
 		// here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
 		execute_cmd(_clients, fd, buff);
 	}
@@ -147,8 +145,6 @@ int Server::serverLoop()
 	while (running)
 	{
 		printf("\nPolling for input...\n");
-		// event_count = epoll_wait(this->_epoll_fd, events, MAX_EVENTS, 30000);
-		// printf("%d ready events\n", event_count);
 		for (i = 0; i < this->_polls.size(); i++)
 		{
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && running)
@@ -160,20 +156,7 @@ int Server::serverLoop()
 				else
 					this->receiveData(this->_polls[i].fd);
 			}
-			/* printf("Reading file descriptor '%d' -- ", events[i].data.fd);
-			bytes_read = read(this->_connection[0], read_buffer, READ_SIZE);
-			printf("%zd bytes read.\n", bytes_read);
-			read_buffer[bytes_read] = '\0';
-			printf("Read '%s'\n", read_buffer);
-
-			if (!strncmp(read_buffer, "stop\0", 5))
-				running = 0; */
 		}
 	}
-	/* if (close(this->_epoll_fd))
-	{
-		fprintf(stderr, "Failed to close epoll file descriptor\n");
-		return (1);
-	} */
 	return (0);
 }
