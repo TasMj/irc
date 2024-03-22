@@ -1,0 +1,1 @@
+nickname = max 9 char mais accepter la sring en entiere

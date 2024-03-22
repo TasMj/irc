@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NewFonction.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/20 10:23:09 by tas               #+#    #+#             */
-/*   Updated: 2024/03/21 21:27:32 by tas              ###   ########.fr       */
+/*   Updated: 2024/03/22 14:34:25 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,10 @@ void execute_cmd(std::vector<Client>& _clients, int fd, std::string buff)
 {
     if (strncmp("/nick ", buff.c_str(), 5) == 0 || strncmp("/NICK ", buff.c_str(), 5) == 0)
         nickCmd(_clients, fd, buff);
+}
+
+std::string get_username(std::vector<Client> _clients, char *buff)
+{
+    // std::cout << PUR << buff << WHI << std::endl;
+    return ("TEST");
 }
