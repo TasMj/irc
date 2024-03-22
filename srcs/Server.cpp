@@ -12,6 +12,11 @@
 
 #include "../includes/Server.hpp"
 
+Channel::~Channel()
+{}
+
+Channel::Channel()
+{}
 
 Server::Server(unsigned int port, std::string password) : _port(port), _password(password)
 {
@@ -109,6 +114,62 @@ void	Server::addNewClient()
 	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl; 
 }
+bool Channel::hasName(const std::string& nameToCheck) const
+{
+        	return this->_name == nameToCheck;
+}
+
+void	Server::verify_existing_chan_or_creat(char *channelNameStart)
+{
+	std::string name(channelNameStart);
+
+        // Parcourir chaque liste de Channel dans Chan
+        for (std::list<std::list<Channel> >::iterator it = Chan.begin(); it != Chan.end(); ++it) {
+            // Parcourir chaque Channel dans la liste actuelle
+            for (std::list<Channel>::iterator jt = it->begin(); jt != it->end(); ++jt) {
+                if (jt->hasName(name)) {
+                    std::cout << "Oui, le channel existe déjà." << std::endl;
+                    return;
+                }
+            }
+        }
+
+        // Si on arrive ici, aucun channel correspondant n'a été trouvé
+        if (!Chan.empty()) {
+            // Ajouter le nouveau Channel à la première liste si Chan n'est pas vide
+            Chan.front().push_back(Channel(name));
+        } else {
+            // Si Chan est vide, créer une nouvelle liste de Channel, ajouter le nouveau Channel, puis ajouter la liste à Chan
+            std::list<Channel> newList;
+            newList.push_back(Channel(name));
+            Chan.push_back(newList);
+        }
+        std::cout << "Un nouveau channel a été créé." << std::endl;
+}
+
+void	Server::choose_comm(char *buff)
+{
+	if (strncmp("NICK", buff, 4) == 0)
+		std::cout << "oui nick commande" << std::endl;
+	else if(strncmp("JOIN", buff, 4) == 0)
+	{
+		std::cout << "OUI join commande" << std::endl;
+		char *channelNameStart = strchr(buff, '#');
+        if (channelNameStart != NULL) // Si on trouve le symbole '#'
+        {
+            // On pourrait directement utiliser channelNameStart qui contient déjà l'adresse du début du nom du canal.
+            std::cout << "Channel: " << channelNameStart << std::endl;
+			verify_existing_chan_or_creat(channelNameStart);
+        }
+        else
+        {
+            std::cout << "Commande JOIN mal formée, aucun canal spécifié." << std::endl;
+        }
+	}
+	else
+		std::cout << "non" << std::endl;
+
+}
 
 void Server::receiveData(int fd)
 {
@@ -128,16 +189,12 @@ void Server::receiveData(int fd)
   
   
   std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;
-  //here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
-	
 	/***********COMMANDE**************/
-	
-	// if (strncmp("/nick", buff, 5) == 0)
-	// 	std::cout << "oui" << std::endl;
-	// else
-	// 	std::cout << "non" << std::endl;
+	choose_comm(buff);
+	std::cout << "laaaa: " << buff << std::endl;
   
  }
+	// choose_commande()
 }
 
 int Server::serverLoop()

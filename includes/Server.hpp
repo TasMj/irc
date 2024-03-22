@@ -24,9 +24,9 @@
 # include <string.h>
 #include <fcntl.h>
 # include <poll.h>
-# include <sys/epoll.h>
+//# include <sys/epoll.h>
 # include <vector>
-
+# include <list>
 #define RED "\e[1;31m" //-> for red color
 #define WHI "\e[0;37m" //-> for white color
 #define GRE "\e[1;32m" //-> for green color
@@ -37,6 +37,20 @@
 
 #define MAX_EVENTS 5
 #define READ_SIZE 10
+
+class	Channel
+{
+	private:
+		std::string _name;
+		int			_nbUsers;
+		Channel();
+		// Channel(Channel const & obj);
+		// Channel & operator=(Channel const & rhs);
+	public:
+		~Channel();
+		Channel(std::string n) : _name(n) {}
+		bool hasName(const std::string& nameToCheck) const; 
+};
 
 class Server
 {
@@ -50,7 +64,7 @@ private:
 	int 						_epoll_fd;
 	std::vector<Client>			_clients;
 	std::vector<pollfd>			_polls;
-	
+	std::list<std::list<Channel> > Chan;	
 	Server();
 	
 public:
@@ -61,7 +75,12 @@ public:
 	int		serverLoop();
 	void	addNewClient();
 	void	receiveData(int fd);
+	void	choose_comm(char *buff);
+	void	verify_existing_chan_or_creat(char *channelNameStart);
+
 };
+
+
 
 int	checkElt(std::string serverName, int port, std::string psw);
 
