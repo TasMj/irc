@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/25 15:01:19 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/25 16:11:33 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ class Server
 		int		serverLoop();
 		void	addNewClient();
 		void	receiveData(int fd);
+		void	receiveFirstData(Client *cli);
 
 		// std::string get_username(std::vector<Client> _clients, char *buff);
 		

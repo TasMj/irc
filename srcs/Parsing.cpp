@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.cpp                                        :+:      :+:    :+:   */
+/*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:54:11 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/25 14:47:20 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/25 16:02:55 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int checkPort(int port)
 	return (0);
 }
 
-int checkPsw(std::string psw)
+int checkPsd(std::string psw)
 {
 	(void)psw;
 	return (0);

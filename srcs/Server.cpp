@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/25 15:53:54 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/25 16:17:11 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,49 @@ void Server::addNewClient()
 	for (it = _clients.begin(); it != _clients.end(); ++it)
 	{
 		std::cout << "fd : " << it->get_fd() << ", Nickname : " << it->get_nickName() << std::endl;
+	}
+	receiveFirstData(&cli);
+}
+
+void Server::receiveFirstData(Client *cli)
+{
+	char buff[1024];
+	memset(buff, 0, sizeof(buff));
+
+	ssize_t bytes = recv(cli->get_fd(), buff, sizeof(buff) - 1, 0);
+
+	if (bytes <= 0)
+	{
+		std::cout << RED << "Client <" << cli->get_fd() << "> Disconnected" << WHI << std::endl;
+		// ClearClients(fd); //-> clear the client
+		close(cli->get_fd()); //-> close the client socket
+	}
+	else
+	{ //-> print the received data
+		buff[bytes] = '\0';
+
+
+		/* first connection
+		if (strncmp(buff, "CAP LS", 6) == 0 || strncmp(buff, "USER", 4) == 0)
+		{
+			std::cout << BLU << "1st connection" << WHI << std::endl;
+			recup_data(_clients, buff);
+		} */
+
+	/*just to print / to delet after*/
+		std::vector<Client>::iterator it;
+		std::string tmp;
+		for (it = _clients.begin(); it != _clients.end(); ++it)
+		{
+			if (it->get_fd() == cli->get_fd())
+			{
+				tmp = it->get_nickName();
+				break;
+			}
+		}
+		std::cout << YEL << tmp << ": " << WHI << buff;
+		// here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
+		execute_cmd(_clients, cli->get_fd(), buff);
 	}
 }
 
