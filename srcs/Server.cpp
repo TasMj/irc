@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/22 22:19:05 by tas              ###   ########.fr       */
+/*   Updated: 2024/03/25 14:54:51 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int Server::initServer(int port)
 	this->_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_sockfd == -1)
 	{
-		std::cout << "Failed to create socket. errno: " << errno << std::endl;
+		// std::cout << "Failed to create socket. errno: " << errno << std::endl;
+		std::cout << "Failed to create socket. errno: " << std::endl;
 		return (1);
 	}
 
@@ -40,17 +41,19 @@ int Server::initServer(int port)
 
 	if (bind(this->_sockfd, (struct sockaddr *)&this->_sockAddr, sizeof(sockaddr)) < 0)
 	{
-		std::cout << "Failed to bind to port " << port << ". errno: " << errno << std::endl;
+		// std::cout << "Failed to bind to port " << port << ". errno: " << errno << std::endl;
+		std::cout << "Failed to bind to port " << port << ". errno: " << std::endl;
 		return (1);
 	}
 
 	if (listen(this->_sockfd, 10) < 0)
 	{
-		std::cout << "Failed to listen on socket. errno: " << errno << std::endl;
+		// std::cout << "Failed to listen on socket. errno: " << errno << std::endl;
+		std::cout << "Failed to listen on socket." << std::endl;
 		return (1);
 	}
 
-	auto addrlen = sizeof(sockaddr);
+	// auto addrlen = sizeof(sockaddr);
 	new_poll.fd = this->_sockfd;
 	new_poll.events = POLLIN;
 	new_poll.revents = 0;
@@ -78,13 +81,13 @@ void Server::addNewClient()
 
 	cli.set_fd(receiving_fd);
 	cli.set_ip(inet_ntoa(cliAdd.sin_addr));
-	// cli.init_nickName("NickDefault_", cli.get_fd());
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
 
 	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl;
 
+	/*print les clients du containers*/
 	std::vector<Client>::iterator it;
 	for (it = _clients.begin(); it != _clients.end(); ++it)
 	{
@@ -110,12 +113,13 @@ void Server::receiveData(int fd)
 	{ //-> print the received data
 		buff[bytes] = '\0';
 
-		/*first connection*/
+
+		/* first connection
 		if (strncmp(buff, "CAP LS", 6) == 0 || strncmp(buff, "USER", 4) == 0)
 		{
 			std::cout << BLU << "1st connection" << WHI << std::endl;
 			recup_data(_clients, buff);
-		}
+		} */
 
 	/*just to print / to delet after*/
 		std::vector<Client>::iterator it;
@@ -137,14 +141,15 @@ void Server::receiveData(int fd)
 int Server::serverLoop()
 {
 	int running = 1;
-	int event_count;
-	int i;
-	size_t bytes_read;
-	char read_buffer[READ_SIZE + 1];
+	// int event_count;
+	// int i;
+	size_t i;
+	// size_t bytes_read;
+	// char read_buffer[READ_SIZE + 1];
 
 	while (running)
 	{
-		printf("\nPolling for input...\n");
+		std::cout << "\nPolling for input...\n" << std::endl;
 		for (i = 0; i < this->_polls.size(); i++)
 		{
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && running)

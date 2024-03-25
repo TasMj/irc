@@ -1,0 +1,6 @@
+<< CAP LS
+<< NICK t
+<< USER tmejri tmejri irc.dal.net :Tasnim MEJRI
+>> :serenity.fl.us.dal.net NOTICE AUTH :*** Looking up your hostname...
+>> :serenity.fl.us.dal.net NOTICE AUTH :*** Checking Ident
+>> :serenity.fl.us.dal.net NOTICE AUTH :*** Found your hostname

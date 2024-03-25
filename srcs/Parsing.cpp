@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:54:11 by tmalless          #+#    #+#             */
-/*   Updated: 2024/02/26 12:20:51 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/25 14:47:20 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int checkPort(int port)
 
 int checkPsw(std::string psw)
 {
+	(void)psw;
 	return (0);
 }
 
