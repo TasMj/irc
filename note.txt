@@ -27,3 +27,4 @@ test basique qui peut être fait avec nc.
     b) Un bot.
 8) verifier syntaxe irssi / rfc
     a) nickname = max 9 char mais accepter la sring en entiere
+

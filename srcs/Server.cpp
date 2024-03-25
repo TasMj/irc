@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/25 14:54:51 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/25 15:53:54 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ int Server::initServer(int port)
 
 void Server::addNewClient()
 {
+	std::cout << GRE << "ca rentre" << WHI << std::endl;
 	Client cli;
 
 	struct sockaddr_in cliAdd;
@@ -138,6 +139,16 @@ void Server::receiveData(int fd)
 	}
 }
 
+// bool	check_poll_fd(std::vector<pollfd> _polls)
+// {
+// 	std::vector<pollfd>::iterator it;
+	
+// 	for (it = _polls.begin(); it != _polls.end(); it++)
+// 	{
+// 		if (it->fd == )
+// 	}
+// }
+
 int Server::serverLoop()
 {
 	int running = 1;
@@ -157,7 +168,11 @@ int Server::serverLoop()
 			if (this->_polls[i].revents & POLLIN)
 			{
 				if (this->_polls[i].fd == this->_sockfd)
+				{
+					// std::cout << BLU << this->_polls[0].fd << WHI << std::endl;
+					// std::cout << GRE << this->_polls[i].fd << WHI << std::endl;	
 					this->addNewClient();
+				}
 				else
 					this->receiveData(this->_polls[i].fd);
 			}

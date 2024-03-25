@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:01:47 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/25 15:13:05 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/25 15:29:03 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,6 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
 
 int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
 {
-    /*verifier qu'il y a assez de paramètres (>3)*/
-    
-    // if (check_param(buff) < 3)
-    // {
-    //     send(fd, "Not enough parameters given\n", 28, 0);
-    //     return (1);
-    // }
-    
     /*on check si nick ou channel*/
     if (buff[9] && buff[9] == '#')
     {
