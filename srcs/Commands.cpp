@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:01:47 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/25 16:06:43 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/26 23:24:13 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ void execute_cmd(std::vector<Client>& _clients, int fd, std::string buff)
         msgCmd(_clients, buff, fd);
     if (strncmp("PING ", buff.c_str(), 5) == 0)
         pingCmd(_clients, fd);
-	if (strncmp("PASS ", buff.c_str(), 5) == 0)
-		checkPwd(_clients, buff, fd);
+	// if (strncmp("PASS ", buff.c_str(), 5) == 0)
+		// checkPwd(_clients, buff, fd);
 }
 
 void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)

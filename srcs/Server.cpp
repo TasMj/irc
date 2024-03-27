@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/25 16:17:11 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/27 10:04:13 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ int Server::initServer(int port)
 	this->_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_sockfd == -1)
 	{
-		// std::cout << "Failed to create socket. errno: " << errno << std::endl;
-		std::cout << "Failed to create socket. errno: " << std::endl;
+		std::cout << "Failed to create socket. errno: " << errno << std::endl;
 		return (1);
 	}
 
@@ -41,15 +40,13 @@ int Server::initServer(int port)
 
 	if (bind(this->_sockfd, (struct sockaddr *)&this->_sockAddr, sizeof(sockaddr)) < 0)
 	{
-		// std::cout << "Failed to bind to port " << port << ". errno: " << errno << std::endl;
-		std::cout << "Failed to bind to port " << port << ". errno: " << std::endl;
+		std::cout << "Failed to bind to port " << port << ". errno: " << errno << std::endl;
 		return (1);
 	}
 
 	if (listen(this->_sockfd, 10) < 0)
 	{
-		// std::cout << "Failed to listen on socket. errno: " << errno << std::endl;
-		std::cout << "Failed to listen on socket." << std::endl;
+		std::cout << "Failed to listen on socket. errno: " << errno << std::endl;
 		return (1);
 	}
 
@@ -61,17 +58,17 @@ int Server::initServer(int port)
 	return (0);
 };
 
+#include <cstdio>
 void Server::addNewClient()
 {
-	std::cout << GRE << "ca rentre" << WHI << std::endl;
 	Client cli;
 
 	struct sockaddr_in cliAdd;
 	struct pollfd new_poll;
 	socklen_t len = sizeof(cliAdd);
-	std::string welcome_msg;
+	// std::string welcome_msg;
 
-	welcome_msg = ":localhost 001 tmejri :\n\n\n\n\n\n\nWelcome\n\nPlease select a nickname with the command /nick\n\n\n";
+	// welcome_msg = ":localhost 001 tmejri :\n\n\n\n\n\n\nWelcome\n\nPlease select a nickname with the command /nick\n\n\n";
 	int receiving_fd = accept(this->_sockfd, (sockaddr *)&(cliAdd), &len);
 
 	fcntl(receiving_fd, F_SETFL, O_NONBLOCK);
@@ -85,7 +82,7 @@ void Server::addNewClient()
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
 
-	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
+	// send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl;
 
 	/*print les clients du containers*/
@@ -94,7 +91,14 @@ void Server::addNewClient()
 	{
 		std::cout << "fd : " << it->get_fd() << ", Nickname : " << it->get_nickName() << std::endl;
 	}
+	// while (cli.get_nickName().empty() == true && cli.get_userName().empty() == true)
 	receiveFirstData(&cli);
+	receiveFirstData(&cli);
+
+	std::string welcome_msg;
+	welcome_msg = ":localhost 001 " + cli.get_userName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
+	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
+
 }
 
 void Server::receiveFirstData(Client *cli)
@@ -111,32 +115,19 @@ void Server::receiveFirstData(Client *cli)
 		close(cli->get_fd()); //-> close the client socket
 	}
 	else
-	{ //-> print the received data
+	{
 		buff[bytes] = '\0';
-
-
-		/* first connection
-		if (strncmp(buff, "CAP LS", 6) == 0 || strncmp(buff, "USER", 4) == 0)
+		std::cout << BLU << "1st connection" << WHI << std::endl;
 		{
-			std::cout << BLU << "1st connection" << WHI << std::endl;
-			recup_data(_clients, buff);
-		} */
-
-	/*just to print / to delet after*/
-		std::vector<Client>::iterator it;
-		std::string tmp;
-		for (it = _clients.begin(); it != _clients.end(); ++it)
-		{
-			if (it->get_fd() == cli->get_fd())
-			{
-				tmp = it->get_nickName();
-				break;
-			}
+			std::cout << "buff: " << buff << std::endl;
+			recup_dataa(cli, buff);
 		}
-		std::cout << YEL << tmp << ": " << WHI << buff;
-		// here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
-		execute_cmd(_clients, cli->get_fd(), buff);
+		std::cout << RED <<  "fd: " << cli->get_fd() << " data: " << cli->get_nickName() << " " << cli->get_userName() << std::endl;
 	}
+	
+	// std::string welcome_msg;
+	// welcome_msg = ":localhost 001 " + cli->get_userName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
+	// send(cli->get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 }
 
 void Server::receiveData(int fd)
@@ -157,14 +148,6 @@ void Server::receiveData(int fd)
 	{ //-> print the received data
 		buff[bytes] = '\0';
 
-
-		/* first connection
-		if (strncmp(buff, "CAP LS", 6) == 0 || strncmp(buff, "USER", 4) == 0)
-		{
-			std::cout << BLU << "1st connection" << WHI << std::endl;
-			recup_data(_clients, buff);
-		} */
-
 	/*just to print / to delet after*/
 		std::vector<Client>::iterator it;
 		std::string tmp;
@@ -182,24 +165,10 @@ void Server::receiveData(int fd)
 	}
 }
 
-// bool	check_poll_fd(std::vector<pollfd> _polls)
-// {
-// 	std::vector<pollfd>::iterator it;
-	
-// 	for (it = _polls.begin(); it != _polls.end(); it++)
-// 	{
-// 		if (it->fd == )
-// 	}
-// }
-
 int Server::serverLoop()
 {
 	int running = 1;
-	// int event_count;
-	// int i;
 	size_t i;
-	// size_t bytes_read;
-	// char read_buffer[READ_SIZE + 1];
 
 	while (running)
 	{
@@ -211,13 +180,12 @@ int Server::serverLoop()
 			if (this->_polls[i].revents & POLLIN)
 			{
 				if (this->_polls[i].fd == this->_sockfd)
-				{
-					// std::cout << BLU << this->_polls[0].fd << WHI << std::endl;
-					// std::cout << GRE << this->_polls[i].fd << WHI << std::endl;	
 					this->addNewClient();
-				}
 				else
+				{
+					std::cout << GRE << "..." << WHI << std::endl;	
 					this->receiveData(this->_polls[i].fd);
+				}
 			}
 		}
 	}

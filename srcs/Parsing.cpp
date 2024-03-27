@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:54:11 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/25 16:02:55 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/26 23:06:06 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,12 @@ int checkPsd(std::string psw)
 
 int	checkElt(std::string serverName, int port, std::string psw)
 {
+	(void)psw;
 	if (!checkName(serverName))
 		return (1);
 	if (!checkPort(port))
 		return (1);
-	if (!checkPsw(psw))
-		return (1);
+	// if (!checkPsw(psw))
+		// return (1);
 	return (0);
 }
