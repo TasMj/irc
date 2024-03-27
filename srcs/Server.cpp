@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/27 16:55:05 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/03/27 20:55:14 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void Server::receiveFirstData(Client *cli)
 		buff[bytes] = '\0';
 		std::cout << BLU << "1st connection" << WHI << std::endl;
 		{
-			std::cout << "buff: " << buff << std::endl;
+			std::cout << CYA << "buff: " << buff << std::endl;
 			recup_dataa(cli, buff);
 		}
 		std::cout << RED <<  "fd: " << cli->get_fd() << " data: " << cli->get_nickName() << " " << cli->get_userName() << std::endl;
@@ -164,6 +164,7 @@ void Server::receiveData(int fd)
 				break;
 			}
 		}
+		std::cout << BLU << buff << std::endl;
 		std::cout << YEL << tmp << ": " << WHI << buff;
 		// here you can add your code to process the received data: parse, check, authenticate, handle the command, etc...
 		execute_cmd(_clients, fd, buff);
