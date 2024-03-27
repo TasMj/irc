@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/27 00:27:10 by tas              ###   ########.fr       */
+/*   Updated: 2024/03/27 17:09:35 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <map>
 # include "Client.hpp"
 # include <cerrno>
+# include <csignal>
 
 /******************************************************************************/
 /*                                  Defines                                   */
@@ -47,6 +48,8 @@
 
 #define MAX_EVENTS 5
 #define READ_SIZE 10
+
+extern bool g_isRunning;
 
 /******************************************************************************/
 /*                                   Class                                    */
@@ -76,7 +79,7 @@ class Server
 		void	addNewClient();
 		void	receiveData(int fd);
 		void	receiveFirstData(Client *cli);
-
+		void	cleanServer();
 		// std::string get_username(std::vector<Client> _clients, char *buff);
 		
 };

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/27 10:04:13 by tas              ###   ########.fr       */
+/*   Updated: 2024/03/27 16:55:05 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 Server::Server(unsigned int port, std::string password) : _port(port), _password(password)
 {
 
+};
+
+Server::~Server()
+{
+	std::cout << "The server has been shutdown." << std::endl;
 };
 
 int Server::initServer(int port)
@@ -93,10 +98,10 @@ void Server::addNewClient()
 	}
 	// while (cli.get_nickName().empty() == true && cli.get_userName().empty() == true)
 	receiveFirstData(&cli);
-	receiveFirstData(&cli);
+	//receiveFirstData(&cli);
 
 	std::string welcome_msg;
-	welcome_msg = ":localhost 001 " + cli.get_userName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
+	welcome_msg = ":localhost 001 " + cli.get_nickName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
 	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 
 }
@@ -165,22 +170,36 @@ void Server::receiveData(int fd)
 	}
 }
 
+void Server::cleanServer()
+{
+	std::vector<pollfd>::iterator it;
+
+	for (it = this->_polls.begin(); it != this->_polls.end(); it++)
+	{
+		close(it->fd);
+	}
+	delete this;
+}
+
 int Server::serverLoop()
 {
-	int running = 1;
+	g_isRunning = true;
 	size_t i;
 
-	while (running)
+	while (g_isRunning)
 	{
 		std::cout << "\nPolling for input...\n" << std::endl;
 		for (i = 0; i < this->_polls.size(); i++)
 		{
-			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && running)
+			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && g_isRunning)
 				throw(std::runtime_error("poll() failed"));
 			if (this->_polls[i].revents & POLLIN)
 			{
 				if (this->_polls[i].fd == this->_sockfd)
+				{
+					std::cout << GRE << ":::" << WHI << std::endl;
 					this->addNewClient();
+				}
 				else
 				{
 					std::cout << GRE << "..." << WHI << std::endl;	
@@ -189,5 +208,6 @@ int Server::serverLoop()
 			}
 		}
 	}
+	this->cleanServer();
 	return (0);
 }
