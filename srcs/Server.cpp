@@ -114,53 +114,136 @@ void	Server::addNewClient()
 	send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
 	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl; 
 }
+
 bool Channel::hasName(const std::string& nameToCheck) const
 {
         	return this->_name == nameToCheck;
 }
 
-void	Server::verify_existing_chan_or_creat(char *channelNameStart)
+void	Server::verify_existing_chan_or_creat(char *channelNameStart, int fd)
 {
 	std::string name(channelNameStart);
+    bool channelFound = false;
 
-        // Parcourir chaque liste de Channel dans Chan
-        for (std::list<std::list<Channel> >::iterator it = Chan.begin(); it != Chan.end(); ++it) {
-            // Parcourir chaque Channel dans la liste actuelle
-            for (std::list<Channel>::iterator jt = it->begin(); jt != it->end(); ++jt) {
-                if (jt->hasName(name)) {
-                    std::cout << "Oui, le channel existe déjà." << std::endl;
-                    return;
-                }
-            }
+    // Parcourir chaque Channel dans Chan
+    for (std::list<Channel>::iterator it = Chan.begin(); it != Chan.end(); ++it)
+	{
+        if (it->hasName(name))
+		{
+            std::cout << "Oui, le channel existe déjà." << std::endl;
+            it->fd_in_channel.push_back(fd); // Ajoute le fd au canal existant
+            channelFound = true;
+            break;
         }
+    }
 
-        // Si on arrive ici, aucun channel correspondant n'a été trouvé
-        if (!Chan.empty()) {
-            // Ajouter le nouveau Channel à la première liste si Chan n'est pas vide
-            Chan.front().push_back(Channel(name));
-        } else {
-            // Si Chan est vide, créer une nouvelle liste de Channel, ajouter le nouveau Channel, puis ajouter la liste à Chan
-            std::list<Channel> newList;
-            newList.push_back(Channel(name));
-            Chan.push_back(newList);
-        }
-        std::cout << "Un nouveau channel a été créé." << std::endl;
+    if (!channelFound)
+	{
+        // Si le canal n'a pas été trouvé, le créer et l'ajouter à la liste
+        Channel newChannel(name);
+        newChannel.fd_in_channel.push_back(fd); // Ajoute le fd au nouveau canal
+        Chan.push_back(newChannel);
+        std::cout << "Un nouveau channel a été créé : " << name << std::endl;
+    }
 }
 
-void	Server::choose_comm(char *buff)
+std::string Channel::getName() const
+{
+	return (this->_name);
+}
+
+void Server::parcourirTousLesChannels()
+{
+       std::list<Channel>::const_iterator it;
+        for (it = Chan.begin(); it != Chan.end(); ++it)
+		{
+            std::cout << "Nom du channel : " << it->getName() << std::endl;
+			for (std::vector<int>::const_iterator fd_it = it->fd_in_channel.begin(); fd_it != it->fd_in_channel.end(); ++fd_it)
+        	{
+        	    std::cout << "fd " << *fd_it << " present dans channel: " << it->getName() << std::endl;
+        	}
+		}
+}
+
+int	Server::count_virgule(char *channelNameStart)
+{
+	int	count = 0;
+	for (int i = 0; channelNameStart[i]; i++)
+	{
+		if (channelNameStart[i] == ',')
+			count++;
+	}
+	return (count);
+}
+
+bool	Server::verify_bad_char(char *channelNameStart)
+{
+	std::string name;
+	name = static_cast<std::string>(channelNameStart);
+	std::cout << "name: " << name << std::endl;
+	if (name.size() > 50)
+		return (0);
+	std::cout << "LA1" << std::endl;
+	if (name[0] != '#')
+	{
+		return (0);
+	}
+	std::cout << "LA2" << std::endl;
+	std::cout << name.size() << std::endl;
+	for (size_t i = 1; i <= name.size() - 3; ++i)
+	{
+		// std::cout << name[i] << std::endl;
+		if ((name[i] >= 97 && name[i] <= 122) || (name[i] >= 65 && name[i] <= 90) || (name[i] >= 48 && name[i] <= 57) || name[i] == 95 || name[i] == 45 || name[i] == 46)
+			std::cout << name[i];
+		else
+			return (0);
+	}
+	std::cout << "LA3" << std::endl;
+	return (1);
+
+}
+
+void	Server::choose_comm(char *buff, int fd)
 {
 	if (strncmp("NICK", buff, 4) == 0)
 		std::cout << "oui nick commande" << std::endl;
 	else if(strncmp("JOIN", buff, 4) == 0)
 	{
-		std::cout << "OUI join commande" << std::endl;
-		char *channelNameStart = strchr(buff, '#');
-        if (channelNameStart != NULL) // Si on trouve le symbole '#'
+
+		char *channelNameStart = strstr(buff, "JOIN ");
+		channelNameStart = channelNameStart + strlen("JOIN ");
+		std::cout << "OUI join commande: " << channelNameStart << std::endl;
+        if (channelNameStart != NULL) // Si on trouve le symbole '#' 
         {
             // On pourrait directement utiliser channelNameStart qui contient déjà l'adresse du début du nom du canal.
             std::cout << "Channel: " << channelNameStart << std::endl;
-			verify_existing_chan_or_creat(channelNameStart);
+			if (verify_bad_char(channelNameStart) == 1)
+				verify_existing_chan_or_creat(channelNameStart, fd);
+			else
+				std::cout << "bad indentation of join parameters command!" << std::endl;
         }
+		// else if (channelNameStart != NULL && strchr(channelNameStart, ','))// plusieurs channels
+		// {
+			// int nb_of_chan = count_virgule(channelNameStart) + 1;
+			// const char* start = channelNameStart;
+			// for (int i = 0; i < nb_of_chan; ++i)
+			// {
+    			// const char* end = strchr(start, ',');
+    			// if (!end) end = start + strlen(start); // Si pas de ',', pointer vers la fin de la chaîne
+// 
+    			// int len = end - start;
+    			// char* tmp = new char[len + 1]; // +1 pour '\0'
+    			// strncpy(tmp, start, len);
+    			// tmp[len] = '\0';
+				// verify_existing_chan_or_creat(tmp, fd);
+// 
+    			// std::cout << "tmp: " << tmp << std::endl;
+// 
+    			// delete[] tmp; // Ne pas oublier de libérer la mémoire
+// 
+    			// start = end + 1; // Passer au prochain nom de canal
+			// }
+		// }
         else
         {
             std::cout << "Commande JOIN mal formée, aucun canal spécifié." << std::endl;
@@ -168,7 +251,6 @@ void	Server::choose_comm(char *buff)
 	}
 	else
 		std::cout << "non" << std::endl;
-
 }
 
 void Server::receiveData(int fd)
@@ -190,11 +272,10 @@ void Server::receiveData(int fd)
   
   std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;
 	/***********COMMANDE**************/
-	choose_comm(buff);
-	std::cout << "laaaa: " << buff << std::endl;
-  
+	choose_comm(buff, fd);
+	parcourirTousLesChannels();	
+
  }
-	// choose_commande()
 }
 
 int Server::serverLoop()

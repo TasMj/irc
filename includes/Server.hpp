@@ -49,7 +49,9 @@ class	Channel
 	public:
 		~Channel();
 		Channel(std::string n) : _name(n) {}
-		bool hasName(const std::string& nameToCheck) const; 
+		bool hasName(const std::string& nameToCheck) const;
+		std::string getName() const;
+		std::vector<int> fd_in_channel;
 };
 
 class Server
@@ -64,7 +66,7 @@ private:
 	int 						_epoll_fd;
 	std::vector<Client>			_clients;
 	std::vector<pollfd>			_polls;
-	std::list<std::list<Channel> > Chan;	
+	std::list<Channel>			Chan;	
 	Server();
 	
 public:
@@ -75,8 +77,12 @@ public:
 	int		serverLoop();
 	void	addNewClient();
 	void	receiveData(int fd);
-	void	choose_comm(char *buff);
-	void	verify_existing_chan_or_creat(char *channelNameStart);
+	void	choose_comm(char *buff, int fd);
+	void	verify_existing_chan_or_creat(char *channelNameStart, int fd);
+bool	verify_bad_char(char *channelNameStart);
+
+	void	parcourirTousLesChannels();
+int	count_virgule(char *channelNameStart);
 
 };
 
