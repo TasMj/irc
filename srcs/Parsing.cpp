@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.cpp                                        :+:      :+:    :+:   */
+/*   Parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:54:11 by tmalless          #+#    #+#             */
-/*   Updated: 2024/02/26 12:20:51 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/03/28 13:50:14 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,18 @@ int checkPort(int port)
 
 int checkPsw(std::string psw)
 {
+	(void)psw;
 	return (0);
 }
 
 int	checkElt(std::string serverName, int port, std::string psw)
 {
+	(void)psw;
 	if (!checkName(serverName))
 		return (1);
 	if (!checkPort(port))
 		return (1);
-	if (!checkPsw(psw))
-		return (1);
+	// if (!checkPsw(psw))
+		// return (1);
 	return (0);
 }

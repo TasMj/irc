@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/19 15:57:52 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/05 17:50:51 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
-
 # define SERVER_HPP
 
+/******************************************************************************/
+/*                                 Includes                                   */
+/******************************************************************************/
 # include <string>
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -22,72 +24,109 @@
 # include <iostream>
 # include <unistd.h>
 # include <string.h>
-#include <fcntl.h>
+# include <fcntl.h>
 # include <poll.h>
 //# include <sys/epoll.h>
 # include <vector>
-# include <list>
-#define RED "\e[1;31m" //-> for red color
-#define WHI "\e[0;37m" //-> for white color
-#define GRE "\e[1;32m" //-> for green color
-#define YEL "\e[1;33m" //-> for yellow color
-
+# include <map>
+# include <deque>
 # include "Client.hpp"
+# include <cerrno>
+# include <csignal>
+# include <fstream>
+# include "Transmission.hpp"
 
+/******************************************************************************/
+/*                                  Defines                                   */
+/******************************************************************************/
+
+/*COLORS*/
+#define RED "\e[1;31m"
+#define WHI "\e[0;37m"
+#define GRE "\e[1;32m"
+#define YEL "\e[1;33m"
+#define BLU "\e[0;34m"
+#define PUR "\e[0;35m"
+#define CYA "\e[0;36m"
 
 #define MAX_EVENTS 5
 #define READ_SIZE 10
 
-class	Channel
-{
-	private:
-		std::string _name;
-		int			_nbUsers;
-		Channel();
-		// Channel(Channel const & obj);
-		// Channel & operator=(Channel const & rhs);
-	public:
-		~Channel();
-		Channel(std::string n) : _name(n) {}
-		bool hasName(const std::string& nameToCheck) const;
-		std::string getName() const;
-		std::vector<int> fd_in_channel;
-};
+extern bool g_isRunning;
+
+/******************************************************************************/
+/*                                   Class                                    */
+/******************************************************************************/
+
+class Client;
+
+class Transmission;
 
 class Server
 {
-private:
-	unsigned int				_port;
-	std::string					_password;
-	sockaddr_in					_sockAddr;
-	int							_sockfd;
-	int							_connection[5];
-	struct pollfd				_poll;
-	int 						_epoll_fd;
-	std::vector<Client>			_clients;
-	std::vector<pollfd>			_polls;
-	std::list<Channel>			Chan;	
-	Server();
+	private:
+		unsigned int				_port;
+		std::string					_password;
+		sockaddr_in					_sockAddr;
+		int							_sockfd;
+		int							_connection[5];
+		struct pollfd				_poll;
+		int 						_epoll_fd;
+		std::vector<Client>			_clients;
+		std::vector<pollfd>			_polls;
+		std::vector<Transmission>	_transmission;
+		
+		unsigned int				_pollStatus;
+		
+		
+	public:
+		Server();
+		Server(unsigned int port, std::string password);
+		~Server();
 	
-public:
-	Server(unsigned int port, std::string password);
-	~Server();
+		int					initServer(int port);
+		int					serverLoop();
+		void				addNewClient();
+		void				receiveData(int fd);
+		int					receiveFirstData(Client *cli);
+		void				cleanServer();
+		std::string			getPwd();
+		std::vector<pollfd>	getPollfds();
+		std::vector<Client> getClient();
+		// std::string get_username(std::vector<Client> _clients, char *buff);
 
-	int		initServer(int port);
-	int		serverLoop();
-	void	addNewClient();
-	void	receiveData(int fd);
-	void	choose_comm(char *buff, int fd);
-	void	verify_existing_chan_or_creat(char *channelNameStart, int fd);
-bool	verify_bad_char(char *channelNameStart);
-
-	void	parcourirTousLesChannels();
-int	count_virgule(char *channelNameStart);
-
+		void				setPollStatus(unsigned int status);
+		void				handleMsg(Client *cli, std::string msg);
+		// std::vector<Transmission>	getTransmission();
+		void				exec_transmission(std::vector<Transmission> transmission);
+		
+		
 };
 
+/******************************************************************************/
+/*                                 Functions                                  */
+/******************************************************************************/
 
+int		checkElt(std::string serverName, int port, std::string psw);
 
-int	checkElt(std::string serverName, int port, std::string psw);
+int			execute_cmd(std::vector<Client>& _clients, int fd, std::string buff);
+void    	nickCmd(std::vector<Client>& _clients, int fd, std::string buff);
+size_t		FindInString(const std::string& chaine, const std::string& sousChaine);
+void    	recup_nickName(std::vector<Client>& _clients, char *buff);
+void    	recup_user(std::vector<Client>& _clients, char *buff);
+void    	recup_data(std::vector<Client>* _clients, char *buff);
+int    		check_nick_exist(std::vector<Client>& _clients, std::string nick);
+std::string recup_nick_msg(std::string buff);
+std::string recup_msg(std::string buff, int start);
+int    		msgCmd(std::vector<Client>& _clients, std::string buff, int fd);
+void 		pingCmd(std::vector<Client>& _clients, int fd);
+//void 		execute_cmd(std::vector<Client>& _clients, int fd, std::string buff);
+int			checkPwd(std::vector<Client>& _clients, std::string buff, int fd);
+void	exitCmd(std::vector<Client> _clients, std::string buff, int fd);
+
+void    recup_nickNamee(Client *cli, std::string buff_str);
+void    recup_dataa(Client *cli, std::deque<std::string> cmds);
+void    recup_userr(Client *cli, std::string buff_str);
+
 
 #endif
