@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/05 17:50:51 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/05 18:39:01 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ class Server
 		void				handleMsg(Client *cli, std::string msg);
 		// std::vector<Transmission>	getTransmission();
 		void				exec_transmission(std::vector<Transmission> transmission);
-		
+		void				handleFirstMsg(Client *cli, std::string msg);
 		
 };
 

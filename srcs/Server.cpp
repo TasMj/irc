@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/05 18:16:05 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/05 18:58:46 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,13 +111,27 @@ void Server::addNewClient()
 	if (receiveFirstData(&cli))
 	{
 		std::string welcome_msg;
-		// welcome_msg = ":localhost 001 " + cli.get_nickName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
+		welcome_msg = ":localhost 001 " + cli.get_nickName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
 		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
-		handleMsg(&cli, welcome_msg);
+		// handleMsg(&cli, welcome_msg);
+		handleFirstMsg(&cli, welcome_msg);
 		// send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);		
 	}
 
 }
+
+void	Server::handleFirstMsg(Client *cli, std::string msg)
+{
+	Transmission newTrans;
+
+	newTrans.setMsg(msg);
+	newTrans.setFdHost(cli->get_fd());
+	_transmission.push_back(newTrans);
+
+	setPollStatus(POLLOUT);
+	
+}
+
 
 
 void	Server::handleMsg(Client *cli, std::string msg)
@@ -128,7 +142,7 @@ void	Server::handleMsg(Client *cli, std::string msg)
 	newTrans.setFdHost(cli->get_fd());
 	_transmission.push_back(newTrans);
 
-	setPollStatus(POLLOUT);
+	// setPollStatus(POLLOUT);
 }
 
 std::deque<std::string>	split(std::string str, std::string separator)
@@ -213,7 +227,6 @@ void Server::receiveData(int fd)
 				break;
 			}
 		}
-		
 		handleMsg(&tmp, buff);
 	}
 }
@@ -249,8 +262,8 @@ int Server::serverLoop()
 {
 	g_isRunning = true;
 	size_t 			i;
-	// unsigned int	pollStatus = _pollStatus;
 	setPollStatus(POLLIN);
+	int flag = 0;
 
 	while (g_isRunning)
 	{
@@ -260,8 +273,6 @@ int Server::serverLoop()
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && g_isRunning)
 				throw(std::runtime_error("poll() failed"));
 
-			// if (this->_polls[i].revents & POLLIN)
-			
 			if (_pollStatus == POLLIN)
 			{
 				if (this->_polls[i].revents & POLLIN)
@@ -270,20 +281,27 @@ int Server::serverLoop()
 					{
 						std::cout << GRE << ":::" << WHI << std::endl;
 						this->addNewClient();
+						flag = 1;
 					}
 					else
 					{
 						std::cout << GRE << "..." << WHI << std::endl;	
 						this->receiveData(this->_polls[i].fd);
+						flag++;
 					}
 				}
 			}
-			if (_pollStatus == POLLOUT)
+			if (_pollStatus == POLLOUT && flag == 1)
 			{
 				std::cout << GRE << "]]]" << WHI << std::endl;
 				exec_transmission(_transmission);
 			}
 		}
+		if (_pollStatus == POLLOUT)
+			{
+				std::cout << GRE << "]]]" << WHI << std::endl;
+				exec_transmission(_transmission);
+			}
 	}
 	this->cleanServer();
 	return (0);
