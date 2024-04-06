@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:01:47 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/05 17:36:19 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/06 15:38:58 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,9 +143,9 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
     std::cout << GRE << "nick: <" << WHI << nick << BLU << "> msg: <" << WHI << msg << ">" << WHI << std::endl;
         
         /*on verifie que le nickname existe*/
-        int fd_destinataire = check_nick_exist(_clients, nick);
+        int _fdDestinataire = check_nick_exist(_clients, nick);
         /*on envoie le msg au nickname*/
-        if (fd_destinataire == 0)
+        if (_fdDestinataire == 0)
         {
             std::cout << RED << "KO" << WHI << std::endl;
             send(fd, "no nick matching\n", 17, 0);
@@ -153,8 +153,8 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
         else
         {
             std::cout << PUR << full_msg << WHI << std::endl;
-            send(fd_destinataire, full_msg.c_str(), full_msg.size(), 0);
-            std::cout << RED << "OK: " << fd_destinataire << WHI << std::endl;
+            send(_fdDestinataire, full_msg.c_str(), full_msg.size(), 0);
+            std::cout << RED << "OK: " << _fdDestinataire << WHI << std::endl;
         }
     }
     return (0);

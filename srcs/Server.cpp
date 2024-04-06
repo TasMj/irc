@@ -6,22 +6,27 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/05 18:58:46 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/06 19:32:37 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 #include "../includes/Transmission.hpp"
 
-Server::Server(unsigned int port, std::string password) : _port(port), _password(password)
+Server::Server(unsigned int port, std::string password) : _port(port), _password(password), _prefixServer(":localhost")
 {
 	std::cout << RED << std::endl << std::endl << password << std::endl << std::endl << WHI;
-};
+}
 
 Server::~Server()
 {
 	std::cout << "The server has been shutdown." << std::endl;
-};
+}
+
+std::string const &	Server::getPrefixServer() const
+{
+	return (this->_prefixServer);
+}
 
 std::string Server::getPwd()
 {
@@ -76,9 +81,8 @@ int Server::initServer(int port)
 	new_poll.revents = 0;
 	this->_polls.push_back(new_poll);
 	return (0);
-};
+}
 
-#include <cstdio>
 void Server::addNewClient()
 {
 	Client cli;
@@ -108,41 +112,51 @@ void Server::addNewClient()
 		std::cout << "fd : " << it->get_fd() << ", Nickname : " << it->get_nickName() << std::endl;
 	}
 	
-	if (receiveFirstData(&cli))
+	// if (receiveFirstData(&cli))
+	// {
+	// 	std::string welcome_msg;
+	// 	welcome_msg = this->getPrefixServer() + " 001 " + cli.get_nickName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
+	// 	cli.setUpTransmission(&cli, welcome_msg, cli.get_fd());
+	// 	cli.prepareMsgToClient(&cli);
+	// }
+}
+
+Client &Server::getRefClientByFd(int fd)
+{
+	std::vector<Client>::iterator	it = _clients.begin();
+	std::vector<Client>::iterator	itend = _clients.end();
+
+	while (it != itend)
 	{
-		std::string welcome_msg;
-		welcome_msg = ":localhost 001 " + cli.get_nickName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
-		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
-		// handleMsg(&cli, welcome_msg);
-		handleFirstMsg(&cli, welcome_msg);
-		// send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);		
+		if (it->get_fd() == fd)
+			return (*it);
+		it++;
 	}
-
+	return (*it);
 }
 
-void	Server::handleFirstMsg(Client *cli, std::string msg)
+void	Server::prepareMsgToClient(Client *cli)
 {
-	Transmission newTrans;
-
-	newTrans.setMsg(msg);
-	newTrans.setFdHost(cli->get_fd());
-	_transmission.push_back(newTrans);
-
-	setPollStatus(POLLOUT);
-	
+	// std::vector<int> ref = cli->getTransmission().getFdDest();
+	// std::vector<int>::iterator it = cli->_trans.getFdDest().begin();
+	// std::vector<int>::iterator itend = cli->_trans.getFdDest().end();
+	for (size_t i = 0; i < this->getTransmission().size(); i++)
+	// while (it != itend)
+	{
+		// client ? 
+		Client &dest = this->getRefClientByFd(this->getFirstTransmission().getFdDest()[i]);
+		dest._bufferOut = dest.getTransmission().getMsg();
+		dest._flagIO = 0;
+		// it++;
+	}
 }
 
-
-
-void	Server::handleMsg(Client *cli, std::string msg)
+void	Client::setUpTransmission(Client *cli, std::string msg, int fdDest)
 {
-	Transmission newTrans;
-
-	newTrans.setMsg(msg);
-	newTrans.setFdHost(cli->get_fd());
-	_transmission.push_back(newTrans);
-
-	// setPollStatus(POLLOUT);
+	cli->_trans->setFdEmitter(cli->get_fd());
+	cli->_trans->setMsg(msg);
+	// 
+	cli->_trans->addNewFdDest(fdDest);
 }
 
 std::deque<std::string>	split(std::string str, std::string separator)
@@ -168,6 +182,9 @@ int Server::receiveFirstData(Client *cli)
 	memset(buff, 0, sizeof(buff));
 
 	ssize_t bytes = recv(cli->get_fd(), buff, sizeof(buff) - 1, 0);
+	std::cout << YEL << "le fd : " << cli->get_fd() << WHI << std::endl;
+	std::cout << BLU << "le poll : " << this->_poll.events << WHI << std::endl;
+	std::cout << RED << "les bytes : " << bytes << WHI << std::endl; 
 
 	if (bytes <= 0)
 	{
@@ -178,7 +195,7 @@ int Server::receiveFirstData(Client *cli)
 	{
 		bool is_pwd = false;
 		buff[bytes + 1] = '\0';
-		std::deque<std::string> cmds = split(buff, "\n");
+		std::deque<std::string> cmds = split(buff, "\r\n");
 		std::cout << cmds.size() << std::endl;
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
@@ -192,8 +209,9 @@ int Server::receiveFirstData(Client *cli)
 			std::string error_msg;
 			std::string miss_pw = "You need a password to connect.\n";
 			error_msg = ":localhost DISCONECT localhost: \n" + miss_pw;
-			handleMsg(cli, error_msg);
-			// send(cli->get_fd(), error_msg.c_str(), error_msg.size(), 0);	
+
+			cli->setUpTransmission(cli, error_msg, cli->get_fd());
+			cli->prepareMsgToClient(cli);
 			return (0);
 		}
 	}
@@ -206,6 +224,8 @@ void Server::receiveData(int fd)
 	memset(buff, 0, sizeof(buff));
 
 	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
+	std::cout << YEL << "le fd : " << fd << WHI << std::endl;
+	std::cout << RED << "les bytes : " << bytes << WHI << std::endl;
 
 	if (bytes <= 0)
 	{
@@ -227,7 +247,9 @@ void Server::receiveData(int fd)
 				break;
 			}
 		}
-		handleMsg(&tmp, buff);
+		Client cli = getRefClientByFd(fd);
+		cli.setUpTransmission(&cli, buff, cli.get_fd());
+		cli.prepareMsgToClient(&cli);
 	}
 }
 
@@ -242,19 +264,37 @@ void Server::cleanServer()
 	delete this;
 }
 
-void	Server::setPollStatus(unsigned int status)
-{
-	this->_pollStatus = status;
-}
-
 void	Server::exec_transmission(std::vector<Transmission> transmission)
 {
 	std::vector<Transmission>::iterator it;
 	
 	for (it = transmission.begin(); it != transmission.end(); ++it)
-		execute_cmd(_clients , it->getFdHost(), it->getMsg());
-	setPollStatus(POLLIN);
+		execute_cmd(_clients , it->getFdEmitter(), it->getMsg());
 	transmission.clear();
+}
+
+void	Server::setPollCycles(std::vector<pollfd> _polls)
+{
+	std::vector<pollfd>::iterator it = _polls.begin();
+	std::vector<pollfd>::iterator itend = _polls.end();
+
+	if (this->_polls.size() == 1)
+		return ;
+	while (it != itend)
+	{
+		if (getRefClientByFd(it->fd).getFlagIO() == 0)
+			it->events = POLLIN;
+		if (getRefClientByFd(it->fd).getFlagIO() == 1)
+			it->events = POLLOUT;
+		it++;
+	}
+}
+
+void	Server::send_transmission(int pollFd)
+{
+	std::string msg = getRefClientByFd(pollFd).getTransmission().getMsg();
+	send(pollFd, msg.c_str(), msg.size(), 0);
+	getRefClientByFd(pollFd).setFlagIO(0);
 }
 
 
@@ -262,47 +302,51 @@ int Server::serverLoop()
 {
 	g_isRunning = true;
 	size_t 			i;
-	setPollStatus(POLLIN);
-	int flag = 0;
 
 	while (g_isRunning)
 	{
-		std::cout << "\nPolling for input...\n" << std::endl;
+		// std::cout << "\nPolling for inpu...\n" << std::endl;
+		setPollCycles(_polls);
+		
 		for (i = 0; i < this->_polls.size(); i++)
 		{
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && g_isRunning)
 				throw(std::runtime_error("poll() failed"));
-
-			if (_pollStatus == POLLIN)
+			
+			if (this->_polls[i].revents & POLLIN)
 			{
-				if (this->_polls[i].revents & POLLIN)
+				if (this->_polls[i].fd == this->_sockfd)
 				{
-					if (this->_polls[i].fd == this->_sockfd)
-					{
-						std::cout << GRE << ":::" << WHI << std::endl;
-						this->addNewClient();
-						flag = 1;
-					}
-					else
-					{
-						std::cout << GRE << "..." << WHI << std::endl;	
-						this->receiveData(this->_polls[i].fd);
-						flag++;
-					}
+					std::cout << GRE << ":::" << WHI << std::endl;
+					this->addNewClient();
+				}
+				else
+				{
+					std::cout << GRE << "..." << WHI << std::endl;	
+					// this->receiveData(this->_polls[i].fd);
+					this->receiveFirstData(&(getRefClientByFd(this->_polls[i].fd)));
 				}
 			}
-			if (_pollStatus == POLLOUT && flag == 1)
+			if (this->_polls[i].revents & POLLOUT)
 			{
-				std::cout << GRE << "]]]" << WHI << std::endl;
-				exec_transmission(_transmission);
+				send_transmission(_polls[i].fd);
 			}
+			_polls[i].revents = 0;
 		}
-		if (_pollStatus == POLLOUT)
-			{
-				std::cout << GRE << "]]]" << WHI << std::endl;
-				exec_transmission(_transmission);
-			}
 	}
 	this->cleanServer();
 	return (0);
+}
+
+std::vector<Transmission> Server::getTransmission()
+{
+	return (this->_transmission);
+}
+
+Transmission Server::getFirstTransmission()
+{
+	Transmission ret;
+	ret = this->_transmission[0];
+	this->_transmission.erase(this->_transmission.begin());
+	return (ret);
 }

@@ -6,12 +6,11 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 11:32:42 by tas               #+#    #+#             */
-/*   Updated: 2024/04/05 17:13:59 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/06 18:30:00 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TRANSMISSION_HPP
-# define TRANSMISSION_HPP
+#pragma once
 
 /******************************************************************************/
 /*                                 Includes                                   */
@@ -27,24 +26,25 @@ class Transmission
 {
     private:
         /* data */
-        int             fd_host;
-        // int             fd_dest;
-        std::string     msg;
-        int             flagPoll;
-        unsigned int    pollStatus;
+        int                  _fdEmitter;
+        std::vector<int>     _fdDest;
+        std::string          _nameEmitter;
+
+        std::string          _msg;
     
     public:
         Transmission(/* args */);
         ~Transmission();
 
-        int             getFlagPoll();
-        void            setPollStatus();
-        unsigned int    getPollStatus();
         void            setMsg(std::string msg);
-        void            setFdHost(int fd);
-        int             getFdHost();
+        void            setFdEmitter(int fd);
+        void            addNewFdDest(int newFd);
+        int             getFdEmitter();
+        void            setFdDest(std::vector<int> fdDest);
+std::vector<int>        getFdDest();
+
+
         std::string     getMsg();
 };
     
 
-#endif

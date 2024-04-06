@@ -6,12 +6,11 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/05 18:39:01 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/06 19:16:58 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#pragma once
 
 /******************************************************************************/
 /*                                 Includes                                   */
@@ -30,12 +29,12 @@
 # include <vector>
 # include <map>
 # include <deque>
-# include "Client.hpp"
 # include <cerrno>
 # include <csignal>
 # include <fstream>
-# include "Transmission.hpp"
 
+# include "Transmission.hpp"
+# include "Client.hpp"
 /******************************************************************************/
 /*                                  Defines                                   */
 /******************************************************************************/
@@ -58,9 +57,10 @@ extern bool g_isRunning;
 /*                                   Class                                    */
 /******************************************************************************/
 
+class Transmission;
+
 class Client;
 
-class Transmission;
 
 class Server
 {
@@ -77,6 +77,8 @@ class Server
 		std::vector<Transmission>	_transmission;
 		
 		unsigned int				_pollStatus;
+
+		std::string					_prefixServer;
 		
 		
 	public:
@@ -95,12 +97,19 @@ class Server
 		std::vector<Client> getClient();
 		// std::string get_username(std::vector<Client> _clients, char *buff);
 
-		void				setPollStatus(unsigned int status);
-		void				handleMsg(Client *cli, std::string msg);
 		// std::vector<Transmission>	getTransmission();
 		void				exec_transmission(std::vector<Transmission> transmission);
-		void				handleFirstMsg(Client *cli, std::string msg);
-		
+				
+		std::string const &	getPrefixServer() const;
+
+		Client 						&getRefClientByFd(int fd);
+		void						setPollCycles(std::vector<pollfd> _polls);
+		void						send_transmission(int pollFd);
+		std::vector<Transmission>	getTransmission();
+		Transmission				Server::getFirstTransmission();
+		void						prepareMsgToClient(Client *cli);
+		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
+
 };
 
 /******************************************************************************/
@@ -128,5 +137,3 @@ void    recup_nickNamee(Client *cli, std::string buff_str);
 void    recup_dataa(Client *cli, std::deque<std::string> cmds);
 void    recup_userr(Client *cli, std::string buff_str);
 
-
-#endif
