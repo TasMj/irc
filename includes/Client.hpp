@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/05 11:36:38 by tas              ###   ########.fr       */
+/*   Updated: 2024/04/07 14:05:02 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_HPP
-# define CLIENT_HPP
+#pragma once
 
 /******************************************************************************/
 /*                                 Includes                                   */
@@ -20,11 +19,14 @@
 # include <sstream>
 # include <fstream>
 # include <unistd.h>
+# include "./Transmission.hpp"
 # include "Server.hpp"
 
 /******************************************************************************/
 /*                                  Class                                     */
 /******************************************************************************/
+
+class Transmission;
 class Server;
 
 class Client
@@ -45,8 +47,12 @@ private:
 	Server				*_server;
 	// std::vector<char>	_canalOperator; //operateurs de canaux -> droit que le client possede sur un canal
 	
-	std::string			_msg;
+	// std::string			_msg;
 	// int					_flagMsg;
+
+	//Transmission			*_trans;
+	std::string				_bufferOut;
+	bool					_flagIO;
 	
 public:
 	Client();
@@ -64,11 +70,18 @@ public:
 	std::string	get_userName();
 	void		set_Server(Server *server);
 	Server*		get_Server();
+	bool		getFlagIO();
+	void		setFlagIO(bool status);
+	std::string	getBufferOut();
+	void		setBufferOut(std::string buff);
 	void		remove();
+	//Transmission getTransmission();
+	// void		prepareMsgToClient(Client *cli);
+	//void		setUpTransmission(Client *cli, std::string msg, int fdDest);
 
 	// unsigned int	receiveMsg();
 
 };
 
+// class Transmission;
 
-#endif

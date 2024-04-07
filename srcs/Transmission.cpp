@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Transmission.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 11:31:30 by tas               #+#    #+#             */
-/*   Updated: 2024/04/05 11:39:56 by tas              ###   ########.fr       */
+/*   Updated: 2024/04/07 15:00:15 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,47 +16,44 @@ Transmission::Transmission()
 {
     
 }
+
 Transmission::~Transmission()
 {
     
 }
 
-int Transmission::getFlagPoll()
-{
-    return (this->flagPoll);
-}
-
-void Transmission::setPollStatus()
-{
-    if (Transmission::getFlagPoll() == 0)
-        pollStatus = POLLIN;
-    else if (Transmission::getFlagPoll() == 1)
-        pollStatus = POLLOUT;
-    else
-        pollStatus = POLLERR;
-}
-
-unsigned int Transmission::getPollStatus()
-{
-    return (this->pollStatus);
-}
-
 void    Transmission::setMsg(std::string msg)
 {
-    this->msg = msg;
+    this->_msg = msg;
 }
 
-void    Transmission::setFdHost(int fd)
+void    Transmission::setFdEmitter(int fd)
 {
-    this->fd_host = fd;
-}
-
-int     Transmission::getFdHost()
-{
-    return (this->fd_host);
+    this->_fdEmitter = fd;
 }
 
 std::string     Transmission::getMsg()
 {
-    return (this->msg);
+    return (this->_msg);
+}
+
+void    Transmission::addNewFdDest(int newFd)
+{   
+	std::cout << "newFD : " << newFd << std::endl;
+    _fdDest.push_back(newFd);
+}
+
+void    Transmission::setFdDest(std::vector<int> fdDest)
+{
+    this->_fdDest = fdDest;
+}
+
+std::vector<int> Transmission::getFdDest()
+{
+    return (this->_fdDest);
+}
+
+int    Transmission::getFdEmitter()
+{
+    return (this->_fdEmitter);
 }
