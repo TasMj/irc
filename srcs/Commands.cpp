@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:01:47 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/07 17:36:57 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/07 22:49:31 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ int execute_cmd(std::vector<Client>& _clients, int fd, std::string buff)
     
     // if (strncmp("CAP LS ", buff.c_str(), 15) == 0)
 	// 	first_com(fd, _clients);
-    if (strncmp(":localhost DISCONECT localhost: ", buff.c_str(), 32) == 0)
-		send(fd, buff.c_str(), buff.size(), 0);
-    else if (strncmp("NICK ", buff.c_str(), 5) == 0)
+    // if (strncmp(":localhost DISCONECT localhost: ", buff.c_str(), 32) == 0)
+		// send(fd, buff.c_str(), buff.size(), 0);
+    if (strncmp("NICK ", buff.c_str(), 5) == 0)
         nickCmd(_clients, fd, buff);
     else if (strncmp("PRIVMSG ", buff.c_str(), 8) == 0)
         msgCmd(_clients, buff, fd);
@@ -45,7 +45,7 @@ void	first_com(int fd, Client &cli)
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
     std::cout << "taille apres apres : " << cli.get_Server()->getTransmission().size() << std::endl;
 	cli.get_Server()->prepareMsgToClient(&cli);
-    cli.get_Server()->send_transmission(cli.get_fd());
+    // cli.get_Server()->send_transmission(cli.get_fd());
 	welcome_msg.clear();
 	
 /* 	welcome_msg = ":" + prefixe + " 002 " + cli.get_nickName() + " :Your host is " + PREFIXE + "\n";
@@ -164,7 +164,7 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
 	        cli = it->get_Server()->getRefClientByFd(it->get_fd());
             cli.get_Server()->setUpTransmission(&cli, err_msg, cli.get_fd());
             cli.get_Server()->prepareMsgToClient(&cli);;
-            cli.get_Server()->send_transmission(cli.get_fd());
+            // cli.get_Server()->send_transmission(cli.get_fd());
             break;
         }
         else
@@ -180,7 +180,7 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
                     cli = it->get_Server()->getRefClientByFd(it->get_fd());
                     cli.get_Server()->setUpTransmission(&cli, newName, cli.get_fd());
                     cli.get_Server()->prepareMsgToClient(&cli);
-                    cli.get_Server()->send_transmission(cli.get_fd());
+                    // cli.get_Server()->send_transmission(cli.get_fd());
                     break;
                 }
             }
@@ -212,10 +212,10 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
         std::cout << msg << std::endl;
         std::string prefixe = ":localhost PRIVMSG ";
 	   
-        std::string full_msg = prefixe + nick + " :\n" + msg + "\n";
+        std::string full_msg = prefixe + nick + " :" + msg + "\n";
         std::string err_msg = prefixe + nick + " :" + "no nick matching\n";
         
-    std::cout << GRE << "nick: <" << WHI << nick << BLU << "> msg: <" << WHI << msg << ">" << WHI << std::endl;
+        std::cout << GRE << "nick: <" << WHI << nick << BLU << "> msg: <" << WHI << msg << ">" << WHI << std::endl;
         
         /*on verifie que le nickname existe*/
         int _fdDestinataire = check_nick_exist(_clients, nick);
@@ -225,18 +225,20 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
             std::cout << RED << "KO" << WHI << std::endl;
             Client cli = _clients.data()->get_Server()->getRefClientByFd(fd);
             cli.get_Server()->setUpTransmission(&cli, err_msg, _fdDestinataire);
+           //cli.get_Server()->setUpTransmission(&cli, err_msg, cli.get_fd());
             cli.get_Server()->prepareMsgToClient(&cli);
-            //cli.get_Server()->send_transmission(cli.get_fd());
         }
         else
         {
             Client cli = _clients.data()->get_Server()->getRefClientByFd(fd);
-            std::cout << PUR << cli.get_fd() << WHI << std::endl;
+
             cli.get_Server()->setUpTransmission(&cli, full_msg, _fdDestinataire);
+            
+            std::cout << PUR << "cli emitter: " << cli.get_fd() << " dest: " << _fdDestinataire << " msg: " << full_msg << WHI << std::endl;
+            
             cli.get_Server()->prepareMsgToClient(&cli);
-            //cli.get_Server()->send_transmission(cli.get_fd());
-            //send(_fdDestinataire, full_msg.c_str(), full_msg.size(), 0);
-            std::cout << RED << "OK: " << _fdDestinataire << WHI << std::endl;
+
+            std::cout << RED << "OK: [" << cli.getBufferOut() << "]" << WHI << std::endl;
         }
     }
     return (0);

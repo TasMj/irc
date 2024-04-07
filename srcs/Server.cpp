@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/07 17:32:46 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/07 23:04:08 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,10 @@ void Server::addNewClient()
 	socklen_t len = sizeof(cliAdd);
 
 	int receiving_fd = accept(this->_sockfd, (sockaddr *)&(cliAdd), &len);
-	fcntl(receiving_fd, F_SETFL, O_NONBLOCK);
+	//fcntl(receiving_fd, F_SETFL, O_NONBLOCK);
 
 	new_poll.fd = receiving_fd;
-	new_poll.events = POLLIN;
+	new_poll.events = POLLIN | POLLOUT;
 	new_poll.revents = 0;
 
 	cli.set_fd(receiving_fd);
@@ -168,24 +168,16 @@ Client &Server::getRefClientByFd(int fd)
 
 void	Server::prepareMsgToClient(Client *cli)
 {
-	// std::vector<int> ref = cli->getTransmission().getFdDest();
-	// std::vector<int>::iterator it = getTransmissionByFd(cli->get_fd()).getFdDest().begin();
-	// std::vector<int>::iterator itend = getTransmissionByFd(cli->get_fd()).getFdDest().end();
-
-	std::cout << BLU << "sizeDest : " << this->getTransmissionByFd(cli->get_fd()).getFdDest().size() << WHI << std::endl;
 	for (size_t i = 0; i < this->getTransmissionByFd(cli->get_fd()).getFdDest().size(); i++)
-	// while (it != itend)
 	{
-		// client ? 
 		Client &dest = this->getRefClientByFd(this->getTransmissionByFd(cli->get_fd()).getFdDest()[i]);
-		std::cout << "sageme : " << this->getTransmissionByFd(cli->get_fd()).getMsg() << std::endl;
 		dest.setBufferOut(this->getTransmissionByFd(cli->get_fd()).getMsg());
-		dest.setFlagIO(0);
-		// it++;
+		std::cout << "BUFFIO: " << dest.getBufferOut() << std::endl;
 	}
+
 	std::vector<Transmission>::iterator	it;
 	
-	for (it = this->getTransmission().begin(); it < this->getTransmission().end(); it++)
+	for (it = this->_transmission.begin(); it < this->_transmission.end(); it++)
 	{
 		if (it->getFdEmitter() == cli->get_fd())
 			break ;
@@ -193,10 +185,11 @@ void	Server::prepareMsgToClient(Client *cli)
 	std::cout << "taille avant : " << this->_transmission.size() << std::endl;
 	this->_transmission.erase(it);
 	std::cout << "taille apres : " << this->_transmission.size() << std::endl;
+	
 }
 
-void Server::setTransmission(const Transmission &newTrans) {
-    // this->getTransmission().push_back(newTrans);
+void Server::setTransmission(const Transmission &newTrans) 
+{
     this->_transmission.push_back(newTrans);
 }
 
@@ -206,10 +199,6 @@ void Server::setUpTransmission(Client *cli, std::string msg, int fdDest) {
     newTrans.setFdEmitter(cli->get_fd());
     newTrans.setMsg(msg);
     newTrans.addNewFdDest(fdDest);
-
-	// std::cout << PUR << "FD : " << this->getTransmission().at(0).getFdDest().at(0) << WHI << std::endl;
-	// std::cout << PUR << "FD : " << this->_transmission.at(0).getFdDest().at(0) << WHI << std::endl;
-
     this->setTransmission(newTrans);
 }
 
@@ -260,13 +249,13 @@ int Server::receiveFirstData(Client *cli)
 	memset(buff, 0, sizeof(buff));
 
 	ssize_t bytes = recv(cli->get_fd(), buff, sizeof(buff) - 1, 0);
-	std::cout << YEL << "le fd : " << cli->get_fd() << WHI << std::endl;
-	std::cout << BLU << "le poll : " << this->_poll.events << WHI << std::endl;
-	std::cout << RED << "les bytes : " << bytes << WHI << std::endl; 
+	// std::cout << YEL << "le fd : " << cli->get_fd() << WHI << std::endl;
+	// std::cout << BLU << "le poll : " << this->_poll.events << WHI << std::endl;
+	// std::cout << RED << "les bytes : " << bytes << WHI << std::endl; 
 
 	if (bytes <= 0)
 	{
-		std::cout << RED << "Client <" << cli->get_fd() << "> Disconnected" << WHI << std::endl;
+		std::cout << RED << "Client <" << cli->get_fd() << "> Disconnected" << cli->get_fd() << WHI << std::endl;
 		close(cli->get_fd()); //-> close the client socket
 	}
 	else
@@ -277,7 +266,7 @@ int Server::receiveFirstData(Client *cli)
 		std::cout << cmds.size() << std::endl;
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
-			std::cout << PUR << "COUCOU : " << WHI << cmds.at(i) << std::endl;
+			// std::cout << PUR << "COUCOU : " << WHI << cmds.at(i) << std::endl;
 			if (strncmp("PASS ", cmds.at(i).c_str(), 5) == 0)
 				is_pwd = true;
 		}
@@ -315,19 +304,19 @@ void Server::receiveData(int fd)
 	{
 		buff[bytes] = '\0';
 
-		std::vector<Client>::iterator it;
-		Client tmp;
-		for (it = _clients.begin(); it != _clients.end(); ++it)
-		{
-			if (it->get_fd() == fd)
-			{
-				tmp = *it;
-				break;
-			}
-		}
-		Client cli = getRefClientByFd(fd);
-		this->setUpTransmission(&cli, buff, cli.get_fd());
-		this->prepareMsgToClient(&cli);
+		// std::vector<Client>::iterator it;
+		// Client tmp;
+		// for (it = _clients.begin(); it != _clients.end(); ++it)
+		// {
+		// 	if (it->get_fd() == fd)
+		// 	{
+		// 		tmp = *it;
+		// 		break;
+		// 	}
+		// }
+		// Client cli = getRefClientByFd(fd);
+		// this->setUpTransmission(&cli, buff, cli.get_fd());
+		// this->prepareMsgToClient(&cli);
 		execute_cmd(_clients, fd, buff);
 	}
 }
@@ -389,15 +378,16 @@ Transmission	Server::getTransmissionByFd(int fd)
 
 void	Server::send_transmission(int pollFd)
 {
-	std::string msg = this->getRefClientByFd(pollFd).getBufferOut();
-	std::cout << "le message : " << msg << std::endl;
+	std::string& msg = this->getRefClientByFd(pollFd).getBufferOut();
+	//std::cout << "le message : " << msg << std::endl;
 	if (!msg.empty())
 	{
-		send(pollFd, msg.c_str(), msg.size(), 0);
-		getRefClientByFd(pollFd).setFlagIO(0);
+		size_t bytes = send(pollFd, msg.c_str(), msg.size(), 0);
+		msg.erase(0, bytes);
+		
+		//getRefClientByFd(pollFd).setFlagIO(0);
 	}
 }
-
 
 int Server::serverLoop()
 {
@@ -406,7 +396,7 @@ int Server::serverLoop()
 	while (g_isRunning)
 	{
 		// std::cout << "\nPolling for inpu...\n" << std::endl;
-		setPollCycles(_polls);
+		//setPollCycles(_polls);
 		
 		for (i = 0; i < this->_polls.size(); i++)
 		{
@@ -417,17 +407,17 @@ int Server::serverLoop()
 			{
 				if (this->_polls[i].fd == this->_sockfd)
 				{
-					std::cout << GRE << ":::" << WHI << std::endl;
+					std::cout << GRE << "[[[addNewClient]]]" << WHI << std::endl;
 					this->addNewClient();
 				}
 				else
 				{
-					std::cout << GRE << "..." << WHI << std::endl;	
+					std::cout << GRE << "[[[receiveData]]]" << WHI << std::endl;
 					this->receiveData(this->_polls[i].fd);
 					//this->receiveFirstData(&(getRefClientByFd(this->_polls[i].fd)));
 				}
 			}
-			if (this->_polls[i].revents & POLLOUT)
+			else if (this->_polls[i].revents & POLLOUT)
 			{
 				this->send_transmission(_polls[i].fd);
 			}
