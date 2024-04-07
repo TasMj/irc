@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/06 19:32:37 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/07 13:04:58 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,23 +140,26 @@ void	Server::prepareMsgToClient(Client *cli)
 	// std::vector<int> ref = cli->getTransmission().getFdDest();
 	// std::vector<int>::iterator it = cli->_trans.getFdDest().begin();
 	// std::vector<int>::iterator itend = cli->_trans.getFdDest().end();
-	for (size_t i = 0; i < this->getTransmission().size(); i++)
+	for (size_t i = 0; i < this->getTransmissionByFd(cli->get_fd()).getFdDest().size(); i++)
 	// while (it != itend)
 	{
 		// client ? 
-		Client &dest = this->getRefClientByFd(this->getFirstTransmission().getFdDest()[i]);
-		dest._bufferOut = dest.getTransmission().getMsg();
-		dest._flagIO = 0;
+		Client &dest = this->getRefClientByFd(this->getTransmissionByFd(cli->get_fd()).getFdDest()[i]);
+		dest.setBufferOut(this->getTransmissionByFd(cli->get_fd()).getMsg());
+		dest.setFlagIO(0);
 		// it++;
 	}
 }
 
 void	Client::setUpTransmission(Client *cli, std::string msg, int fdDest)
 {
-	cli->_trans->setFdEmitter(cli->get_fd());
-	cli->_trans->setMsg(msg);
+	Transmission	newTrans;
+	
+	newTrans.setFdEmitter(cli->get_fd());
+	newTrans.setMsg(msg);
 	// 
-	cli->_trans->addNewFdDest(fdDest);
+	newTrans.addNewFdDest(fdDest);
+	cli->get_Server()->getTransmission().push_back(newTrans);
 }
 
 std::deque<std::string>	split(std::string str, std::string separator)
@@ -211,7 +214,7 @@ int Server::receiveFirstData(Client *cli)
 			error_msg = ":localhost DISCONECT localhost: \n" + miss_pw;
 
 			cli->setUpTransmission(cli, error_msg, cli->get_fd());
-			cli->prepareMsgToClient(cli);
+			this->prepareMsgToClient(cli);
 			return (0);
 		}
 	}
@@ -249,7 +252,7 @@ void Server::receiveData(int fd)
 		}
 		Client cli = getRefClientByFd(fd);
 		cli.setUpTransmission(&cli, buff, cli.get_fd());
-		cli.prepareMsgToClient(&cli);
+		this->prepareMsgToClient(&cli);
 	}
 }
 
@@ -290,11 +293,37 @@ void	Server::setPollCycles(std::vector<pollfd> _polls)
 	}
 }
 
+Transmission	Server::getTransmissionByFd(int fd)
+{
+	std::vector<Transmission>::iterator	it;
+	Transmission						ret;
+
+	for (it = this->getTransmission().begin(); it < this->getTransmission().end(); it++)
+	{
+		if (it->getFdEmitter() == fd)
+		{
+			ret = *it;
+			break ;
+		}
+	}
+	return (ret);
+}
+
 void	Server::send_transmission(int pollFd)
 {
-	std::string msg = getRefClientByFd(pollFd).getTransmission().getMsg();
-	send(pollFd, msg.c_str(), msg.size(), 0);
-	getRefClientByFd(pollFd).setFlagIO(0);
+	std::string msg = this->getTransmissionByFd(pollFd).getMsg();
+	if (!msg.empty())
+	{
+		send(pollFd, msg.c_str(), msg.size(), 0);
+		getRefClientByFd(pollFd).setFlagIO(0);
+		std::vector<Transmission>::iterator	it;
+		for (it = this->getTransmission().begin(); it < this->getTransmission().end(); it++)
+		{
+			if (it->getFdEmitter() == pollFd)
+				break ;
+		}
+		this->getTransmission().erase(it);
+	}
 }
 
 

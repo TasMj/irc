@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/06 19:13:02 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/07 12:49:46 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,3 +121,13 @@ void	Client::setFlagIO(bool status)
 {
 	this->_flagIO = status;
 }
+
+std::string	Client::getBufferOut()
+{
+	return (this->_bufferOut);
+};
+
+void		Client::setBufferOut(std::string buff)
+{
+	this->_bufferOut = buff;
+};

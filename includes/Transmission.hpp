@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Transmission.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 11:32:42 by tas               #+#    #+#             */
-/*   Updated: 2024/04/06 18:30:00 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/07 12:34:09 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Transmission
         int             getFdEmitter();
         void            setFdDest(std::vector<int> fdDest);
 std::vector<int>        getFdDest();
-
+		
 
         std::string     getMsg();
 };

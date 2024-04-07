@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/06 19:11:48 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/07 12:49:55 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ public:
 	Server*		get_Server();
 	bool		getFlagIO();
 	void		setFlagIO(bool status);
+	std::string	getBufferOut();
+	void		setBufferOut(std::string buff);
 	void		remove();
 	//Transmission getTransmission();
 	// void		prepareMsgToClient(Client *cli);

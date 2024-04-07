@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/06 19:16:58 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/07 13:05:58 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,10 @@ class Server
 		void						setPollCycles(std::vector<pollfd> _polls);
 		void						send_transmission(int pollFd);
 		std::vector<Transmission>	getTransmission();
-		Transmission				Server::getFirstTransmission();
+		Transmission				getFirstTransmission();
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
-
+		Transmission				getTransmissionByFd(int fd);
 };
 
 /******************************************************************************/
