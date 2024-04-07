@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:55:54 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/07 14:44:25 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/07 16:22:32 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void    recup_dataa(Client *cli, std::deque<std::string> cmds)
             recup_userr(cli, cmds.at(i).c_str());
 	}
 	first_com(cli->get_fd(), *cli);
-	cli->get_Server()->send_transmission(cli->get_fd());
+	//cli->get_Server()->send_transmission(cli->get_fd());
 }
 
 

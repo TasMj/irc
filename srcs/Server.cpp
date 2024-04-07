@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/07 15:28:21 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/07 17:32:46 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,8 +169,8 @@ Client &Server::getRefClientByFd(int fd)
 void	Server::prepareMsgToClient(Client *cli)
 {
 	// std::vector<int> ref = cli->getTransmission().getFdDest();
-	// std::vector<int>::iterator it = cli->_trans.getFdDest().begin();
-	// std::vector<int>::iterator itend = cli->_trans.getFdDest().end();
+	// std::vector<int>::iterator it = getTransmissionByFd(cli->get_fd()).getFdDest().begin();
+	// std::vector<int>::iterator itend = getTransmissionByFd(cli->get_fd()).getFdDest().end();
 
 	std::cout << BLU << "sizeDest : " << this->getTransmissionByFd(cli->get_fd()).getFdDest().size() << WHI << std::endl;
 	for (size_t i = 0; i < this->getTransmissionByFd(cli->get_fd()).getFdDest().size(); i++)
@@ -183,26 +183,58 @@ void	Server::prepareMsgToClient(Client *cli)
 		dest.setFlagIO(0);
 		// it++;
 	}
-}
-
-void	Server::setTransmission(Transmission &newTrans)
-{
-	this->getTransmission().push_back(newTrans);
-}
-
-void	Server::setUpTransmission(Client *cli, std::string msg, int fdDest)
-{
-	Transmission	newTrans;
+	std::vector<Transmission>::iterator	it;
 	
-	newTrans.setFdEmitter(cli->get_fd());
-	newTrans.setMsg(msg);
-	std::cout << "mes : " << newTrans.getMsg() << std::endl;
-	// 
-	newTrans.addNewFdDest(fdDest);
-	this->setTransmission(newTrans);
-	// std::cout << YEL << "sizeDest : " << this->getFirstTransmission().getFdDest().size() << WHI << std::endl;
-
+	for (it = this->getTransmission().begin(); it < this->getTransmission().end(); it++)
+	{
+		if (it->getFdEmitter() == cli->get_fd())
+			break ;
+	}
+	std::cout << "taille avant : " << this->_transmission.size() << std::endl;
+	this->_transmission.erase(it);
+	std::cout << "taille apres : " << this->_transmission.size() << std::endl;
 }
+
+void Server::setTransmission(const Transmission &newTrans) {
+    // this->getTransmission().push_back(newTrans);
+    this->_transmission.push_back(newTrans);
+}
+
+void Server::setUpTransmission(Client *cli, std::string msg, int fdDest) {
+    Transmission newTrans;
+    
+    newTrans.setFdEmitter(cli->get_fd());
+    newTrans.setMsg(msg);
+    newTrans.addNewFdDest(fdDest);
+
+	// std::cout << PUR << "FD : " << this->getTransmission().at(0).getFdDest().at(0) << WHI << std::endl;
+	// std::cout << PUR << "FD : " << this->_transmission.at(0).getFdDest().at(0) << WHI << std::endl;
+
+    this->setTransmission(newTrans);
+}
+
+
+// void	Server::setTransmission(Transmission newTrans)
+// {
+// 	this->getTransmission().push_back(newTrans);
+// }
+
+// void	Server::setUpTransmission(Client *cli, std::string msg, int fdDest)
+// {
+// 	Transmission	newTrans;
+	
+// 	newTrans.setFdEmitter(cli->get_fd());
+// 	newTrans.setMsg(msg);
+// 	std::cout << "mes : " << newTrans.getMsg() << std::endl;
+// 	//
+// 	newTrans.addNewFdDest(fdDest);
+
+// 	std::cout << YEL << "sizeDest : " << newTrans.getFdDest()[0] << WHI << std::endl;
+	
+// 	this->setTransmission(newTrans);
+// 	// std::cout << YEL << "sizeDest : " << this->getFirstTransmission().getFdDest().size() << WHI << std::endl;
+
+// }
 
 std::deque<std::string>	split(std::string str, std::string separator)
 {
@@ -296,6 +328,7 @@ void Server::receiveData(int fd)
 		Client cli = getRefClientByFd(fd);
 		this->setUpTransmission(&cli, buff, cli.get_fd());
 		this->prepareMsgToClient(&cli);
+		execute_cmd(_clients, fd, buff);
 	}
 }
 
@@ -343,7 +376,7 @@ Transmission	Server::getTransmissionByFd(int fd)
 	std::vector<Transmission>::iterator	it;
 	Transmission						ret;
 
-	for (it = this->getTransmission().begin(); it < this->getTransmission().end(); it++)
+	for (it = _transmission.begin(); it < _transmission.end(); it++)
 	{
 		if (it->getFdEmitter() == fd)
 		{
@@ -356,19 +389,12 @@ Transmission	Server::getTransmissionByFd(int fd)
 
 void	Server::send_transmission(int pollFd)
 {
-	std::string msg = this->getTransmissionByFd(pollFd).getMsg();
+	std::string msg = this->getRefClientByFd(pollFd).getBufferOut();
 	std::cout << "le message : " << msg << std::endl;
 	if (!msg.empty())
 	{
 		send(pollFd, msg.c_str(), msg.size(), 0);
 		getRefClientByFd(pollFd).setFlagIO(0);
-		std::vector<Transmission>::iterator	it;
-		for (it = this->getTransmission().begin(); it < this->getTransmission().end(); it++)
-		{
-			if (it->getFdEmitter() == pollFd)
-				break ;
-		}
-		this->getTransmission().erase(it);
 	}
 }
 
@@ -403,7 +429,7 @@ int Server::serverLoop()
 			}
 			if (this->_polls[i].revents & POLLOUT)
 			{
-				send_transmission(_polls[i].fd);
+				this->send_transmission(_polls[i].fd);
 			}
 			_polls[i].revents = 0;
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:01:47 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/07 14:43:28 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/07 17:36:57 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ int execute_cmd(std::vector<Client>& _clients, int fd, std::string buff)
 	
     std::cout << YEL << "buff: " << buff << WHI << std::endl;
     
-    /* if (strncmp("CAP LS ", buff.c_str(), 15) == 0)
-		first_com(fd, _clients); */
+    // if (strncmp("CAP LS ", buff.c_str(), 15) == 0)
+	// 	first_com(fd, _clients);
     if (strncmp(":localhost DISCONECT localhost: ", buff.c_str(), 32) == 0)
 		send(fd, buff.c_str(), buff.size(), 0);
     else if (strncmp("NICK ", buff.c_str(), 5) == 0)
@@ -43,40 +43,56 @@ void	first_com(int fd, Client &cli)
 	welcome_msg.append(":" + prefixe + " 001 " + cli.get_nickName() + " :Welcome\n" + INTERCEPT + "\n");
 	std::cout << RED << "welcome msg :" << welcome_msg << WHI;
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
+    std::cout << "taille apres apres : " << cli.get_Server()->getTransmission().size() << std::endl;
 	cli.get_Server()->prepareMsgToClient(&cli);
+    cli.get_Server()->send_transmission(cli.get_fd());
 	welcome_msg.clear();
 	
-	welcome_msg = ":" + prefixe + " 002 " + cli.get_nickName() + " :Your host is " + PREFIXE + "\n";
+/* 	welcome_msg = ":" + prefixe + " 002 " + cli.get_nickName() + " :Your host is " + PREFIXE + "\n";
 	std::cout << RED << "welcome msg :" << welcome_msg << WHI;
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
 	cli.get_Server()->prepareMsgToClient(&cli);
+    cli.get_Server()->send_transmission(cli.get_fd());
 	welcome_msg.clear();
 	
-	welcome_msg = ":" + prefixe + " 003 " + cli.get_nickName() + " ::This server was created Mon Aug 11 2014 at 17:47:17 GMT \n";
+	welcome_msg = ":" + prefixe + " 003 " + cli.get_nickName() + " :This server was created Mon Aug 11 2014 at 17:47:17 GMT \n";
 	std::cout << RED << "welcome msg :" << welcome_msg << WHI;
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
 	cli.get_Server()->prepareMsgToClient(&cli);
+    cli.get_Server()->send_transmission(cli.get_fd());
 	welcome_msg.clear();
 	
 	welcome_msg = ":" + prefixe + " 004 " + cli.get_nickName() + " :" + PREFIXE + " tasambthe1.0 dgikoswx itkol bko \n" ;
 	std::cout << RED << "welcome msg :" << welcome_msg << WHI;
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
 	cli.get_Server()->prepareMsgToClient(&cli);
+    cli.get_Server()->send_transmission(cli.get_fd());
 	welcome_msg.clear();
 	
-	welcome_msg = ":" + prefixe + " 005 " + cli.get_nickName() + " MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG "\
-		"CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 NICKLEN=9 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ "\
+	welcome_msg = ":" + prefixe + " 005 " + cli.get_nickName() + " :MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG "\
+		"CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 :are supported by this server \n";
+	std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
+	cli.get_Server()->prepareMsgToClient(&cli);
+    cli.get_Server()->send_transmission(cli.get_fd());
+	welcome_msg.clear();
+
+    welcome_msg = ":" + prefixe + " 005 " + cli.get_nickName() + " :NICKLEN=9 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ "\
 		"CHANMODES=b,k,l,rimnpst CASEMAPPING=rfc1459 :are supported by this server \n";
 	std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
 	cli.get_Server()->prepareMsgToClient(&cli);
+    cli.get_Server()->send_transmission(cli.get_fd());
 	welcome_msg.clear();
+
+    
 	
 	welcome_msg = ":" + prefixe + " 372 " + cli.get_nickName() + " :Bien le bonjour du jour ! \n";
 	std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
 	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
 	cli.get_Server()->prepareMsgToClient(&cli);
-	welcome_msg.clear();
+    cli.get_Server()->send_transmission(cli.get_fd());
+	welcome_msg.clear(); */
 }
 
 void	exitCmd(std::vector<Client> _clients, std::string buff, int fd)
@@ -144,7 +160,11 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
         if ((it->get_nickName().size() == newNick.length())
             && (strncmp(it->get_nickName().c_str(), newNick.c_str(), it->get_nickName().size()) == 0))
         {
-	        send(fd, err_msg.c_str(), err_msg.size(), 0);
+            Client cli;
+	        cli = it->get_Server()->getRefClientByFd(it->get_fd());
+            cli.get_Server()->setUpTransmission(&cli, err_msg, cli.get_fd());
+            cli.get_Server()->prepareMsgToClient(&cli);;
+            cli.get_Server()->send_transmission(cli.get_fd());
             break;
         }
         else
@@ -153,8 +173,16 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
             for (ite = _clients.begin(); ite != _clients.end(); ++ite)
             {
                 if (it->get_fd() == fd)
+                {
                     it->set_nickName(newNick);
-                break;
+                    std::string newName = ":localhost NICK " + newNick + " :Your nick name is now : " + newNick + "\n"; 
+                    Client cli;
+                    cli = it->get_Server()->getRefClientByFd(it->get_fd());
+                    cli.get_Server()->setUpTransmission(&cli, newName, cli.get_fd());
+                    cli.get_Server()->prepareMsgToClient(&cli);
+                    cli.get_Server()->send_transmission(cli.get_fd());
+                    break;
+                }
             }
         }
     }
@@ -185,6 +213,7 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
         std::string prefixe = ":localhost PRIVMSG ";
 	   
         std::string full_msg = prefixe + nick + " :\n" + msg + "\n";
+        std::string err_msg = prefixe + nick + " :" + "no nick matching\n";
         
     std::cout << GRE << "nick: <" << WHI << nick << BLU << "> msg: <" << WHI << msg << ">" << WHI << std::endl;
         
@@ -194,12 +223,19 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
         if (_fdDestinataire == 0)
         {
             std::cout << RED << "KO" << WHI << std::endl;
-            send(fd, "no nick matching\n", 17, 0);
+            Client cli = _clients.data()->get_Server()->getRefClientByFd(fd);
+            cli.get_Server()->setUpTransmission(&cli, err_msg, _fdDestinataire);
+            cli.get_Server()->prepareMsgToClient(&cli);
+            //cli.get_Server()->send_transmission(cli.get_fd());
         }
         else
         {
-            std::cout << PUR << full_msg << WHI << std::endl;
-            send(_fdDestinataire, full_msg.c_str(), full_msg.size(), 0);
+            Client cli = _clients.data()->get_Server()->getRefClientByFd(fd);
+            std::cout << PUR << cli.get_fd() << WHI << std::endl;
+            cli.get_Server()->setUpTransmission(&cli, full_msg, _fdDestinataire);
+            cli.get_Server()->prepareMsgToClient(&cli);
+            //cli.get_Server()->send_transmission(cli.get_fd());
+            //send(_fdDestinataire, full_msg.c_str(), full_msg.size(), 0);
             std::cout << RED << "OK: " << _fdDestinataire << WHI << std::endl;
         }
     }
@@ -209,6 +245,7 @@ int    msgCmd(std::vector<Client>& _clients, std::string buff, int fd)
 void pingCmd(std::vector<Client>& _clients, int fd)
 {
     std::string nick;
+    Client cli;
     
     std::vector<Client>::iterator it;
     for (it = _clients.begin(); it != _clients.end(); ++it)
@@ -221,5 +258,8 @@ void pingCmd(std::vector<Client>& _clients, int fd)
     }
     std::string msg = ":localhost PONG localhost: " + nick + "\n";
     std::cout << BLU << msg << WHI << std::endl;
-    send(fd, msg.c_str(), msg.size(), 0);
+    cli = it->get_Server()->getRefClientByFd(it->get_fd());
+    cli.get_Server()->setUpTransmission(&cli, msg, cli.get_fd());
+    cli.get_Server()->prepareMsgToClient(&cli);
+    //cli.get_Server()->send_transmission(cli.get_fd());
 }

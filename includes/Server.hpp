@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/07 15:20:31 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/07 15:53:27 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,8 @@ class Server
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
 		Transmission				getTransmissionByFd(int fd);
-		void						setTransmission(Transmission &newTrans);
+		// void						setTransmission(Transmission newTrans);
+		void setTransmission(const Transmission &newTrans);
 };
 
 /******************************************************************************/

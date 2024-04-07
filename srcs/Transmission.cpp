@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Transmission.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 11:31:30 by tas               #+#    #+#             */
-/*   Updated: 2024/04/07 15:00:15 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/07 15:57:18 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void    Transmission::addNewFdDest(int newFd)
 {   
 	std::cout << "newFD : " << newFd << std::endl;
     _fdDest.push_back(newFd);
+	std::cout << "FD : " << _fdDest.at(0) << std::endl;
 }
 
 void    Transmission::setFdDest(std::vector<int> fdDest)
