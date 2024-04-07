@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/05 18:16:05 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/06 18:00:13 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,11 +110,40 @@ void Server::addNewClient()
 	
 	if (receiveFirstData(&cli))
 	{
+		std::string prefixe = PREFIXE;
 		std::string welcome_msg;
-		// welcome_msg = ":localhost 001 " + cli.get_nickName() + " :\n\n\n\n\n\n\nWelcome\n\n\n\n\n";
+		welcome_msg = ":" + prefixe + " 001 " + cli.get_nickName() + " :Welcome\n" + INTERCEPT + "\n";
 		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
 		handleMsg(&cli, welcome_msg);
-		// send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);		
+		welcome_msg.clear();
+		welcome_msg = ":" + prefixe + " 002 " + cli.get_nickName() + " :Your host is " + PREFIXE + "\n";
+		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+		handleMsg(&cli, welcome_msg);
+		welcome_msg.clear();
+		welcome_msg = ":" + prefixe + " 003 " + cli.get_nickName() + " ::This server was created Mon Aug 11 2014 at 17:47:17 GMT \n";
+		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+		handleMsg(&cli, welcome_msg);
+		welcome_msg.clear();
+		welcome_msg = ":" + prefixe + " 004 " + cli.get_nickName() + " :" + PREFIXE + " tasambthe1.0 dgikoswx itkol bko \n" ;
+		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+		handleMsg(&cli, welcome_msg);
+		welcome_msg.clear();
+		welcome_msg = ":" + prefixe + " 005 " + cli.get_nickName() + " MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG "\
+			"CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 NICKLEN=9 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ "\
+			"CHANMODES=b,k,l,rimnpst CASEMAPPING=rfc1459 :are supported by this server \n";
+		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+		handleMsg(&cli, welcome_msg);
+		welcome_msg.clear();
+		welcome_msg = ":" + prefixe + " 372 " + cli.get_nickName() + " :Bien le bonjour du jour ! \n";
+		// std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+		handleMsg(&cli, welcome_msg);
+		welcome_msg.clear();
+		// send(cli.get_fd(), welcome_msg.c_str(), welcome_msg.size(), 0);
+		/* welcome_msg = ":" + prefixe + " 422 " + cli.get_nickName() + " :MOTD File is missing";
+		std::cout << RED << "welcome msg :" <<std::endl << std::endl << cli.get_nickName() <<std::endl << std::endl << WHI;
+		handleMsg(&cli, welcome_msg);
+		welcome_msg.clear();	 */
+			
 	}
 
 }
@@ -128,6 +157,8 @@ void	Server::handleMsg(Client *cli, std::string msg)
 	newTrans.setFdHost(cli->get_fd());
 	_transmission.push_back(newTrans);
 
+	std::cout << " ON EST ICI !!!" << std::endl;
+	std::cout << YEL << std::endl << std::endl << "Poll status :     " << this->_pollStatus << std::endl << std::endl << WHI << std::endl;
 	setPollStatus(POLLOUT);
 }
 
@@ -150,6 +181,7 @@ std::deque<std::string>	split(std::string str, std::string separator)
 
 int Server::receiveFirstData(Client *cli)
 {
+	std::cout << GRE << std::endl << std::endl << "Poll status :     " << this->_pollStatus << std::endl << std::endl << WHI << std::endl;
 	char buff[1024];
 	memset(buff, 0, sizeof(buff));
 
@@ -183,6 +215,7 @@ int Server::receiveFirstData(Client *cli)
 			return (0);
 		}
 	}
+	//setPollStatus(POLLOUT);
 	return (1);
 }
 
@@ -192,13 +225,12 @@ void Server::receiveData(int fd)
 	memset(buff, 0, sizeof(buff));
 
 	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
-
+	std::cout << BLU << std::endl << std::endl << "Poll status :     " << this->_pollStatus << std::endl << std::endl << WHI << std::endl;
 	if (bytes <= 0)
 	{
 		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
 		close(fd); //-> close the client socket
 	}
-
 	else
 	{
 		buff[bytes] = '\0';
@@ -215,6 +247,7 @@ void Server::receiveData(int fd)
 		}
 		
 		handleMsg(&tmp, buff);
+		//setPollStatus(POLLOUT);
 	}
 }
 
@@ -234,14 +267,17 @@ void	Server::setPollStatus(unsigned int status)
 	this->_pollStatus = status;
 }
 
-void	Server::exec_transmission(std::vector<Transmission> transmission)
+void	Server::exec_transmission(std::deque<Transmission> transmission)
 {
-	std::vector<Transmission>::iterator it;
+	std::deque<Transmission>::iterator it;
 	
 	for (it = transmission.begin(); it != transmission.end(); ++it)
+	{
 		execute_cmd(_clients , it->getFdHost(), it->getMsg());
+		transmission.pop_front();
+	}
 	setPollStatus(POLLIN);
-	transmission.clear();
+	//transmission.clear();
 }
 
 
@@ -251,7 +287,7 @@ int Server::serverLoop()
 	size_t 			i;
 	// unsigned int	pollStatus = _pollStatus;
 	setPollStatus(POLLIN);
-
+	std::cout << PUR << std::endl << std::endl << "Poll status :     " << this->_pollStatus << std::endl << std::endl << WHI << std::endl; 
 	while (g_isRunning)
 	{
 		std::cout << "\nPolling for input...\n" << std::endl;

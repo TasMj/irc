@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/05 17:50:51 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/06 16:36:45 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,13 @@
 
 #define MAX_EVENTS 5
 #define READ_SIZE 10
+#define PREFIXE "localhost"
+#define INTERCEPT "                                                         c=====c\n\
+                                                            H\n\
+   ____________                                         _,,_H__\n\
+  (__((__((___()                                       //|     |\n\
+ (__((__((___()()_____________________________________// |ACME |\n\
+(__((__((___()()()------------------------------------'  |_____|\n"
 
 extern bool g_isRunning;
 
@@ -74,7 +81,7 @@ class Server
 		int 						_epoll_fd;
 		std::vector<Client>			_clients;
 		std::vector<pollfd>			_polls;
-		std::vector<Transmission>	_transmission;
+		std::deque<Transmission>	_transmission;
 		
 		unsigned int				_pollStatus;
 		
@@ -98,7 +105,7 @@ class Server
 		void				setPollStatus(unsigned int status);
 		void				handleMsg(Client *cli, std::string msg);
 		// std::vector<Transmission>	getTransmission();
-		void				exec_transmission(std::vector<Transmission> transmission);
+		void				exec_transmission(std::deque<Transmission> transmission);
 		
 		
 };

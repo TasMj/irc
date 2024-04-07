@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:18:08 by tmalless          #+#    #+#             */
-/*   Updated: 2024/03/28 15:18:37 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/06 16:28:14 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool g_isRunning = false;
 
 void	signalHandler(int sig)
 {
-	std::cout << "Terminating signal intercepted : " << sig << "." << std::endl;
+	std::cout << INTERCEPT << std::endl << "Terminating signal intercepted : " << sig << "." << std::endl;
 	g_isRunning = false;
 }
 
