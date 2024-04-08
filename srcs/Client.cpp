@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/07 22:07:52 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/08 13:01:44 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,11 @@
 
 Client::Client()
 {
-	// _trans = new Transmission();
-	// std::cout << PUR << "CLIENT " << WHI << std::endl;
+
 }
 
 Client::~Client()
 {
-	// std::cout << PUR << "DESTROY CLIENT" << WHI << std::endl;
-	// delete _trans;
 
 }
 
@@ -79,8 +76,6 @@ std::string Client::get_ip()
 {
 	return (this->_ipAdd);
 }
-
-
 
 void	Client::init_nickName(std::string nick, int fd)
 {

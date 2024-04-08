@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:55:54 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/07 16:22:32 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/08 13:02:55 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void    recup_nickNamee(Client *cli, std::string buff_str)
 {
-    // std::string buff_str(buff); //char * to string
     
     size_t position = FindInString(buff_str, "NICK"); //obtient la position de la premiere occurence
     if (position != std::string::npos) //si le mot NICK est présent
@@ -32,7 +31,6 @@ void    recup_nickNamee(Client *cli, std::string buff_str)
 
 void    recup_userr(Client *cli, std::string buff_str)
 {
-    // std::string buff_str(buff);
     size_t position = FindInString(buff_str, "USER");
     if (position != std::string::npos)
     {
@@ -61,7 +59,6 @@ void    recup_dataa(Client *cli, std::deque<std::string> cmds)
             recup_userr(cli, cmds.at(i).c_str());
 	}
 	first_com(cli->get_fd(), *cli);
-	//cli->get_Server()->send_transmission(cli->get_fd());
 }
 
 

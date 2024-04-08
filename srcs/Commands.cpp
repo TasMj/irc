@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:01:47 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/07 22:49:31 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/08 13:02:37 by tas              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,8 @@
 
 int execute_cmd(std::vector<Client>& _clients, int fd, std::string buff)
 {
-	
     std::cout << YEL << "buff: " << buff << WHI << std::endl;
     
-    // if (strncmp("CAP LS ", buff.c_str(), 15) == 0)
-	// 	first_com(fd, _clients);
-    // if (strncmp(":localhost DISCONECT localhost: ", buff.c_str(), 32) == 0)
-		// send(fd, buff.c_str(), buff.size(), 0);
     if (strncmp("NICK ", buff.c_str(), 5) == 0)
         nickCmd(_clients, fd, buff);
     else if (strncmp("PRIVMSG ", buff.c_str(), 8) == 0)
@@ -117,7 +112,6 @@ int	checkPwd(std::vector<Client>& _clients, std::string buff, int fd)
 	{
 		if (it->get_fd() == fd)
 		{
-			std::cout << YEL << "laaaaaaaaaaaaaaaaaaaaaaaaaa" << it->get_Server()->getPwd() << WHI << std::endl;
 			serv_pwd = it->get_Server()->getPwd();
 			break ;
 		}
@@ -164,7 +158,6 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
 	        cli = it->get_Server()->getRefClientByFd(it->get_fd());
             cli.get_Server()->setUpTransmission(&cli, err_msg, cli.get_fd());
             cli.get_Server()->prepareMsgToClient(&cli);;
-            // cli.get_Server()->send_transmission(cli.get_fd());
             break;
         }
         else
@@ -180,7 +173,6 @@ void    nickCmd(std::vector<Client>& _clients, int fd, std::string buff)
                     cli = it->get_Server()->getRefClientByFd(it->get_fd());
                     cli.get_Server()->setUpTransmission(&cli, newName, cli.get_fd());
                     cli.get_Server()->prepareMsgToClient(&cli);
-                    // cli.get_Server()->send_transmission(cli.get_fd());
                     break;
                 }
             }
@@ -263,5 +255,4 @@ void pingCmd(std::vector<Client>& _clients, int fd)
     cli = it->get_Server()->getRefClientByFd(it->get_fd());
     cli.get_Server()->setUpTransmission(&cli, msg, cli.get_fd());
     cli.get_Server()->prepareMsgToClient(&cli);
-    //cli.get_Server()->send_transmission(cli.get_fd());
 }
