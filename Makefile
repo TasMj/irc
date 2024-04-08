@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tas <tas@student.42.fr>                    +#+  +:+       +#+         #
+#    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/03 11:33:11 by tas              ###   ########.fr        #
+#    Updated: 2024/04/08 23:50:27 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,9 +14,15 @@ NAME 		= ircserv
 
 OBJ_PATH 	= obj/
 
-SRC_NAME 	=  ./srcs/Client.cpp ./srcs/Commands.cpp ./srcs/main.cpp ./srcs/Msg.cpp \
-			./srcs/Nick.cpp ./srcs/Parsing.cpp ./srcs/Server.cpp ./srcs/Tools.cpp \
-			./srcs/Transmission.cpp
+SRC_NAME 	+=	./srcs/Client.cpp
+SRC_NAME 	+= ./srcs/ServerCommands.cpp
+SRC_NAME 	+= ./srcs/main.cpp
+SRC_NAME 	+= ./srcs/Msg.cpp 
+SRC_NAME 	+= ./srcs/Nick.cpp
+SRC_NAME 	+= ./srcs/Parsing.cpp
+SRC_NAME 	+= ./srcs/Server.cpp
+SRC_NAME 	+= ./srcs/Tools.cpp
+SRC_NAME 	+= ./srcs/Transmission.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 
@@ -24,7 +30,8 @@ SRC 		= $(addprefix $(SRC_PATH),$(SRC_NAME))
 OBJ 		= $(addprefix $(OBJ_PATH),$(OBJ_NAME))
 
 CC 			= c++
-FLAGS 		= -Wall -Wextra -Werror -std=c++98
+FLAGS 		= -Wall -Wextra -Werror -std=c++98 -g3
+
 RM 			= @rm -rf
 
 DEPS_NAME 	= $(SRC_NAME:.cpp=.d)
@@ -50,5 +57,22 @@ fclean:	clean
 
 re:	fclean
 	make all
+
+#-----------------------------------------------------------------------------#
+
+port			= 8080
+password		= password
+
+VALGRIND_PARAMS	+=	--track-fds=yes
+VALGRIND_PARAMS	+=	--leak-check=full
+VALGRIND_PARAMS	+=	--show-leak-kinds=all
+
+test: re
+	valgrind -q \
+		${VALGRIND_PARAMS} \
+		./${NAME} \
+		${port} ${password}
+
+#-----------------------------------------------------------------------------#
 
 .PHONY: all clean fclean re

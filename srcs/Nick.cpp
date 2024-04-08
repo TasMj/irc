@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:55:54 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/08 13:02:55 by tas              ###   ########.fr       */
+/*   Updated: 2024/04/08 23:49:03 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void    recup_nickNamee(Client *cli, std::string buff_str)
             nick_data = nick_data.substr(0, end);
         cli->set_nickName(nick_data); //set the nicknqme
     }
-    std::cout << PUR << "nick: " << cli->get_nickName() << WHI << std::endl;
 }
 
 void    recup_userr(Client *cli, std::string buff_str)
@@ -46,7 +45,17 @@ void    recup_userr(Client *cli, std::string buff_str)
         user_name = user_data.substr(position + 1, user_data.size());
         cli->set_userName(user_name); //set the nicknqme
     }
-    std::cout << PUR << "user: " << cli->get_userName() << WHI << std::endl;
+}
+
+static void	first_com(int fd, Client &cli)
+{
+	std::string prefixe = PREFIXE;
+	std::string welcome_msg;
+	
+	welcome_msg.append(":" + prefixe + " 001 " + cli.get_nickName() + " :Welcome\n" + INTERCEPT + "\n");
+	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
+	cli.get_Server()->prepareMsgToClient(&cli);
+	welcome_msg.clear();
 }
 
 void    recup_dataa(Client *cli, std::deque<std::string> cmds)
@@ -65,9 +74,9 @@ void    recup_dataa(Client *cli, std::deque<std::string> cmds)
 /*check if the nickname exist in the container
 if it exist -> retunr the fd
 if not -> return 0 */
-int    check_nick_exist(std::vector<Client>& _clients, std::string nick)
+int    check_nick_exist(std::deque<Client>& _clients, std::string nick)
 {
-    std::vector<Client>::iterator it;
+    std::deque<Client>::iterator it;
 	for (it = _clients.begin(); it != _clients.end(); ++it)
 	{
 		if (it->get_nickName() == nick)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/08 13:06:37 by tas              ###   ########.fr       */
+/*   Updated: 2024/04/08 23:52:51 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,24 +72,21 @@ class Client;
 class Server
 {
 	private:
-	
-		unsigned int				_port;
 		std::string					_password;
 		sockaddr_in					_sockAddr;
 		int							_sockfd;
-		int							_connection[5];
-		struct pollfd				_poll;
-		int 						_epoll_fd;
-		std::vector<Client>			_clients;
+		//int							_connection[5];
+		//struct pollfd				_poll;
+		//int 						_epoll_fd;
+		std::deque<Client>			_clients;
 		std::vector<pollfd>			_polls;
 		std::vector<Transmission>	_transmission;
-		unsigned int				_pollStatus;
 		std::string					_prefixServer;
 		
 	public:
 	
 		Server();
-		Server(unsigned int port, std::string password);
+		Server(std::string password);
 		~Server();
 		int							initServer(int port);
 		int							serverLoop();
@@ -99,17 +96,26 @@ class Server
 		void						cleanServer();
 		std::string					getPwd();
 		std::vector<pollfd>			getPollfds();
-		std::vector<Client> 		getClient();
+		std::deque<Client> 		getClient();
 		std::string const &			getPrefixServer() const;
-		Client 						&getRefClientByFd(int fd);
-		void						setPollCycles(std::vector<pollfd> _polls);
+		Client* 						getRefClientByFd(int fd);
 		void						send_transmission(int pollFd);
 		std::vector<Transmission>	getTransmission();
 		Transmission				getFirstTransmission();
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
-		Transmission				getTransmissionByFd(int fd);
-		void 						setTransmission(const Transmission &newTrans);
+		Transmission*				getTransmissionByFd(int fd);
+
+/******************************************************************************/
+/*                                 Commandes                                  */
+/******************************************************************************/
+		int		execute_cmd(Client* cli, int fd, std::string buff);
+		void    nickCmd(Client* cli, int fd, std::string buff);
+		void	msgCmd(Client* cli, int fd, std::string buff);
+		void	pingCmd(Client* cli, int fd);
+		int		checkPwd(Client* cli, int fd, std::string buff);
+		void	exitCmd(Client* cli, int fd, std::string buff);
+
 };
 
 /******************************************************************************/
@@ -117,18 +123,18 @@ class Server
 /******************************************************************************/
 
 int			checkElt(std::string serverName, int port, std::string psw);
-int			execute_cmd(std::vector<Client>& _clients, int fd, std::string buff);
-void    	nickCmd(std::vector<Client>& _clients, int fd, std::string buff);
+int			execute_cmd(std::deque<Client>& _clients, int fd, std::string buff);
+void    	nickCmd(std::deque<Client>& _clients, int fd, std::string buff);
 size_t		FindInString(const std::string& chaine, const std::string& sousChaine);
-int    		check_nick_exist(std::vector<Client>& _clients, std::string nick);
+int    		check_nick_exist(std::deque<Client>& _clients, std::string nick);
 std::string recup_nick_msg(std::string buff);
 std::string recup_msg(std::string buff, int start);
-int    		msgCmd(std::vector<Client>& _clients, std::string buff, int fd);
-void 		pingCmd(std::vector<Client>& _clients, int fd);
-int			checkPwd(std::vector<Client>& _clients, std::string buff, int fd);
-void		exitCmd(std::vector<Client> _clients, std::string buff, int fd);
+int    		msgCmd(std::deque<Client>& _clients, std::string buff, int fd);
+void 		pingCmd(std::deque<Client>& _clients, int fd);
+int			checkPwd(std::deque<Client>& _clients, std::string buff, int fd);
+void		exitCmd(std::deque<Client> _clients, std::string buff, int fd);
 void    	recup_nickNamee(Client *cli, std::string buff_str);
 void    	recup_dataa(Client *cli, std::deque<std::string> cmds);
 void    	recup_userr(Client *cli, std::string buff_str);
-void		first_com(int fd, Client &cli);
+//void		first_com(int fd, Client &cli);
 

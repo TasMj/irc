@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Msg.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:07:43 by tmejri            #+#    #+#             */
-/*   Updated: 2024/03/25 15:08:03 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/08 21:10:01 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ std::string recup_msg(std::string buff, int start)
 {
     std::string tmp;
     size_t end = buff.find_first_of("\r\n");
-    std::cout << PUR << "start: " << start << " end: " << end << WHI << std::endl;
     if (end != std::string::npos)
         tmp = buff.substr(0, end);
     std::string msg;

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tas <tas@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/08 13:01:44 by tas              ###   ########.fr       */
+/*   Updated: 2024/04/08 22:45:32 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
 
-Client::Client()
+Client::Client(): _bufferOut("")
 {
 
 }
@@ -35,7 +35,7 @@ void	Client::set_Server(Server *server)
 void	Client::remove()
 {
 	size_t i = 0;
-	std::vector<Client>::iterator it;
+	std::deque<Client>::iterator it;
 	std::vector<pollfd>::iterator jt;
 	for (it = this->_server->getClient().begin(); it != this->_server->getClient().end(); ++it)
 	{
@@ -124,5 +124,6 @@ std::string&	Client::getBufferOut()
 
 void		Client::setBufferOut(std::string buff)
 {
-	this->_bufferOut = buff;
+	std::cout << "-> " << _bufferOut << " " << buff << std::endl;
+	_bufferOut = buff;
 };

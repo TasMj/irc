@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Transmission.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 11:31:30 by tas               #+#    #+#             */
-/*   Updated: 2024/04/07 15:57:18 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/08 21:11:24 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,7 @@ std::string     Transmission::getMsg()
 
 void    Transmission::addNewFdDest(int newFd)
 {   
-	std::cout << "newFD : " << newFd << std::endl;
     _fdDest.push_back(newFd);
-	std::cout << "FD : " << _fdDest.at(0) << std::endl;
 }
 
 void    Transmission::setFdDest(std::vector<int> fdDest)

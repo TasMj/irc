@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:18:08 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/07 21:36:19 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/08 21:05:54 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int main(int ac, char **av)
 {
 	if (ac != 3)
 	{
-		std::cout << "Error: invalid input.\nMust be: ./ircserv <port> <password>" << std::endl;
+		std::cout << RED << "Error: invalid input.\nMust be: ./ircserv <port> <password>" << WHI << std::endl;
 		return (1);
 	}
 
@@ -35,8 +35,8 @@ int main(int ac, char **av)
 	/* if (!checkElt(av[0], portDigit, psw))
 		return (1); */
 	Server *server;
-	server = new Server(portDigit, psw);
-	std::cout << BLU << server->getPwd() << WHI << std::endl;
+	server = new Server(psw);
+	std::cout << BLU << "The Password is: " << server->getPwd() << WHI << std::endl;
 	signal(SIGINT, signalHandler);
 	if (server->initServer(portDigit) != 0)
 		exit(EXIT_FAILURE);
