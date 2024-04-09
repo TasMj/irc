@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/08 22:54:23 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/09 15:13:11 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,8 +106,8 @@ void Server::addNewClient()
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
 	
-	std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl;
-	receiveFirstData(&cli);
+	//std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl;
+	//receiveFirstData(&cli);
 }
 
 Client* Server::getRefClientByFd(int fd)
@@ -223,14 +223,34 @@ void Server::receiveData(int fd)
 	memset(buff, 0, sizeof(buff));
 
 	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
+	buff[bytes] = '\0';
 
+	std::cout << bytes << " " << buff << std::endl;
 	if (bytes <= 0)
 	{
 		close(fd);
 	}
 	else
 	{
-		buff[bytes] = '\0';
+
+		std::string bufff(buff);
+		size_t found = bufff.find("\r\n");
+		
+		std::cout << found << " " << bufff << std::endl;
+		if (found != std::string::npos) {
+
+			std::string tmp = bufff.substr(0, found);
+			try {
+				t_message msg = parse_message(tmp);
+				std::cout << msg << std::endl;
+			} catch (std::invalid_argument e) {
+				std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
+			}
+		} else {
+			std::cout << "ERR " << bufff << std::endl;
+		}
+
+
 		Client* cli = getRefClientByFd(fd);
 		if (cli)
 			execute_cmd(cli, fd, buff);

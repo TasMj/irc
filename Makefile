@@ -6,23 +6,25 @@
 #    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/08 23:50:27 by aclement         ###   ########.fr        #
+#    Updated: 2024/04/09 13:42:50 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME 		= ircserv
 
 OBJ_PATH 	= obj/
+INC_PATH 	= includes/
 
 SRC_NAME 	+=	./srcs/Client.cpp
-SRC_NAME 	+= ./srcs/ServerCommands.cpp
-SRC_NAME 	+= ./srcs/main.cpp
-SRC_NAME 	+= ./srcs/Msg.cpp 
-SRC_NAME 	+= ./srcs/Nick.cpp
-SRC_NAME 	+= ./srcs/Parsing.cpp
-SRC_NAME 	+= ./srcs/Server.cpp
-SRC_NAME 	+= ./srcs/Tools.cpp
-SRC_NAME 	+= ./srcs/Transmission.cpp
+SRC_NAME 	+=	./srcs/ServerCommands.cpp
+SRC_NAME 	+=	./srcs/main.cpp
+SRC_NAME 	+=	./srcs/Msg.cpp 
+SRC_NAME 	+=	./srcs/Nick.cpp
+SRC_NAME 	+=	./srcs/Parsing.cpp
+SRC_NAME 	+=	./srcs/Server.cpp
+SRC_NAME 	+=	./srcs/Tools.cpp
+SRC_NAME 	+=	./srcs/Transmission.cpp
+SRC_NAME 	+=	./srcs/Message.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 
@@ -41,11 +43,11 @@ all: $(NAME)
 
 $(NAME): Makefile $(OBJ)
 		@echo "Build $(NAME)"
-		@$(CC) $(FLAGS) $(INC) $(OBJ) -o $(NAME) $(LIBS) -MMD
+		@$(CC) $(FLAGS) -I $(INC_PATH) $(OBJ) -o $(NAME) $(LIBS) -MMD
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
 		mkdir -p $(@D)
-		$(CC) $(FLAGS) $(INC) -MMD -o $@ -c $<
+		$(CC) $(FLAGS) -I $(INC_PATH) -MMD -o $@ -c $<
 
 -include $(DEPS)
 

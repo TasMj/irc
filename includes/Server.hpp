@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/08 23:52:51 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/09 13:38:52 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # include <fstream>
 # include "Transmission.hpp"
 # include "Client.hpp"
+# include "Message.hpp"
 
 /******************************************************************************/
 /*                                  Defines                                   */
