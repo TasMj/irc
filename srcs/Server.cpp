@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/09 15:13:11 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 01:30:49 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,17 +236,18 @@ void Server::receiveData(int fd)
 		std::string bufff(buff);
 		size_t found = bufff.find("\r\n");
 		
-		std::cout << found << " " << bufff << std::endl;
+		std::cout << found << " " << bufff << ",npos: " << std::string::npos << std::endl;
 		if (found != std::string::npos) {
 
 			std::string tmp = bufff.substr(0, found);
 			try {
 				t_message msg = parse_message(tmp);
 				std::cout << msg << std::endl;
-			} catch (std::invalid_argument e) {
+			} catch (std::exception &e) {
 				std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
 			}
-		} else {
+		}
+		else {
 			std::cout << "ERR " << bufff << std::endl;
 		}
 

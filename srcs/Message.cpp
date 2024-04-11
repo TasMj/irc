@@ -1,29 +1,46 @@
 #include "Message.hpp"
 
-static std::deque<std::string> parse_params(std::string& input) {
+static std::deque<std::string> parse_params(std::string& input, std::string del) {
     std::deque<std::string> output;
-
-    size_t  start, found;
     std::string word;
 
-    start = 0;
-    do {
-        start = input.find_first_not_of(" ", start);
-        found = input.find_first_of(" ", start);
-        word = input.substr(start, found);
+    int start, end = -1* del.size();
+    do 
+    {
+        start = end + del.size();
+        end = input.find(del, start);
+        word = input.substr(start, end - start);
         std::cout << "word: '" << word << "'" << std::endl;
-        output.push_back(word);
-        start = found;
-    } while (input[found]);
+        if (!word.empty())
+            output.push_back(word);
+    } while (end != -1);
     return (output);
 }
-
+// static std::deque<std::string> parse_params(std::string& input) {
+    // std::deque<std::string> output;
+// 
+    // size_t  start, found;
+    // std::string word;
+// 
+    // start = 0;
+    // do {
+        // start = input.find_first_not_of(" ", start);
+        // found = input.find_first_of(" ", start);
+        // word = input.substr(start, found);
+        // std::cout << "word: '" << word << "'" << std::endl;
+        // output.push_back(word);
+        // start = found;
+    // } while (input[found]);
+    // return (output);
+// }
+// 
 static bool    parse_last_params(std::string& output, std::string& input) {
     size_t  found = input.find(":");
     if (found == std::string::npos)
         return (false);
     output = input.substr(found);
     input.erase(found);
+    std::cout << input << std::endl;
     return (true);
 }
 
@@ -73,7 +90,7 @@ t_message   parse_message(std::string input) {
     input.erase(0, found);
     output.has_last_params = parse_last_params(output.last_params, input);
     std::cout << "before parse_params" << std::endl;
-    output.params = parse_params(input);
+    output.params = parse_params(input, " ");
     std::cout << "after parse_params" << std::endl;
     return (output);
 }

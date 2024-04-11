@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/09 13:53:10 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 03:07:50 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,20 @@
 
 int Server::execute_cmd(Client* cli, int fd, std::string buff)
 {
-	
-    if (strncmp("NICK ", buff.c_str(), 5) == 0)
-        nickCmd(cli, fd, buff);
-    else if (strncmp("PRIVMSG ", buff.c_str(), 8) == 0)
-        msgCmd(cli, fd, buff);
-    else if (strncmp("PING ", buff.c_str(), 5) == 0)
-        pingCmd(cli, fd);
-	else if (strncmp("PASS ", buff.c_str(), 5) == 0)
-		return (checkPwd(cli, fd, buff));
-	else if (strncmp("EXIT ", buff.c_str(), 5) == 0)
-		exitCmd(cli, fd, buff);
+	(void)cli;
+	(void)fd;
+	(void)buff;
+	std::cout << "COMMANDE TO CHECK" << std::endl;
+    // if (strncmp("NICK ", buff.c_str(), 5) == 0)
+        // nickCmd(cli, fd, buff);
+    // else if (strncmp("PRIVMSG ", buff.c_str(), 8) == 0)
+        // msgCmd(cli, fd, buff);
+    // else if (strncmp("PING ", buff.c_str(), 5) == 0)
+        // pingCmd(cli, fd);
+	// else if (strncmp("PASS ", buff.c_str(), 5) == 0)
+		// return (checkPwd(cli, fd, buff));
+	// else if (strncmp("EXIT ", buff.c_str(), 5) == 0)
+		// exitCmd(cli, fd, buff);
 	return (0);
 }
 
