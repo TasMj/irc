@@ -6,30 +6,25 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/11 03:07:50 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 19:22:57 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-int Server::execute_cmd(Client* cli, int fd, std::string buff)
-{
-	(void)cli;
-	(void)fd;
-	(void)buff;
-	std::cout << "COMMANDE TO CHECK" << std::endl;
-    // if (strncmp("NICK ", buff.c_str(), 5) == 0)
-        // nickCmd(cli, fd, buff);
-    // else if (strncmp("PRIVMSG ", buff.c_str(), 8) == 0)
-        // msgCmd(cli, fd, buff);
-    // else if (strncmp("PING ", buff.c_str(), 5) == 0)
-        // pingCmd(cli, fd);
-	// else if (strncmp("PASS ", buff.c_str(), 5) == 0)
-		// return (checkPwd(cli, fd, buff));
-	// else if (strncmp("EXIT ", buff.c_str(), 5) == 0)
-		// exitCmd(cli, fd, buff);
-	return (0);
+bool	expect_N_Params(t_message* msg, size_t n) {
+	return (msg->params.size() == n);
 }
+
+bool	expect_At_Least_N_Params(t_message* msg, size_t n) {
+	return (msg->params.size() >= n);
+}
+
+bool	expect_LastParams(t_message* msg) {
+	return (msg->has_last_params);
+}
+
+/* ************************************************************************** */
 
 static Client* findNickName(std::deque<Client>& clients, std::string nickName) {
 	std::deque<Client>::iterator first, last;
@@ -44,20 +39,28 @@ static Client* findNickName(std::deque<Client>& clients, std::string nickName) {
 	return (NULL);
 }
 
-void    Server::nickCmd(Client* cli, int fd, std::string buff)
+int Server::execute_cmd(Client* cli, t_message* msg)
 {
-	// PARSING
-    std::string receivedData(buff);
-    
-    size_t pos = receivedData.find_first_of("\r\n");
-    if (pos != std::string::npos) {
-        receivedData = receivedData.substr(0, pos);
-    }
-    std::string newNick = receivedData.substr(5, pos);
+	if (!cli || ! msg)
+		return (-1);
+	t_cmd_list::iterator	it = _cmd_list.find(msg->command);
+	if (it != _cmd_list.end()) {
+		function toExecute = it->second;
+		(this->*(toExecute))(cli, msg);
+	}
+	return (0);
+}
 
+void    Server::cmd_nick(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 1)
+	) { return; }
+	
+    std::string newNick = msg->params[0];
     std::string nickName = cli->get_nickName();
 	
 	std::string response;
+
 	// CHECKING
     if (findNickName(_clients, newNick))
         response = ":localhost NICK " + nickName + " :\nthis nickname already exist. Please try a new one.\n";
@@ -67,82 +70,34 @@ void    Server::nickCmd(Client* cli, int fd, std::string buff)
 	}
 
 	// SENDING
-    cli->get_Server()->setUpTransmission(cli, response, fd);
+    cli->get_Server()->setUpTransmission(cli, response, cli->get_fd());
     cli->get_Server()->prepareMsgToClient(cli);
 }
 
-void    Server::msgCmd(Client* cli, int fd, std::string buff)
-{
-    /*on check si nick ou channel*/
-    if (buff[9] && buff[9] == '#')
-    {
-        /*si channel*/
-        /*recup nom du chennel*/
-        /*recup msg du chennel*/
-        /*on verifie que le nickname existe*/
-        /*on envoie le msg au nickname*/
-    }
-    else
-    {
-        /*si nick*/
-        std::string nick;
-        nick = recup_nick_msg(buff);
-        
-        /*on isole le nick et le msg du buffer*/
-        std::string msg;
-        int start = nick.length() + 10;
-        msg = recup_msg(buff, start);
-        std::cout << msg << std::endl;
-        std::string prefixe = ":localhost PRIVMSG ";
-	   
-	   	std::string response;
-
-		int		fd_to_send;
-		Client* found = findNickName(_clients, nick);
-        if (found)
-		{
-        	response = prefixe + nick + " :" + msg + "\n";
-			fd_to_send = found->get_fd();
-        }
-		else
-        {
-			response = prefixe + nick + " :" + "no nick matching\n";
-			fd_to_send = fd;
-        }
-		cli->get_Server()->setUpTransmission(cli, response, fd_to_send);
-        cli->get_Server()->prepareMsgToClient(cli);
-    }
+void	Server::cmd_join(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 1)
+	) {return; }
+	// for (int i = 0; msg->params[i]; i++)
+		
 }
 
-void	Server::pingCmd(Client* cli, int fd)
-{
-	(void)fd;
-	if (cli == NULL)
-		return ;
-
-    std::string msg = ":localhost PONG localhost: " + cli->get_nickName() + "\n";
-    cli->get_Server()->setUpTransmission(cli, msg, cli->get_fd());
+void	Server::cmd_ping(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 0)
+	) { return; }
+	
+    std::string response = ":localhost PONG localhost: " + cli->get_nickName() + "\n";
+    cli->get_Server()->setUpTransmission(cli, response, cli->get_fd());
     cli->get_Server()->prepareMsgToClient(cli);
 }
 
-int		Server::checkPwd(Client* cli, int fd, std::string buff)
-{
-	(void)cli;
-	int pos = buff.find(" ");
-	buff.erase(0, pos + 1);
-	if (_password.compare(buff) != 0)
-		return (0);
+void	Server::cmd_quit(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 0)
+	) { return; }
 
-	std::string err_msg =":localhost DISCONNECT localhost: \n Wrong password.\n";
-	send(fd, err_msg.c_str(), err_msg.size(), 0);
-	return (1);
-
-}
-
-void	Server::exitCmd(Client* cli, int fd, std::string buff)
-{
-	(void) buff;
-	(void) cli;
+	int fd = cli->get_fd();
 	std::deque<Client>::iterator it;
 	for (it = _clients.begin(); it != _clients.end(); ++it)
 	{
@@ -154,3 +109,56 @@ void	Server::exitCmd(Client* cli, int fd, std::string buff)
 	}
 }
 
+void	Server::cmd_pass(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 1)
+	) { return; }
+	
+	if (!msg->params.empty() && _password.compare(msg->params[0]) == 0)
+		return ;
+
+	std::string err_msg =":localhost DISCONNECT localhost: \n Wrong password.\n";
+	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
+}
+
+void    Server::cmd_privmsg(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_At_Least_N_Params(msg, 1)
+		|| !expect_LastParams(msg)
+	) { return; }
+	
+	std::string name = msg->params[0];
+    /*on check si nick ou channel*/
+	if (name[0] == '#') {
+		/*si channel*/
+        /*recup nom du chennel*/
+        /*recup msg du chennel*/
+        /*on verifie que le nickname existe*/
+        /*on envoie le msg au nickname*/
+	} else {
+        /*si nick*/
+        std::string nick = name;
+        std::string msgToSend = msg->last_params;
+
+
+        std::string prefixe = ":localhost PRIVMSG ";	   
+	   	std::string response;
+
+		int		fd_to_send;
+		Client* found = findNickName(_clients, nick);
+        if (found) {
+        	response = prefixe + nick + " :" + response + "\n";
+			fd_to_send = found->get_fd();
+        }
+		else
+        {
+			response = prefixe + nick + " :" + "no nick matching\n";
+			fd_to_send = cli->get_fd();
+        }
+		cli->get_Server()->setUpTransmission(cli, response, fd_to_send);
+        cli->get_Server()->prepareMsgToClient(cli);
+    }
+}
+
+void    Server::cmd_privmsg(Client* cli, t_message* msg) {
+}

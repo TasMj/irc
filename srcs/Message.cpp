@@ -10,30 +10,12 @@ static std::deque<std::string> parse_params(std::string& input, std::string del)
         start = end + del.size();
         end = input.find(del, start);
         word = input.substr(start, end - start);
-        std::cout << "word: '" << word << "'" << std::endl;
         if (!word.empty())
             output.push_back(word);
     } while (end != -1);
     return (output);
 }
-// static std::deque<std::string> parse_params(std::string& input) {
-    // std::deque<std::string> output;
-// 
-    // size_t  start, found;
-    // std::string word;
-// 
-    // start = 0;
-    // do {
-        // start = input.find_first_not_of(" ", start);
-        // found = input.find_first_of(" ", start);
-        // word = input.substr(start, found);
-        // std::cout << "word: '" << word << "'" << std::endl;
-        // output.push_back(word);
-        // start = found;
-    // } while (input[found]);
-    // return (output);
-// }
-// 
+
 static bool    parse_last_params(std::string& output, std::string& input) {
     size_t  found = input.find(":");
     if (found == std::string::npos)
@@ -77,21 +59,29 @@ static bool    parse_prefix(t_prefix& output, std::string& input) {
     return (true);
 }
 
-t_message   parse_message(std::string input) {
-    t_message output;
-
-    output.has_prefix = parse_prefix(output.prefix, input);
-    size_t found = input.find(" ");
+t_message*   parse_message(std::string& input) {
+    t_message* output;
+    size_t found;
+    
+    found = input.find("\r\n");
+    if (found == std::string::npos)
+        return (NULL);
+    output = new t_message;
+    if (output == NULL)
+        throw std::runtime_error("Unable to allocate memory for a incomming message");
+    std::string toParse = input.substr(0, found);
+    input.erase(0, found + 2);
+    output->has_last_params = false; // not the best way, but ok
+    output->has_prefix = parse_prefix(output->prefix, toParse);
+    found = toParse.find(" ");
     if (found == std::string::npos) {
-        output.command = input.substr(0);
+        output->command = toParse;
         return (output);
     }
-    output.command = input.substr(0, found);
-    input.erase(0, found);
-    output.has_last_params = parse_last_params(output.last_params, input);
-    std::cout << "before parse_params" << std::endl;
-    output.params = parse_params(input, " ");
-    std::cout << "after parse_params" << std::endl;
+    output->command = toParse.substr(0, found);
+    toParse.erase(0, found);
+    output->has_last_params = parse_last_params(output->last_params, toParse);
+    output->params = parse_params(toParse, " ");
     return (output);
 }
 

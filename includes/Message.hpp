@@ -5,7 +5,7 @@
 #include <deque>
 #include <stdexcept>
 #include <iostream>
-#include "Server.hpp"
+#include "Color.hpp"
 
 typedef struct s_prefix {
     std::string nickname;
@@ -24,5 +24,5 @@ typedef struct s_message {
     std::string             last_params;
 }   t_message;
 
-t_message       parse_message(std::string input);
+t_message*      parse_message(std::string& input);
 std::ostream&   operator<<(std::ostream& os, t_message& msg);

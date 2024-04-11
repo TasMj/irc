@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/08 22:45:32 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 18:41:41 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,3 +127,19 @@ void		Client::setBufferOut(std::string buff)
 	std::cout << "-> " << _bufferOut << " " << buff << std::endl;
 	_bufferOut = buff;
 };
+
+
+bool	Client::receive(t_message** msg) {
+	char buff[1024] = { 0 };
+	ssize_t bytes = recv(_fd, buff, sizeof(buff) - 1, 0);
+
+	if (bytes <= 0) {
+		close(_fd);
+		return (false);
+	}
+	_bufferIn.append(buff);
+	t_message* tmp = parse_message(_bufferIn);
+	if (tmp)
+		(*msg) = tmp;
+	return (true);
+}

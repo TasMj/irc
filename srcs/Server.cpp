@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/11 01:30:49 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 18:42:45 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@ Server::Server()
 
 Server::Server(std::string password) : _password(password), _prefixServer(":localhost")
 {
+	_cmd_list["NICK"]		= &Server::cmd_nick;
+	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
+	_cmd_list["PING"]		= &Server::cmd_ping;
+	_cmd_list["PASS"]		= &Server::cmd_pass;
+	_cmd_list["QUIT"]		= &Server::cmd_quit;
 }
 
 Server::~Server()
@@ -217,47 +222,6 @@ int Server::receiveFirstData(Client *cli)
 	return (1);
 }
 
-void Server::receiveData(int fd)
-{
-	char buff[1024];
-	memset(buff, 0, sizeof(buff));
-
-	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
-	buff[bytes] = '\0';
-
-	std::cout << bytes << " " << buff << std::endl;
-	if (bytes <= 0)
-	{
-		close(fd);
-	}
-	else
-	{
-
-		std::string bufff(buff);
-		size_t found = bufff.find("\r\n");
-		
-		std::cout << found << " " << bufff << ",npos: " << std::string::npos << std::endl;
-		if (found != std::string::npos) {
-
-			std::string tmp = bufff.substr(0, found);
-			try {
-				t_message msg = parse_message(tmp);
-				std::cout << msg << std::endl;
-			} catch (std::exception &e) {
-				std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
-			}
-		}
-		else {
-			std::cout << "ERR " << bufff << std::endl;
-		}
-
-
-		Client* cli = getRefClientByFd(fd);
-		if (cli)
-			execute_cmd(cli, fd, buff);
-	}
-}
-
 void Server::cleanServer()
 {
 	std::vector<pollfd>::iterator it;
@@ -268,7 +232,6 @@ void Server::cleanServer()
 	}
 	delete this;
 }
-
 
 Transmission*	Server::getTransmissionByFd(int fd)
 {
@@ -316,8 +279,17 @@ int Server::serverLoop()
 				}
 				else
 				{
-					std::cout << GRE << "[[[receiveData]]]" << WHI << std::endl;
-					this->receiveData(this->_polls[i].fd);
+					try {
+						t_message* msg = NULL;
+						Client* cli = getRefClientByFd(this->_polls[i].fd);
+						
+						if (cli && cli->receive(&msg) && msg) {
+							std::cout << GRE << "[[[receiveData]]] " << (*msg) << WHI << std::endl;
+							execute_cmd(cli, msg);
+						}
+					} catch (std::exception &e) {
+						std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
+					}
 				}
 			}
 			else if (this->_polls[i].revents & POLLOUT)

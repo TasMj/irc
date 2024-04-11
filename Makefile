@@ -6,7 +6,7 @@
 #    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/09 13:42:50 by aclement         ###   ########.fr        #
+#    Updated: 2024/04/11 18:19:36 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,6 @@ INC_PATH 	= includes/
 SRC_NAME 	+=	./srcs/Client.cpp
 SRC_NAME 	+=	./srcs/ServerCommands.cpp
 SRC_NAME 	+=	./srcs/main.cpp
-SRC_NAME 	+=	./srcs/Msg.cpp 
 SRC_NAME 	+=	./srcs/Nick.cpp
 SRC_NAME 	+=	./srcs/Parsing.cpp
 SRC_NAME 	+=	./srcs/Server.cpp

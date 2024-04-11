@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/09 13:38:52 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 19:18:20 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,7 @@
 /*                                  Defines                                   */
 /******************************************************************************/
 
-/*COLORS*/
-#define RED "\e[1;31m"
-#define WHI "\e[0;37m"
-#define GRE "\e[1;32m"
-#define YEL "\e[1;33m"
-#define BLU "\e[0;34m"
-#define PUR "\e[0;35m"
-#define CYA "\e[0;36m"
+#include "Color.hpp"
 
 #define MAX_EVENTS 5
 #define READ_SIZE 10
@@ -76,14 +69,17 @@ class Server
 		std::string					_password;
 		sockaddr_in					_sockAddr;
 		int							_sockfd;
-		//int							_connection[5];
-		//struct pollfd				_poll;
-		//int 						_epoll_fd;
+
 		std::deque<Client>			_clients;
 		std::vector<pollfd>			_polls;
 		std::vector<Transmission>	_transmission;
 		std::string					_prefixServer;
-		
+
+			
+		typedef	void (Server::*function)(Client*, t_message*);
+		typedef std::map<std::string, function> t_cmd_list;
+		t_cmd_list								_cmd_list;
+				
 	public:
 	
 		Server();
@@ -110,13 +106,13 @@ class Server
 /******************************************************************************/
 /*                                 Commandes                                  */
 /******************************************************************************/
-		int		execute_cmd(Client* cli, int fd, std::string buff);
-		void    nickCmd(Client* cli, int fd, std::string buff);
-		void	msgCmd(Client* cli, int fd, std::string buff);
-		void	pingCmd(Client* cli, int fd);
-		int		checkPwd(Client* cli, int fd, std::string buff);
-		void	exitCmd(Client* cli, int fd, std::string buff);
-
+		int		execute_cmd(Client* cli, t_message* msg);
+		void    cmd_nick(Client* cli, t_message* msg);
+		void	cmd_ping(Client* cli, t_message* msg);
+		void	cmd_quit(Client* cli, t_message* msg);
+		void	cmd_pass(Client* cli, t_message* msg);
+		void    cmd_privmsg(Client* cli, t_message* msg);
+		void	cmd_join(Client* cli, t_message* msg);
 };
 
 /******************************************************************************/
