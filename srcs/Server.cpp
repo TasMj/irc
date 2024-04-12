@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 17:14:17 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 18:42:42 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,7 @@ int Server::initServer(int port) {
 	return (0);
 }
 
-void Server::addNewClient()
-{
+void Server::addNewClient() {
 	Client cli;
 
 	struct sockaddr_in cliAdd;
@@ -100,9 +99,6 @@ void Server::addNewClient()
 	cli.set_Server(this);
 	this->_clients.push_back(cli);
 	this->_polls.push_back(new_poll);
-	
-	//std::cout << "CLIENT " << receiving_fd << " CONNECTED" << std::endl;
-	//receiveFirstData(&cli);
 }
 
 Client* Server::getRefClientByFd(int fd)
@@ -173,10 +169,10 @@ void Server::cleanServer()
 {
 	std::vector<pollfd>::iterator it;
 
-	for (it = this->_polls.begin(); it != this->_polls.end(); it++)
-	{
+	for (it = this->_polls.begin(); it != this->_polls.end(); it++) {
 		close(it->fd);
 	}
+	// clean channels!!
 	delete this;
 }
 
@@ -193,8 +189,7 @@ Transmission*	Server::getTransmissionByFd(int fd)
 	return (NULL);
 }
 
-void	Server::removeClient(Client& cli)
-{
+void	Server::removeClient(Client& cli) {
 	int	fd = cli.get_fd();
 	size_t i = 0;
 	std::deque<Client>::iterator it;
@@ -209,71 +204,59 @@ void	Server::removeClient(Client& cli)
 	_clients.erase(it);
 	for (jt = _polls.begin(); jt != _polls.end(); ++jt)
 	{
-		if (it->get_fd() == fd)
+		if (it->get_fd() == fd) // invalid read -> maybe mismatch when remove client and close fd
 			break ;
 		i++;
 	}
 	close(jt->events);
 	_polls.erase(jt);
 	close(fd);
-	
 }
 
-int Server::serverLoop()
-{
+int		Server::serverLoop() {
 	g_isRunning = true;
 	size_t 			i;
 	while (g_isRunning)
 	{
-		//std::cout << "recv" <<std::endl;
-
-		for (i = 0; i < this->_polls.size(); i++)
+		for (i = 0; i < _polls.size(); i++)
 		{
-			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && g_isRunning)
+			if (poll(&_polls[0], _polls.size(), -1) == -1 && g_isRunning)
 				throw(std::runtime_error("poll() failed"));
-/*
-			Client* cli = getRefClientByFd(this->_polls[i].fd);
+
+			int		fd = _polls[i].fd;
+			short	event = _polls[i].revents;
+			if (event & POLLIN && fd == _sockfd) {
+				addNewClient();
+				continue;
+			}
+			
+			Client* cli = getRefClientByFd(fd);
 			if (cli == NULL) {
 				continue;
-				return (-1); // mais en vrai c'est chelou
+				//return (-1); // mais en vrai c'est chelou
 			}
-*/
-			if (this->_polls[i].revents & POLLIN)
-			{
-				if (this->_polls[i].fd == this->_sockfd)
-					this->addNewClient();
-				else
-				{
-					try {
-						std::deque<t_message*> messages;
-						Client* cli = getRefClientByFd(this->_polls[i].fd);
-						
-						if (cli && cli->receive(messages)) {
-							for (size_t i = 0; i < messages.size(); i++) {
-								std::cout << GRE << "[[[receiveData]]]\n" << *messages[i] << WHI << std::endl;
-								execute_cmd(cli, messages[i]);
-								delete messages[i];
-							}
+
+			if (event & POLLIN) {
+				try {
+					std::deque<t_message*> messages;					
+					if (cli && cli->read_stream(messages)) {
+						for (size_t i = 0; i < messages.size(); i++) {
+							std::cout << GRE << *messages[i] << WHI << std::endl;
+							execute_cmd(cli, messages[i]);
+							delete messages[i];
 						}
-					} catch (std::exception &e) {
-						std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
 					}
+				} catch (std::exception &e) {
+					std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
 				}
 			}
-			else if (this->_polls[i].revents & POLLOUT) {
-				Client* cli = getRefClientByFd(this->_polls[i].fd);	
-				cli->send_transmission();
+			else if (event & POLLOUT) {
+				cli->write_stream();
 			}
-			_polls[i].revents = 0;
 		}
 	}
-	this->cleanServer();
+	cleanServer();
 	return (0);
-}
-
-std::vector<Transmission> Server::getTransmission()
-{
-	return (this->_transmission);
 }
 
 Transmission Server::getFirstTransmission()

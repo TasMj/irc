@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:55:54 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/08 23:49:03 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 17:04:40 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,42 +45,4 @@ void    recup_userr(Client *cli, std::string buff_str)
         user_name = user_data.substr(position + 1, user_data.size());
         cli->set_userName(user_name); //set the nicknqme
     }
-}
-
-static void	first_com(int fd, Client &cli)
-{
-	std::string prefixe = PREFIXE;
-	std::string welcome_msg;
-	
-	welcome_msg.append(":" + prefixe + " 001 " + cli.get_nickName() + " :Welcome\n" + INTERCEPT + "\n");
-	cli.get_Server()->setUpTransmission(&cli, welcome_msg, fd);
-	cli.get_Server()->prepareMsgToClient(&cli);
-	welcome_msg.clear();
-}
-
-void    recup_dataa(Client *cli, std::deque<std::string> cmds)
-{
-    for (size_t i = 0; i < cmds.size(); i++)
-    {
-        if (strncmp(cmds.at(i).c_str(), "NICK ", 5) == 0)
-            recup_nickNamee(cli, cmds.at(i).c_str());
-        else if (strncmp(cmds.at(i).c_str(), "USER ", 5) == 0)
-            recup_userr(cli, cmds.at(i).c_str());
-	}
-	first_com(cli->get_fd(), *cli);
-}
-
-
-/*check if the nickname exist in the container
-if it exist -> retunr the fd
-if not -> return 0 */
-int    check_nick_exist(std::deque<Client>& _clients, std::string nick)
-{
-    std::deque<Client>::iterator it;
-	for (it = _clients.begin(); it != _clients.end(); ++it)
-	{
-		if (it->get_nickName() == nick)
-            return (it->get_fd());
-	}
-    return (0);
 }

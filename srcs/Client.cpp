@@ -6,15 +6,17 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:50:26 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 18:47:26 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
 
-Client::Client(): _bufferOut("")
+Client::Client()
+	: _bufferOut("")
+	, _login(UNSET)
 {
-	_login = (t_login)UNSET;
+	//_login = (t_login)UNSET;
 }
 
 Client::~Client()
@@ -97,7 +99,7 @@ void		Client::setBufferOut(std::string buff) {
 };
 
 
-bool	Client::receive(std::deque<t_message*>& output) {
+bool	Client::read_stream(std::deque<t_message*>& output) {
 	char buff[1024] = { 0 };
 	ssize_t bytes = recv(_fd, buff, sizeof(buff) - 1, 0);
 
@@ -115,7 +117,7 @@ bool	Client::receive(std::deque<t_message*>& output) {
 	return (true);
 }
 
-void	Client::send_transmission(void) {
+void	Client::write_stream(void) {
 	if (_bufferOut.empty())
 		return; 
 	std::cout << YEL << _bufferOut << WHI << std::endl;
@@ -125,14 +127,15 @@ void	Client::send_transmission(void) {
 
 void	Client::join(Channel* channel, std::string* password) {
 	std::string* response = channel->join(this, password);
-	if (response)
+	if (response) {
 		_bufferOut.append(*response);
+		std::cout << GRE << *response << " " << _bufferOut << WHI << std::endl;
+	}
 	else
 		_channels.insert(channel->asPair());
 }
 
-
-void			Client::isWelcomed(std::string flag) {
+void	Client::isWelcomed(std::string flag) {
 	if (_login == OK) {
 		return;
 	}
@@ -142,7 +145,6 @@ void			Client::isWelcomed(std::string flag) {
 		_login = _login | (t_login)NICK;
 	else if (flag.compare("PASS") == 0)
 		_login = _login | (t_login)PASS;
-	std::cout << "Bonchour " << std::endl;
 	
 	if (_login == OK) {
 		std::string	welcome;

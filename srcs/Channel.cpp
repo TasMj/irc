@@ -5,14 +5,18 @@ Channel::Channel(std::string name, std::string* password)
     : _name(name)
     , _password(NULL)
 {
-    if (password)
+
+    if (password != NULL) {
         _password = new std::string(*password);
+    }
 }
 
 std::string*    Channel::join(Client* cli, std::string* password) {
     if (_password) {
-        if (!password || _password->compare(*password) != 0)
-            return (new std::string("bad password"));
+        if (password == NULL || (password != NULL && _password->compare(*password) != 0)) {
+            return (new std::string("bad password\r\n"));
+        }
+        //send THE RIGHT ERROR MSG
     }
     _clients.insert(std::make_pair(cli->get_nickName(), cli));
     return (NULL);

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 18:37:42 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 18:41:31 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,13 @@ public:
 	void			remove();
 
 	void			setBufferOut(std::string buff);
-	bool			receive(t_message** msg);
-	void			send_transmission(void);
 	void			join(Channel* channel, std::string* password);
+
+/******************************************************************************/
+/*                              Socket IO                                     */
+/******************************************************************************/
+	bool			read_stream(std::deque<t_message*>& output);
+	void			write_stream(void);
 };
 
 	t_login			operator|(t_login oldFlag, t_login newFlag);

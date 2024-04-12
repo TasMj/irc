@@ -6,7 +6,7 @@
 #    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/12 13:13:46 by aclement         ###   ########.fr        #
+#    Updated: 2024/04/12 17:10:30 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ SRC_NAME 	+=	./srcs/Transmission.cpp
 SRC_NAME 	+=	./srcs/Channel.cpp
 SRC_NAME 	+=	./srcs/Message.cpp
 SRC_NAME 	+=	./srcs/cmd/join.cpp
+SRC_NAME 	+=	./srcs/cmd/privmsg.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 
@@ -59,7 +60,7 @@ fclean:	clean
 		$(RM) $(NAME)
 
 re:	fclean
-	make all
+	@make all
 
 #-----------------------------------------------------------------------------#
 
