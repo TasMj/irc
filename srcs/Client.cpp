@@ -6,13 +6,15 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:25:48 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 17:16:28 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
 
-Client::Client(): _bufferOut("")
+Client::Client()
+	: _bufferOut("")
+	, _login(UNSET)
 {
 
 }
@@ -97,7 +99,7 @@ void		Client::setBufferOut(std::string buff) {
 };
 
 
-bool	Client::receive(std::deque<t_message*>& output) {
+bool	Client::read_stream(std::deque<t_message*>& output) {
 	char buff[1024] = { 0 };
 	ssize_t bytes = recv(_fd, buff, sizeof(buff) - 1, 0);
 
@@ -115,33 +117,29 @@ bool	Client::receive(std::deque<t_message*>& output) {
 	return (true);
 }
 
-void	Client::send_transmission(void) {
+void	Client::write_stream(void) {
 	if (_bufferOut.empty())
-		return; 
+		return;
+	std::cout << YEL << _bufferOut << WHI << std::endl;
 	size_t bytes = send(_fd, _bufferOut.c_str(), _bufferOut.size(), 0);
 	_bufferOut.erase(0, bytes);
 }
 
 void	Client::join(Channel* channel, std::string* password) {
 	std::string* response = channel->join(this, password);
-	if (response)
+	if (response) {
 		_bufferOut.append(*response);
+		std::cout << GRE << *response << " " << _bufferOut << WHI << std::endl;
+	}
 	else
 		_channels.insert(channel->asPair());
 }
 
-
-void			Client::isWelcomed(std::string flag) {
+void	Client::isWelcomed(t_login flag) {
 	if (_login == OK) {
 		return;
 	}
-	if (flag.compare("USER") == 0)
-		_login = _login | (t_login)USER;
-	else if (flag.compare("NICK") == 0)
-		_login = _login | (t_login)NICK;
-	else if (flag.compare("PASS") == 0)
-		_login = _login | (t_login)PASS;
-	std::cout << "Bonchour " << std::endl;
+	_login = _login | (t_login)flag;
 	
 	if (_login == OK) {
 		std::string	welcome;

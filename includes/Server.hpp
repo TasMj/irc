@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 16:13:13 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 17:07:48 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,20 +93,17 @@ class Server
 		int							initServer(int port);
 		int							serverLoop();
 		void						addNewClient();
-		void						receiveData(int fd);
-		int							receiveFirstData(Client *cli);
 		void						cleanServer();
 
 		std::string const &			getPrefixServer() const;
-		Client* 						getRefClientByFd(int fd);
-		void						send_transmission(int pollFd);
-		std::vector<Transmission>	getTransmission();
+		Client* 					getRefClientByFd(int fd);
 		Transmission				getFirstTransmission();
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
 		Transmission*				getTransmissionByFd(int fd);
 
 
+		Client*	findNickName(std::string nickName);
 void	removeClient(Client& cli);
 /******************************************************************************/
 /*                                 Commandes                                  */
@@ -121,6 +118,9 @@ void	removeClient(Client& cli);
 		void	cmd_join(Client* cli, t_message* msg);
 };
 
+
+
+
 /******************************************************************************/
 /*                                 Functions                                  */
 /******************************************************************************/
@@ -130,7 +130,6 @@ int			checkElt(std::string serverName, int port, std::string psw);
 void    	nickCmd(std::deque<Client>& _clients, int fd, std::string buff);
 
 
-int    		check_nick_exist(std::deque<Client>& _clients, std::string nick);
 std::string recup_nick_msg(std::string buff);
 std::string recup_msg(std::string buff, int start);
 int    		msgCmd(std::deque<Client>& _clients, std::string buff, int fd);
@@ -138,7 +137,9 @@ void 		pingCmd(std::deque<Client>& _clients, int fd);
 int			checkPwd(std::deque<Client>& _clients, std::string buff, int fd);
 void		exitCmd(std::deque<Client> _clients, std::string buff, int fd);
 void    	recup_nickNamee(Client *cli, std::string buff_str);
-void    	recup_dataa(Client *cli, std::deque<std::string> cmds);
 void    	recup_userr(Client *cli, std::string buff_str);
 
-bool	expect_N_Params(t_message* msg, size_t n);
+
+bool		expect_N_Params(t_message* msg, size_t n);
+bool		expect_At_Least_N_Params(t_message* msg, size_t n);
+bool		expect_LastParams(t_message* msg);

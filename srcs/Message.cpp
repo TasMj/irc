@@ -4,9 +4,8 @@ static bool    parse_last_params(std::string& output, std::string& input) {
     size_t  found = input.find(":");
     if (found == std::string::npos)
         return (false);
-    output = input.substr(found);
+    output = input.substr(found + 1);
     input.erase(found);
-    std::cout << input << std::endl;
     return (true);
 }
 

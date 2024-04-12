@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:22:44 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 17:00:40 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,16 +81,19 @@ public:
 	void			setAuthentified(bool status);
 	bool			getAlreadyKnown();
 	void			setAlreadyKnown(bool status);
-
-	bool			receive(std::deque<t_message*>& output);
-	void			isWelcomed(std::string flag);
+	
+	void			isWelcomed(t_login flag);
 	
 	void			remove();
 
 	void			setBufferOut(std::string buff);
-	bool			receive(t_message** msg);
-	void			send_transmission(void);
 	void			join(Channel* channel, std::string* password);
+
+/******************************************************************************/
+/*                              Socket IO                                     */
+/******************************************************************************/
+	bool			read_stream(std::deque<t_message*>& output);
+	void			write_stream(void);
 };
 
 	t_login			operator|(t_login oldFlag, t_login newFlag);
