@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:22:44 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 18:37:42 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ private:
 	bool			_flagIO;
 	bool			_authentified;
 	bool			_alreadyKnown;
+	bool			_isOps;
 	t_login		_login;
 
 	std::map<std::string, Channel*>	_channels;
@@ -81,6 +82,8 @@ public:
 	void			setAuthentified(bool status);
 	bool			getAlreadyKnown();
 	void			setAlreadyKnown(bool status);
+	bool			getIsOps();
+	void			setIsOps(bool status);
 
 	bool			receive(std::deque<t_message*>& output);
 	void			isWelcomed(std::string flag);

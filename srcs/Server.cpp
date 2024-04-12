@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 16:30:20 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 17:14:17 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ Server::Server(std::string password)
 {
 	_cmd_list["NICK"]		= &Server::cmd_nick;
 	_cmd_list["USER"]		= &Server::cmd_user;
-	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
-	_cmd_list["PING"]		= &Server::cmd_ping;
 	_cmd_list["PASS"]		= &Server::cmd_pass;
-	_cmd_list["QUIT"]		= &Server::cmd_quit;
+	_cmd_list["PING"]		= &Server::cmd_ping;
 	_cmd_list["JOIN"]		= &Server::cmd_join;
+	_cmd_list["MODE"]		= &Server::cmd_mode;
+	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
+	_cmd_list["QUIT"]		= &Server::cmd_quit;
 
 }
 
@@ -117,6 +118,21 @@ Client* Server::getRefClientByFd(int fd)
 	}
 	return (NULL);
 }
+
+Client* Server::getRefClientByName(std::string name)
+{
+	std::deque<Client>::iterator	it = _clients.begin();
+	std::deque<Client>::iterator	itend = _clients.end();
+
+	while (it != itend)
+	{
+		if (it->get_userName() == name)
+			return (&(*it));
+		it++;
+	}
+	return (NULL);
+}
+
 
 void	Server::prepareMsgToClient(Client *cli)
 {

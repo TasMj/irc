@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerCommands.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 16:14:42 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 18:36:53 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,9 +107,9 @@ void    Server::cmd_user(Client* cli, t_message* msg) {
 		modified = true;
 	}
 	if (modified)
-        response = ":localhost USER " + userName + " :" + msg->params[0] + " is already taken. You're now known has " + userName + ".\n";
+        response = ":localhost " + msg->params[0] + " is already taken. Your username is : " + userName + ".\n";
 	else
-    	response = ":localhost USER " + userName + " :You're now known has " + userName + "\n"; 
+    	response = ":localhost Your username is : " + userName + "\n"; 
 	cli->set_userName(userName);
 
 
@@ -140,7 +140,7 @@ void	Server::cmd_ping(Client* cli, t_message* msg) {
 
 void	Server::cmd_quit(Client* cli, t_message* msg) {
 	if (0
-		|| !expect_N_Params(msg, 0)
+		|| !expect_N_Params(msg, 1)
 	) { return; }
 
 	int fd = cli->get_fd();
@@ -170,7 +170,7 @@ void	Server::cmd_pass(Client* cli, t_message* msg) {
 		return ;
 	}
 
-	std::string err_msg =":localhost DISCONNECT localhost: \n Wrong password.\n";
+	std::string err_msg =":localhost QUIT localhost: \n Wrong password.\n";
 	cli->get_Server()->setUpTransmission(cli, err_msg, cli->get_fd());
     cli->get_Server()->prepareMsgToClient(cli);
 //	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
@@ -213,4 +213,43 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
 		cli->get_Server()->setUpTransmission(cli, response, fd_to_send);
         cli->get_Server()->prepareMsgToClient(cli);
     }
+}
+
+static void	cmd_mode_chan(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 2)
+		|| !expect_N_Params(msg, 3)
+		|| !expect_N_Params(msg, 4)
+		|| !expect_N_Params(msg, 5)
+	) { return; }
+
+	std::cout << "Channel mode " << cli->get_nickName() << std::endl;
+
+//	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
+}
+
+void	Server::cmd_mode(Client* cli, t_message* msg) {
+	/* if (0
+	
+		|| !expect_N_Params(msg, 2)
+		|| !expect_N_Params(msg, 3)
+		|| !expect_N_Params(msg, 4)
+		|| !expect_N_Params(msg, 5)
+	) { return; } */
+	std::map<std::string, Channel>::iterator	it;
+
+	it = _channel
+	//std::cout << "Channel : " << this->_channels[msg->params[0]] << std::endl << "Client : " << this->getRefClientByName(msg->params[0])->get_userName() << std::endl;
+	if (!this->_channels[msg->params[0]]->getName().empty())
+		cmd_mode_chan(cli, msg);
+	else
+	{
+		cli->get_Server()->setUpTransmission(cli, ":localhost Please specify a channel or a user for MODE command.\n", cli->get_fd());
+    	cli->get_Server()->prepareMsgToClient(cli);
+	}
+
+	/* std::string err_msg =":localhost DISCONNECT localhost: \n Wrong password.\n";
+	cli->get_Server()->setUpTransmission(cli, err_msg, cli->get_fd());
+    cli->get_Server()->prepareMsgToClient(cli); */
+//	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
 }

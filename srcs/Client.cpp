@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:25:48 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:50:26 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Client::Client(): _bufferOut("")
 {
-
+	_login = (t_login)UNSET;
 }
 
 Client::~Client()
@@ -118,6 +118,7 @@ bool	Client::receive(std::deque<t_message*>& output) {
 void	Client::send_transmission(void) {
 	if (_bufferOut.empty())
 		return; 
+	std::cout << YEL << _bufferOut << WHI << std::endl;
 	size_t bytes = send(_fd, _bufferOut.c_str(), _bufferOut.size(), 0);
 	_bufferOut.erase(0, bytes);
 }

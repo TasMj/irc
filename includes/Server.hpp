@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 16:13:13 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 17:11:02 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,12 +99,14 @@ class Server
 
 		std::string const &			getPrefixServer() const;
 		Client* 						getRefClientByFd(int fd);
+		Client* 						getRefClientByName(std::string name);
 		void						send_transmission(int pollFd);
 		std::vector<Transmission>	getTransmission();
 		Transmission				getFirstTransmission();
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
 		Transmission*				getTransmissionByFd(int fd);
+		Channel*					getRefChannelByName(std::string chanName);
 
 
 void	removeClient(Client& cli);
@@ -114,11 +116,12 @@ void	removeClient(Client& cli);
 		int		execute_cmd(Client* cli, t_message* msg);
 		void    cmd_nick(Client* cli, t_message* msg);
 		void    cmd_user(Client* cli, t_message* msg);
-		void	cmd_ping(Client* cli, t_message* msg);
-		void	cmd_quit(Client* cli, t_message* msg);
 		void	cmd_pass(Client* cli, t_message* msg);
-		void    cmd_privmsg(Client* cli, t_message* msg);
+		void	cmd_ping(Client* cli, t_message* msg);
 		void	cmd_join(Client* cli, t_message* msg);
+		void	cmd_mode(Client* cli, t_message* msg);
+		void    cmd_privmsg(Client* cli, t_message* msg);
+		void	cmd_quit(Client* cli, t_message* msg);
 };
 
 /******************************************************************************/
