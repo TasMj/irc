@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:18:08 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/08 21:05:54 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:50:54 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,13 @@ int main(int ac, char **av)
 	unsigned int	portDigit = atoi(port);
 	/* if (!checkElt(av[0], portDigit, psw))
 		return (1); */
-	Server *server;
-	server = new Server(psw);
-	std::cout << BLU << "The Password is: " << server->getPwd() << WHI << std::endl;
+		
+	Server *server = new Server(psw);
+	
 	signal(SIGINT, signalHandler);
-	if (server->initServer(portDigit) != 0)
+	if (server->initServer(portDigit) != 0) {
+		std::cout << RED << "Error" << WHI << std::endl;
 		exit(EXIT_FAILURE);
+	}
 	server->serverLoop();
 }

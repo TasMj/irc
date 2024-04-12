@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 14:46:00 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:13:17 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,31 +30,6 @@ Server*	Client::get_Server()
 void	Client::set_Server(Server *server)
 {
 	this->_server = server;
-}
-
-void	Client::remove()
-{
-	size_t i = 0;
-	std::deque<Client>::iterator it;
-	std::vector<pollfd>::iterator jt;
-	for (jt = this->_server->getPollfds().begin(); jt != this->_server->getPollfds().end(); ++jt)
-	{
-		if (it->get_fd() == this->get_fd())
-			break ;
-		i++;
-	}
-	for (it = this->_server->getClient().begin(); it != this->_server->getClient().end(); ++it)
-	{
-		if (it->get_fd() == this->get_fd())
-			break ;
-		i++;
-	}
-	close(it->get_fd());
-	close(jt->events);
-	this->_server->getPollfds().erase(jt);
-	close(this->_fd);
-	this->_server->getClient().erase(it);
-	
 }
 
 void	Client::set_fd(int fd)

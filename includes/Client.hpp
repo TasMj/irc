@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 13:09:37 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:13:07 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,11 @@
 # include <sstream>
 # include <fstream>
 # include <unistd.h>
-# include "./Transmission.hpp"
+
 # include "Message.hpp"
-# include "Server.hpp"
+# include "Channel.hpp"
+# include "Transmission.hpp"
+
 
 /******************************************************************************/
 /*                                  Class                                     */

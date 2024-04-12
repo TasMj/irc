@@ -5,7 +5,10 @@
 #include <deque>
 #include <stdexcept>
 #include <iostream>
+
 #include "Color.hpp"
+#include "Utils.hpp"
+
 
 typedef struct s_prefix {
     std::string nickname;

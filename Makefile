@@ -6,7 +6,7 @@
 #    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/11 18:19:36 by aclement         ###   ########.fr        #
+#    Updated: 2024/04/12 13:13:46 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,11 @@ SRC_NAME 	+=	./srcs/main.cpp
 SRC_NAME 	+=	./srcs/Nick.cpp
 SRC_NAME 	+=	./srcs/Parsing.cpp
 SRC_NAME 	+=	./srcs/Server.cpp
-SRC_NAME 	+=	./srcs/Tools.cpp
+SRC_NAME 	+=	./srcs/Utils.cpp
 SRC_NAME 	+=	./srcs/Transmission.cpp
+SRC_NAME 	+=	./srcs/Channel.cpp
 SRC_NAME 	+=	./srcs/Message.cpp
+SRC_NAME 	+=	./srcs/cmd/join.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 

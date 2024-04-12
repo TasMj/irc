@@ -1,21 +1,5 @@
 #include "Message.hpp"
 
-static std::deque<std::string> parse_params(std::string& input, std::string del) {
-    std::deque<std::string> output;
-    std::string word;
-
-    int start, end = -1* del.size();
-    do 
-    {
-        start = end + del.size();
-        end = input.find(del, start);
-        word = input.substr(start, end - start);
-        if (!word.empty())
-            output.push_back(word);
-    } while (end != -1);
-    return (output);
-}
-
 static bool    parse_last_params(std::string& output, std::string& input) {
     size_t  found = input.find(":");
     if (found == std::string::npos)
@@ -82,7 +66,7 @@ t_message*   parse_message(std::string& input) {
     output->command = toParse.substr(0, found);
     toParse.erase(0, found);
     output->has_last_params = parse_last_params(output->last_params, toParse);
-    output->params = parse_params(toParse, " ");
+    output->params = split(toParse, " ");
     return (output);
 }
 
@@ -103,9 +87,9 @@ std::ostream& operator<<(std::ostream& os, t_message& msg) {
     if (!msg.params.empty()) {
         os << "\tPARAMS: [";
         for (size_t i = 0; i < msg.params.size(); i++) {
-            os << msg.params[i] << ",";
+            os << "\"" << msg.params[i] << "\", ";
         }
-        os << "\b]\n";
+        os << "\b\b]\n";
     }
     if (msg.has_last_params)
         os << "\tLAST PARAM: " << msg.last_params << "\n";

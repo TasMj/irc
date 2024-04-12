@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerCommands.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 14:56:00 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:14:42 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void	Server::cmd_quit(Client* cli, t_message* msg) {
 	{
 		if (it->get_fd() == fd)
 		{
-			it->remove();
+			removeClient(*it);
 			break ;
 		}
 	}
