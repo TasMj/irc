@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 16:14:22 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:30:20 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,12 +215,13 @@ int Server::serverLoop()
 		{
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && g_isRunning)
 				throw(std::runtime_error("poll() failed"));
-
+/*
 			Client* cli = getRefClientByFd(this->_polls[i].fd);
 			if (cli == NULL) {
 				continue;
 				return (-1); // mais en vrai c'est chelou
 			}
+*/
 			if (this->_polls[i].revents & POLLIN)
 			{
 				if (this->_polls[i].fd == this->_sockfd)
@@ -228,18 +229,25 @@ int Server::serverLoop()
 				else
 				{
 					try {
-						t_message* msg = NULL;
-						if (cli->receive(&msg) && msg) {
-							std::cout << (*msg)	 << std::endl;
-							execute_cmd(cli, msg);
+						std::deque<t_message*> messages;
+						Client* cli = getRefClientByFd(this->_polls[i].fd);
+						
+						if (cli && cli->receive(messages)) {
+							for (size_t i = 0; i < messages.size(); i++) {
+								std::cout << GRE << "[[[receiveData]]]\n" << *messages[i] << WHI << std::endl;
+								execute_cmd(cli, messages[i]);
+								delete messages[i];
+							}
 						}
 					} catch (std::exception &e) {
 						std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
 					}
 				}
 			}
-			else if (this->_polls[i].revents & POLLOUT)
+			else if (this->_polls[i].revents & POLLOUT) {
+				Client* cli = getRefClientByFd(this->_polls[i].fd);	
 				cli->send_transmission();
+			}
 			_polls[i].revents = 0;
 		}
 	}

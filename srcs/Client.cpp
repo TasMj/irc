@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:13:17 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:25:48 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Client::Client(): _bufferOut("")
 {
-	_login = UNSET;
+
 }
 
 Client::~Client()
@@ -92,34 +92,8 @@ void	Client::setFlagIO(bool status)
 	this->_flagIO = status;
 }
 
-bool		Client::getAuthentified()
-{
-	return (this->_authentified);
-}
-
-void	Client::setAuthentified(bool status)
-{
-	this->_authentified = status;
-}
-
-bool		Client::getAlreadyKnown()
-{
-	return (this->_alreadyKnown);
-}
-
-void	Client::setAlreadyKnown(bool status)
-{
-	this->_alreadyKnown = status;
-}
-
-std::string&	Client::getBufferOut()
-{
-	return (this->_bufferOut);
-};
-
-void		Client::setBufferOut(std::string buff)
-{
-	_bufferOut = buff;
+void		Client::setBufferOut(std::string buff) {
+	_bufferOut.append(buff);
 };
 
 
@@ -140,6 +114,22 @@ bool	Client::receive(std::deque<t_message*>& output) {
 	}
 	return (true);
 }
+
+void	Client::send_transmission(void) {
+	if (_bufferOut.empty())
+		return; 
+	size_t bytes = send(_fd, _bufferOut.c_str(), _bufferOut.size(), 0);
+	_bufferOut.erase(0, bytes);
+}
+
+void	Client::join(Channel* channel, std::string* password) {
+	std::string* response = channel->join(this, password);
+	if (response)
+		_bufferOut.append(*response);
+	else
+		_channels.insert(channel->asPair());
+}
+
 
 void			Client::isWelcomed(std::string flag) {
 	if (_login == OK) {

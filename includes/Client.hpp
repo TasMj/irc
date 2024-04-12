@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 16:13:07 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:22:44 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef enum e_login {
 	OK		= USER | NICK | PASS,
 }	t_login;
 
+class Channel;
 
 class Client
 {
@@ -55,6 +56,8 @@ private:
 	bool			_authentified;
 	bool			_alreadyKnown;
 	t_login		_login;
+
+	std::map<std::string, Channel*>	_channels;
 	
 public:
 	Client();
@@ -73,17 +76,21 @@ public:
 	Server*			get_Server();
 	bool			getFlagIO();
 	void			setFlagIO(bool status);
+	
 	bool			getAuthentified();
 	void			setAuthentified(bool status);
 	bool			getAlreadyKnown();
 	void			setAlreadyKnown(bool status);
-	std::string&	getBufferOut();
-	void			setBufferOut(std::string buff);
 
 	bool			receive(std::deque<t_message*>& output);
 	void			isWelcomed(std::string flag);
 	
 	void			remove();
+
+	void			setBufferOut(std::string buff);
+	bool			receive(t_message** msg);
+	void			send_transmission(void);
+	void			join(Channel* channel, std::string* password);
 };
 
 	t_login			operator|(t_login oldFlag, t_login newFlag);
