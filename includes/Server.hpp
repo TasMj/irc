@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/11 19:18:20 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/11 21:33:10 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ class Server
 /******************************************************************************/
 		int		execute_cmd(Client* cli, t_message* msg);
 		void    cmd_nick(Client* cli, t_message* msg);
+		void    cmd_user(Client* cli, t_message* msg);
 		void	cmd_ping(Client* cli, t_message* msg);
 		void	cmd_quit(Client* cli, t_message* msg);
 		void	cmd_pass(Client* cli, t_message* msg);

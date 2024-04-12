@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/11 18:42:45 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:56:42 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ Server::Server()
 Server::Server(std::string password) : _password(password), _prefixServer(":localhost")
 {
 	_cmd_list["NICK"]		= &Server::cmd_nick;
+	_cmd_list["USER"]		= &Server::cmd_user;
 	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
 	_cmd_list["PING"]		= &Server::cmd_ping;
 	_cmd_list["PASS"]		= &Server::cmd_pass;
@@ -138,8 +139,6 @@ void	Server::prepareMsgToClient(Client *cli)
 	std::string			toSend = transmission->getMsg(); 
 	std::vector<int>	destinataire = transmission->getFdDest();
 
-	std::cout << "-> " << toSend << std::endl;
-	
 	for (size_t i = 0; i < destinataire.size(); i++)
 	{
 		Client* dest = getRefClientByFd(destinataire[i]);
@@ -254,6 +253,7 @@ void	Server::send_transmission(int pollFd)
 	std::string& msg = cli->getBufferOut();
 	if (!msg.empty())
 	{
+		std::cout << BLU << std::endl << msg << WHI << std::endl;
 		size_t bytes = send(pollFd, msg.c_str(), msg.size(), 0);
 		msg.erase(0, bytes);
 	}
@@ -265,6 +265,8 @@ int Server::serverLoop()
 	size_t 			i;
 	while (g_isRunning)
 	{
+		//std::cout << "recv" <<std::endl;
+
 		for (i = 0; i < this->_polls.size(); i++)
 		{
 			if (poll(&this->_polls[0], this->_polls.size(), -1) == -1 && g_isRunning)
@@ -280,22 +282,24 @@ int Server::serverLoop()
 				else
 				{
 					try {
-						t_message* msg = NULL;
+						std::deque<t_message*> messages;
 						Client* cli = getRefClientByFd(this->_polls[i].fd);
 						
-						if (cli && cli->receive(&msg) && msg) {
-							std::cout << GRE << "[[[receiveData]]] " << (*msg) << WHI << std::endl;
-							execute_cmd(cli, msg);
+						if (cli && cli->receive(messages)) {
+							for (size_t i = 0; i < messages.size(); i++) {
+								std::cout << GRE << "[[[receiveData]]]\n" << *messages[i] << WHI << std::endl;
+								execute_cmd(cli, messages[i]);
+							}
 						}
 					} catch (std::exception &e) {
 						std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
 					}
 				}
 			}
-			else if (this->_polls[i].revents & POLLOUT)
-			{
+			else if (this->_polls[i].revents & POLLOUT) {
 				this->send_transmission(_polls[i].fd);
 			}
+			
 			_polls[i].revents = 0;
 		}
 	}

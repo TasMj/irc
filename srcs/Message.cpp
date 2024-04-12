@@ -70,6 +70,7 @@ t_message*   parse_message(std::string& input) {
     if (output == NULL)
         throw std::runtime_error("Unable to allocate memory for a incomming message");
     std::string toParse = input.substr(0, found);
+	output->raw = toParse;
     input.erase(0, found + 2);
     output->has_last_params = false; // not the best way, but ok
     output->has_prefix = parse_prefix(output->prefix, toParse);
@@ -87,6 +88,7 @@ t_message*   parse_message(std::string& input) {
 
 std::ostream& operator<<(std::ostream& os, t_message& msg) {
     os << PUR;
+	os << msg.raw << "\n";
     os << "MESSAGE: {\n";
     if (msg.has_prefix) {
         os << "\tPREFIX: {\n";
@@ -97,7 +99,7 @@ std::ostream& operator<<(std::ostream& os, t_message& msg) {
             os << "\t\thost: " << msg.prefix.host << "\n";
         os << "\t}\n";
     }
-    os << "\t COMMAND: " << msg.command << "\n";
+    os << "\tCOMMAND: " << msg.command << "\n";
     if (!msg.params.empty()) {
         os << "\tPARAMS: [";
         for (size_t i = 0; i < msg.params.size(); i++) {

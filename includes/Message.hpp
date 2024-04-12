@@ -16,6 +16,7 @@ typedef struct s_prefix {
 }   t_prefix;
 
 typedef struct s_message {
+	std::string				raw;
     bool                    has_prefix;
     t_prefix                prefix;;
     std::string             command;

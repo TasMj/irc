@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/11 17:35:05 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 13:09:37 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,19 @@
 class Transmission;
 class Server;
 
+typedef enum e_login {
+	UNSET	= 0,
+	USER	= (1 << 0),
+	NICK	= (1 << 1),
+	PASS	= (1 << 2),
+	OK		= USER | NICK | PASS,
+}	t_login;
+
+
 class Client
 {
 private:
+
 	int				_fd;
 	std::string		_ipAdd;
 	std::string		_nickName;
@@ -40,6 +50,9 @@ private:
 	Server			*_server;
 	std::string		_bufferIn, _bufferOut;
 	bool			_flagIO;
+	bool			_authentified;
+	bool			_alreadyKnown;
+	t_login		_login;
 	
 public:
 	Client();
@@ -58,10 +71,18 @@ public:
 	Server*			get_Server();
 	bool			getFlagIO();
 	void			setFlagIO(bool status);
+	bool			getAuthentified();
+	void			setAuthentified(bool status);
+	bool			getAlreadyKnown();
+	void			setAlreadyKnown(bool status);
 	std::string&	getBufferOut();
 	void			setBufferOut(std::string buff);
 
-	bool			receive(t_message** msg);
+	bool			receive(std::deque<t_message*>& output);
+	void			isWelcomed(std::string flag);
+	
 	void			remove();
 };
 
+	t_login			operator|(t_login oldFlag, t_login newFlag);
+	

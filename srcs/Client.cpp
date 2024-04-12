@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/11 18:41:41 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:46:00 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Client::Client(): _bufferOut("")
 {
-
+	_login = UNSET;
 }
 
 Client::~Client()
@@ -37,6 +37,12 @@ void	Client::remove()
 	size_t i = 0;
 	std::deque<Client>::iterator it;
 	std::vector<pollfd>::iterator jt;
+	for (jt = this->_server->getPollfds().begin(); jt != this->_server->getPollfds().end(); ++jt)
+	{
+		if (it->get_fd() == this->get_fd())
+			break ;
+		i++;
+	}
 	for (it = this->_server->getClient().begin(); it != this->_server->getClient().end(); ++it)
 	{
 		if (it->get_fd() == this->get_fd())
@@ -44,16 +50,10 @@ void	Client::remove()
 		i++;
 	}
 	close(it->get_fd());
-	this->_server->getClient().erase(it);
-	for (jt = this->_server->getPollfds().begin(); jt != this->_server->getPollfds().end(); ++jt)
-	{
-		if (it->get_fd() == this->get_fd())
-			break ;
-		i++;
-	}
 	close(jt->events);
 	this->_server->getPollfds().erase(jt);
 	close(this->_fd);
+	this->_server->getClient().erase(it);
 	
 }
 
@@ -117,6 +117,26 @@ void	Client::setFlagIO(bool status)
 	this->_flagIO = status;
 }
 
+bool		Client::getAuthentified()
+{
+	return (this->_authentified);
+}
+
+void	Client::setAuthentified(bool status)
+{
+	this->_authentified = status;
+}
+
+bool		Client::getAlreadyKnown()
+{
+	return (this->_alreadyKnown);
+}
+
+void	Client::setAlreadyKnown(bool status)
+{
+	this->_alreadyKnown = status;
+}
+
 std::string&	Client::getBufferOut()
 {
 	return (this->_bufferOut);
@@ -124,12 +144,11 @@ std::string&	Client::getBufferOut()
 
 void		Client::setBufferOut(std::string buff)
 {
-	std::cout << "-> " << _bufferOut << " " << buff << std::endl;
 	_bufferOut = buff;
 };
 
 
-bool	Client::receive(t_message** msg) {
+bool	Client::receive(std::deque<t_message*>& output) {
 	char buff[1024] = { 0 };
 	ssize_t bytes = recv(_fd, buff, sizeof(buff) - 1, 0);
 
@@ -138,8 +157,39 @@ bool	Client::receive(t_message** msg) {
 		return (false);
 	}
 	_bufferIn.append(buff);
+	
 	t_message* tmp = parse_message(_bufferIn);
-	if (tmp)
-		(*msg) = tmp;
+	while (tmp) {
+		output.push_back(tmp);
+		tmp = parse_message(_bufferIn);
+	}
 	return (true);
+}
+
+void			Client::isWelcomed(std::string flag) {
+	if (_login == OK) {
+		return;
+	}
+	if (flag.compare("USER") == 0)
+		_login = _login | (t_login)USER;
+	else if (flag.compare("NICK") == 0)
+		_login = _login | (t_login)NICK;
+	else if (flag.compare("PASS") == 0)
+		_login = _login | (t_login)PASS;
+	std::cout << "Bonchour " << std::endl;
+	
+	if (_login == OK) {
+		std::string	welcome;
+		std::string	prefixe = PREFIXE;
+	
+		welcome = ":" + prefixe + " 001 " + get_nickName() + ": Si si la famille !\n";
+		get_Server()->setUpTransmission(this, welcome, get_fd());
+    	get_Server()->prepareMsgToClient(this);
+		//send welcome
+	}
+}
+
+t_login			operator|(t_login oldFlag, t_login newFlag)
+{
+	return ((t_login)((int)oldFlag | (int)newFlag));
 }

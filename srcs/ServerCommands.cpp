@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerCommands.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/11 19:22:57 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:56:00 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,27 @@ bool	expect_LastParams(t_message* msg) {
 /* ************************************************************************** */
 
 static Client* findNickName(std::deque<Client>& clients, std::string nickName) {
+	if (nickName.empty())
+		return (NULL);
 	std::deque<Client>::iterator first, last;
 
 	first = clients.begin();
 	last = clients.end();
 	while (first != last) {
-    	if (nickName.compare(first->get_nickName()))
+    	if (nickName.compare(first->get_nickName()) == 0)
+			return (&(*first));
+		++first;
+	}
+	return (NULL);
+}
+
+static Client* findUserName(std::deque<Client>& clients, std::string userName) {
+	std::deque<Client>::iterator first, last;
+
+	first = clients.begin();
+	last = clients.end();
+	while (first != last) {
+    	if (userName.compare(first->get_userName()) == 0)
 			return (&(*first));
 		++first;
 	}
@@ -72,19 +87,50 @@ void    Server::cmd_nick(Client* cli, t_message* msg) {
 	// SENDING
     cli->get_Server()->setUpTransmission(cli, response, cli->get_fd());
     cli->get_Server()->prepareMsgToClient(cli);
+	cli->isWelcomed("NICK");
 }
 
-void	Server::cmd_join(Client* cli, t_message* msg) {
+void    Server::cmd_user(Client* cli, t_message* msg) {
+	if (0
+		|| !expect_N_Params(msg, 3)
+	) { return; }
+	
+		
+    std::string userName = msg->params[0];
+	bool		modified = false;
+	std::string response;
+
+	// CHECKING
+    while (findUserName(_clients, userName))
+	{
+		userName.append("_");
+		modified = true;
+	}
+	if (modified)
+        response = ":localhost USER " + userName + " :" + msg->params[0] + " is already taken. You're now known has " + userName + ".\n";
+	else
+    	response = ":localhost USER " + userName + " :You're now known has " + userName + "\n"; 
+	cli->set_userName(userName);
+
+
+	// SENDING
+    cli->get_Server()->setUpTransmission(cli, response, cli->get_fd());
+    cli->get_Server()->prepareMsgToClient(cli);
+	
+	cli->isWelcomed("USER");
+}
+
+/* void	Server::cmd_join(Client* cli, t_message* msg) {
 	if (0
 		|| !expect_N_Params(msg, 1)
 	) {return; }
 	// for (int i = 0; msg->params[i]; i++)
 		
-}
+} */
 
 void	Server::cmd_ping(Client* cli, t_message* msg) {
 	if (0
-		|| !expect_N_Params(msg, 0)
+		|| !expect_N_Params(msg, 1)
 	) { return; }
 	
     std::string response = ":localhost PONG localhost: " + cli->get_nickName() + "\n";
@@ -113,12 +159,21 @@ void	Server::cmd_pass(Client* cli, t_message* msg) {
 	if (0
 		|| !expect_N_Params(msg, 1)
 	) { return; }
-	
-	if (!msg->params.empty() && _password.compare(msg->params[0]) == 0)
+
+	if (!msg->params.empty()
+		&& _password.compare(msg->params[0]) == 0
+		//&& !cli->get_nickName().empty()
+		//&& !cli->get_userName().empty()
+	) {
+		cli->isWelcomed("PASS");
+		
 		return ;
+	}
 
 	std::string err_msg =":localhost DISCONNECT localhost: \n Wrong password.\n";
-	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
+	cli->get_Server()->setUpTransmission(cli, err_msg, cli->get_fd());
+    cli->get_Server()->prepareMsgToClient(cli);
+//	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
 }
 
 void    Server::cmd_privmsg(Client* cli, t_message* msg) {
@@ -158,7 +213,4 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
 		cli->get_Server()->setUpTransmission(cli, response, fd_to_send);
         cli->get_Server()->prepareMsgToClient(cli);
     }
-}
-
-void    Server::cmd_privmsg(Client* cli, t_message* msg) {
 }
