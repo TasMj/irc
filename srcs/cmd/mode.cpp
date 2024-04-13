@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/13 20:18:38 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/13 20:36:05 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,9 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 			if (n >= msg->params.size())
 				modeError('o');
 			else if (op == '+')
-				chan->addOperator(msg->params[n], cli, false);
+				chan->addOperator(cli->get_Server()->getRefClientByName(msg->params[n]), false);
 			else
-				chan->removeOperator(msg->params[n], cli);
+				chan->removeOperator(cli->get_Server()->getRefClientByName(msg->params[n]));
 			n++;
 		}
 		if (msg->params[1][i] == 'k')
@@ -113,7 +113,7 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 	//std::cout << "Channel : " << this->_channels[msg->params[0]] << std::endl << "Client : " << this->getRefClientByName(msg->params[0])->get_userName() << std::endl;
 	if (it != _channels.end())
 	{
-		if (!it->second->checkOperator(cli->get_userName()))
+		if (!it->second->checkOperator(cli))
 		{
 			cli->get_Server()->setUpTransmission(cli, ":localhost You need to be an Operator to use MODE command.\n", cli->get_fd());
     		cli->get_Server()->prepareMsgToClient(cli);
@@ -146,75 +146,85 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 // HANDLE OPERATOR FLAG
 /* ************************************************************************** */
 
-bool			Channel::checkOperator(std::string name)
+bool			Channel::checkOperator(Client* cli)
 {
+	if (!cli)
+		return (false);
 	for (size_t i = 0; i < _operators.size(); i++)
 	{
-		if (_operators[i] == name)
+		if (_operators[i]->get_userName() == cli->get_userName())
 		{
-			std::cout << name << " is an operator of this channel." << std::endl;
+			std::cout << cli->get_userName() << " is an operator of this channel." << std::endl;
 			return (true);
 		}
 	}
-	std::cout << name << " is not an operator of this channel." << std::endl;
+	std::cout << cli->get_userName() << " is not an operator of this channel." << std::endl;
 	return (false);
 };
 
-void			Channel::addOperator(std::string name, Client* cli, bool creation)
+void			Channel::addOperator(Client* cli, bool creation)
 {
-	if (!cli->get_Server()->getRefClientByName(name))
+	/* if (!cli->get_Server()->getRefClientByName(name))
 	{
 		std::cout << name << " : this user doesn't exist." << std::endl;
 		return ;
+	} */
+	if (!cli)
+	{
+		std::cout << "This user doesn't exist." << std::endl;
+		return ;
 	}
-	
+		
 	if (!creation)
 	{
 		t_clients_map::iterator it;
 		
 		for (it = _clients.begin(); it != _clients.end(); it++)
 		{
-			if (it->second->get_userName() == name)
+			if (it->second->get_userName() == cli->get_userName())
 				break ;
 		}
 		
 		if (it == _clients.end())
 		{
-			std::cout << name << " : this user is not in this channel." << std::endl;
+			std::cout << cli->get_userName() << " : this user is not in this channel." << std::endl;
 			return ;
 		}
 	}
 	
 	for (size_t i = 0; i < _operators.size(); i++)
 	{
-		if (_operators[i] == name)
+		if (_operators[i]->get_userName() == cli->get_userName())
 		{
-			std::cout << name << " is already an operator of this channel." << std::endl;
+			std::cout << cli->get_userName() << " is already an operator of this channel." << std::endl;
 			return ;
 		}
 	}
-	std::cout << name << " is a new operator of this channel." << std::endl;
-	_operators.push_back(name);
+	std::cout << cli->get_userName() << " is a new operator of this channel." << std::endl;
+	_operators.push_back(cli);
 };
 
-void			Channel::removeOperator(std::string name, Client* cli)
+void			Channel::removeOperator(Client* cli)
 {
-	if (!cli->get_Server()->getRefClientByName(name))
+	if (!cli)
+		return ;
+	if (!cli->get_Server()->getRefClientByName(cli->get_userName()))
 	{
-		std::cout << name << " : this user doesn't exist." << std::endl;
+		std::cout << cli->get_userName() << " : this user doesn't exist." << std::endl;
 		return ;
 	}
-	for (size_t i = 0; i < _operators.size(); i++)
+	std::vector<Client*>::iterator it;
+	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
-		if (_operators[i] == name)
+		if ((*it)->get_userName() == cli->get_userName())
 		{
-			_operators[i].erase();
-			std::cout << name << " is no more an operator of this channel." << std::endl;
+			_operators.erase(it);
+			std::cout << cli->get_userName() << " is no more an operator of this channel." << std::endl;
 			return ;
 		}
 	}
 	
-	std::cout << name << " was not an operator of this channel." << std::endl;
+	std::cout << cli->get_userName() << " was not an operator of this channel." << std::endl;
 };
 
 /* ************************************************************************** */
