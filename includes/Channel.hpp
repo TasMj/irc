@@ -26,7 +26,7 @@ class Channel {
         std::string*   				_password;
         t_clients_map  				_clients;
 		std::vector<std::string>	_operators;
-		//int							_limit;
+		int							_limit;
 		t_mode						_mode;
 
     public:
@@ -36,8 +36,8 @@ class Channel {
         std::string*    join(Client* cli, std::string* password);
         t_channel       asPair(void);
 		bool			checkOperator(std::string name);
-		void			addOperator(std::string name);
-		void			removeOperator(std::string name);
+		void			addOperator(std::string name, Client* cli, bool creation);
+		void			removeOperator(std::string name, Client* cli);
 		void			modPassword(std::string password);
 		void			removePassword();
 		void			modLimit(std::string limit);
@@ -48,4 +48,6 @@ class Channel {
 		void			topicModeOff();
 };
 
+t_mode			operator|(t_mode oldFlag, t_mode newFlag);
 
+t_mode			operator&(t_mode oldFlag, t_mode unsetFlag);

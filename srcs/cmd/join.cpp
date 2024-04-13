@@ -24,7 +24,7 @@ void	Server::cmd_join(Client* cli, t_message* msg) {
             if (it == _channels.end())
 			{
                 _channels[name] = new Channel(name, password);
-				_channels[name]->addOperator(cli->get_userName());
+				_channels[name]->addOperator(cli->get_userName(), cli, true);
 			}
             cli->join(_channels[name], password);
             delete password;

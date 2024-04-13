@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 19:01:40 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/13 17:17:11 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Server::Server(std::string password)
 {
 	_cmd_list["NICK"]		= &Server::cmd_nick;
 	_cmd_list["USER"]		= &Server::cmd_user;
-	_cmd_list["userhost"]		= &Server::cmd_user;
+	_cmd_list["userhost"]	= &Server::cmd_user;
 	_cmd_list["PASS"]		= &Server::cmd_pass;
 	_cmd_list["PING"]		= &Server::cmd_ping;
 	_cmd_list["JOIN"]		= &Server::cmd_join;
