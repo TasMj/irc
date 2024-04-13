@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 18:47:26 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 20:42:35 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Client::Client()
 	: _bufferOut("")
+	, _isOps(false)
 	, _login(UNSET)
 {
 	//_login = (t_login)UNSET;
@@ -94,6 +95,16 @@ void	Client::setFlagIO(bool status)
 	this->_flagIO = status;
 }
 
+bool		Client::getIsOps()
+{
+	return (this->_isOps);
+}
+
+void	Client::setIsOps(bool status)
+{
+	this->_isOps = status;
+}
+
 void		Client::setBufferOut(std::string buff) {
 	_bufferOut.append(buff);
 };
@@ -157,7 +168,13 @@ void	Client::isWelcomed(std::string flag) {
 	}
 }
 
+t_login			Client::getLogStatus()
+{
+	return (_login);
+};
+
 t_login			operator|(t_login oldFlag, t_login newFlag)
 {
 	return ((t_login)((int)oldFlag | (int)newFlag));
 }
+

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/12 18:41:31 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/12 20:41:54 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ public:
 	Server*			get_Server();
 	bool			getFlagIO();
 	void			setFlagIO(bool status);
+
+	t_login			getLogStatus();
 	
 	bool			getAuthentified();
 	void			setAuthentified(bool status);

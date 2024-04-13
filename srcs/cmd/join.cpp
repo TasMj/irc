@@ -22,7 +22,10 @@ void	Server::cmd_join(Client* cli, t_message* msg) {
                 password = new std::string(channelPasswords[i]);
             t_channel_map::iterator it = _channels.find(name);
             if (it == _channels.end())
+			{
                 _channels[name] = new Channel(name, password);
+				_channels[name]->addOperator(cli->get_userName());
+			}
             cli->join(_channels[name], password);
             delete password;
         } else {

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 18:46:54 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/13 16:40:20 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,17 +71,30 @@ void    Server::cmd_nick(Client* cli, t_message* msg) {
 		|| !expect_N_Params(msg, 1)
 	) { return; }
 	
+	/* if (!(cli->getLogStatus() & PASS))
+	{
+		std::cout << "zboub" << std::endl;
+		return ;
+	} */
+	
     std::string newNick = msg->params[0];
     std::string nickName = cli->get_nickName();
-	
 	std::string response;
 
 	// CHECKING
     if (findNickName(newNick))
-        response = ":localhost NICK " + nickName + " :\nthis nickname already exist. Please try a new one.\n";
+	{
+		newNick.append("_");
+		while (findNickName(newNick))
+		{
+			newNick.append("_");
+		}
+		cli->set_nickName(newNick);
+        response = ":localhost NICK " + newNick + " :\nthis nickname has already been taken. Your new nickname is " + newNick + "\n";
+	}
 	else {
 		cli->set_nickName(newNick);
-    	response = ":localhost NICK " + newNick + " :Your nick name is now : " + newNick + "\n"; 
+    	response = ":localhost NICK " + newNick + " :\nYour nick name is now : " + newNick + "\n"; 
 	}
 
 	// SENDING
@@ -91,10 +104,15 @@ void    Server::cmd_nick(Client* cli, t_message* msg) {
 }
 
 void    Server::cmd_user(Client* cli, t_message* msg) {
-	if (0
+	/* if (0
 		|| !expect_N_Params(msg, 3)
-	) { return; }
-	
+	) { return; } */
+	/* if (!(cli->getLogStatus() & PASS))
+	{
+		std::cout << "zebi" << std::endl;
+		cli->get_Server()->removeClient(*cli);
+		return ;
+	} */
 		
     std::string userName = msg->params[0];
 	bool		modified = false;
@@ -111,13 +129,17 @@ void    Server::cmd_user(Client* cli, t_message* msg) {
 	else
     	response = ":localhost Your username is : " + userName + "\n"; 
 	cli->set_userName(userName);
-
+	if (cli->get_userName()[0] == '&')
+		cli->setIsOps(true);
+	else
+		cli->setIsOps(false);
 
 	// SENDING
     cli->get_Server()->setUpTransmission(cli, response, cli->get_fd());
     cli->get_Server()->prepareMsgToClient(cli);
 	
-	cli->isWelcomed("USER");
+	if (msg->command == "USER")
+		cli->isWelcomed("USER");
 }
 
 /* void	Server::cmd_join(Client* cli, t_message* msg) {
@@ -170,9 +192,10 @@ void	Server::cmd_pass(Client* cli, t_message* msg) {
 		return ;
 	}
 
-	std::string err_msg =":localhost QUIT localhost: \n Wrong password.\n";
+	std::string err_msg =":localhost Wrong password.\n";
 	cli->get_Server()->setUpTransmission(cli, err_msg, cli->get_fd());
     cli->get_Server()->prepareMsgToClient(cli);
+	//cli->get_Server()->removeClient(*cli);
 //	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
 }
 
@@ -215,15 +238,106 @@ void	Server::cmd_pass(Client* cli, t_message* msg) {
 //     }
 // }
 
-static void	cmd_mode_chan(Client* cli, t_message* msg) {
-	if (0
+/* static size_t	n_params_wanted(std::string flags)
+{
+	size_t n = 0;
+	for (size_t i = 0; flags[i]; i++)
+	{
+		if (flags[i] == 'o' || flags[i] == 'k' || flags[i] == 'l')
+			n++;
+	}
+	return (n);
+} */
+
+static void	modeError(char c)
+{
+	if (c == 'o')
+	{
+		std::cout << "Flag 'o' for command Mode need a user as parameter"<< std::endl;
+	}
+	if (c == 'k')
+	{
+		std::cout << "Flag 'k' for command Mode need a password as parameter"<< std::endl;
+	}
+	if (c == 'l')
+	{
+		std::cout << "Flag 'l' for command Mode need a number as parameter"<< std::endl;
+	}
+};
+
+static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
+	//bool		i = false, t = false, k = false, o = false, l = false;
+	std::string	userName;
+	std::string	password;
+	//size_t		limit;
+	//size_t		nParamsNeeded = n_params_wanted(msg->params[1].c_str());
+	char		op = '+';
+
+	if (msg->params[1][0] == '-')
+		op = '-';
+	/* for (size_t n = 2; n <= nParamsNeeded; n++)
+	{ */
+	for (size_t i = 0; msg->params[1][i]; i++)
+	{
+		size_t n = 2;
+		if (msg->params[1][i] == 'o')
+		{
+			if (n >= msg->params.size())
+				modeError('o');
+			else if (op == '+')
+				chan->addOperator(msg->params[n]);
+			else
+				chan->removeOperator(msg->params[n]);
+			n++;
+		}
+		if (msg->params[1][i] == 'k')
+		{
+			if (n >= msg->params.size() && op == '+')
+				modeError('k');
+			else if (op == '+')
+			{
+				chan->modPassword(msg->params[n]);
+				n++;
+			}
+			else
+				chan->removePassword();
+		}
+		if (msg->params[1][i] == 'l')
+		{
+			if (n >= msg->params.size() && op == '+')
+				modeError('l');
+			else if (op == '+')
+			{
+				chan->modLimit(msg->params[n]);
+				n++;
+			}
+			else
+				chan->removeLimit();
+		}
+		if (msg->params[1][i] == 'i')
+		{
+			if (op == '+')
+				chan->inviteModeOn();
+			else
+				chan->inviteModeOff();
+		}
+		if (msg->params[1][i] == 't')
+		{
+			if (op == '+')
+				chan->topicModeOn();
+			else
+				chan->topicModeOff();
+		}
+	}
+/* 	} */
+	/* if (0
 		|| !expect_N_Params(msg, 2)
 		|| !expect_N_Params(msg, 3)
 		|| !expect_N_Params(msg, 4)
 		|| !expect_N_Params(msg, 5)
-	) { return; }
-
-	std::cout << "Channel mode " << cli->get_nickName() << std::endl;
+	) { return; } */
+	
+	std::cout << "Channel mode " << cli->get_nickName() << " " << msg->command << chan->getName() << std::endl;
 
 //	send(cli->get_fd(), err_msg.c_str(), err_msg.size(), 0);
 }
@@ -236,16 +350,45 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 		|| !expect_N_Params(msg, 4)
 		|| !expect_N_Params(msg, 5)
 	) { return; } */
-	std::map<std::string, Channel>::iterator	it;
+	/* if (!cli->getIsOps())
+	{
+		cli->get_Server()->setUpTransmission(cli, ":localhost You need to be an Operator to use MODE command.\n", cli->get_fd());
+    	cli->get_Server()->prepareMsgToClient(cli);
+		return ;
+	} */
+	
+	std::map<std::string, Channel *>::iterator	it;
 
-	it = _channel
+	it = _channels.find(msg->params[0]);
 	//std::cout << "Channel : " << this->_channels[msg->params[0]] << std::endl << "Client : " << this->getRefClientByName(msg->params[0])->get_userName() << std::endl;
-	if (!this->_channels[msg->params[0]]->getName().empty())
-		cmd_mode_chan(cli, msg);
+	if (it != _channels.end())
+	{
+		if (!it->second->checkOperator(cli->get_userName()))
+		{
+			cli->get_Server()->setUpTransmission(cli, ":localhost You need to be an Operator to use MODE command.\n", cli->get_fd());
+    		cli->get_Server()->prepareMsgToClient(cli);
+			return ;
+		}
+		if (msg->params[1].find_first_not_of("+-itkol", 0) != std::string::npos)
+		{
+			cli->get_Server()->setUpTransmission(cli, ":localhost Flags are incorect ([+|-]i|t|k|o|l).\n", cli->get_fd());
+			cli->get_Server()->prepareMsgToClient(cli);
+		}
+		else
+			cmd_mode_chan(cli, msg, it->second);
+	}
 	else
 	{
-		cli->get_Server()->setUpTransmission(cli, ":localhost Please specify a channel or a user for MODE command.\n", cli->get_fd());
-    	cli->get_Server()->prepareMsgToClient(cli);
+		if (msg->params[0][0] == '#')
+		{
+			cli->get_Server()->setUpTransmission(cli, ":localhost Please specify the flag(s) you want to change ([+|-]i|t|k|o|l).\n", cli->get_fd());
+			cli->get_Server()->prepareMsgToClient(cli);
+		}
+		else
+		{	
+			cli->get_Server()->setUpTransmission(cli, ":localhost Please specify a valid channel for MODE command.\n", cli->get_fd());
+			cli->get_Server()->prepareMsgToClient(cli);
+		}
 	}
 
 	/* std::string err_msg =":localhost DISCONNECT localhost: \n Wrong password.\n";
