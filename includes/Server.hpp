@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:12:31 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/14 19:24:25 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,13 +98,14 @@ class Server
 		std::string const &			getPrefixServer() const;
 		Client* 						getRefClientByFd(int fd);
 		Client* 						getRefClientByName(std::string name);
+		Client* 						getRefClientByNick(std::string nick);
 		void						send_transmission(int pollFd);
 		std::vector<Transmission>	getTransmission();
 		Transmission				getFirstTransmission();
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
 		Transmission*				getTransmissionByFd(int fd);
-		Channel*					getRefChannelByName(std::string chanName);
+		//Channel*					getRefChannelByName(std::string chanName);
 
 
 		Client*	findNickName(std::string nickName);
@@ -120,6 +121,7 @@ void	removeClient(Client& cli);
 		void	cmd_join(Client* cli, t_message* msg);
 		void	cmd_mode(Client* cli, t_message* msg);
 		void    cmd_privmsg(Client* cli, t_message* msg);
+		void	cmd_invite(Client* cli, t_message* msg);
 		void	cmd_quit(Client* cli, t_message* msg);
 		void	cmd_kick(Client* cli, t_message* msg);
 };

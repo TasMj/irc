@@ -25,19 +25,19 @@ class Channel {
         std::string    				_name;
         std::string*   				_password;
         t_clients_map  				_clients;
-		std::vector<std::string>	_operators;
-		//int							_limit;
+		std::vector<Client*>	_operators;
+		int							_limit;
 		t_mode						_mode;
 
     public:
         Channel(std::string name, std::string* password);
         std::string     getName(void);
         void            sendToAllClients(std::string msg, Client* cli = NULL);
-        std::string*    join(Client* cli, std::string* password);
+        std::string*    join(Client* cli, std::string* password, bool fromInvite);
         t_channel       asPair(void);
-		bool			checkOperator(std::string name);
-		void			addOperator(std::string name);
-		void			removeOperator(std::string name);
+		bool			checkOperator(Client* cli);
+		void			addOperator(Client* cli, bool creation);
+		void			removeOperator(Client* cli);
 		void			modPassword(std::string password);
 		void			removePassword();
 		void			modLimit(std::string limit);
@@ -49,6 +49,9 @@ class Channel {
 		
 		bool			checkClientExist(std::string toKick);
 		void    		removeCliFromChan(std::string toKick);
+		void			inviteCmd(Client *sender, Client *receiver);
 };
 
+t_mode			operator|(t_mode oldFlag, t_mode newFlag);
 
+t_mode			operator&(t_mode oldFlag, t_mode unsetFlag);

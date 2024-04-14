@@ -6,7 +6,7 @@
 #    By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/14 18:58:25 by tmejri           ###   ########.fr        #
+#    Updated: 2024/04/14 19:23:43 by tmejri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,8 @@ SRC_NAME 	+=	./srcs/cmd/join.cpp
 SRC_NAME 	+=	./srcs/cmd/privmsg.cpp
 SRC_NAME 	+=	./srcs/cmd/kick.cpp
 SRC_NAME 	+=	./srcs/errors.cpp
+SRC_NAME 	+=	./srcs/cmd/mode.cpp
+SRC_NAME 	+=	./srcs/cmd/invite.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 
