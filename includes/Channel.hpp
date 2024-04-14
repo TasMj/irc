@@ -14,10 +14,10 @@ typedef std::pair<std::string, Channel*>    t_channel;
 typedef std::map<std::string, Channel*>     t_channel_map;
 
 typedef enum e_mode {
-	I	= (1 << 0),
-	T	= (1 << 1),
-	K	= (1 << 2),
-	L	= (1 << 3),
+	INVITE	= (1 << 0),
+	TOPIC	= (1 << 1),
+	KEY		= (1 << 2),
+	LIMIT	= (1 << 3),
 }	t_mode;
 
 class Channel {
@@ -25,15 +25,15 @@ class Channel {
         std::string    				_name;
         std::string*   				_password;
         t_clients_map  				_clients;
-		std::vector<Client*>	_operators;
-		int							_limit;
+		std::vector<Client*>		_operators;
+		size_t						_limit;
 		t_mode						_mode;
 
     public:
         Channel(std::string name, std::string* password);
         std::string     getName(void);
         void            sendToAllClients(std::string msg, Client* cli = NULL);
-        std::string*    join(Client* cli, std::string* password, bool fromInvite);
+        std::string*    join(Client* cli, std::string* password);
         t_channel       asPair(void);
 		bool			checkOperator(Client* cli);
 		void			addOperator(Client* cli, bool creation);

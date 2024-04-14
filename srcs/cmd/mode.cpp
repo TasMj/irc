@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/13 20:36:05 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/14 19:08:43 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,19 +234,37 @@ void			Channel::removeOperator(Client* cli)
 void			Channel::modPassword(std::string password)
 {
 	//if (!(_mode & (t_mode)K))
-	
-	_mode = (t_mode)_mode | (t_mode)K; 
-	if ((_mode & (t_login)K))
-		std::cout << "le flag a ete ajoute !" << std::endl;
+	if (_mode & (t_mode)KEY)
+	{
+		std::cout << "This channel already ask for a password to enter." << std::endl;
+		return ;
+	}
+	else
+		_mode = (t_mode)_mode | (t_mode)KEY; 
+	/* if ((_mode & (t_login)K))
+		std::cout << "le flag a ete ajoute !" << std::endl; */
 	std::cout << password << " is the new password of this channel." << std::endl;
+	if (_password)
+		delete _password;
+	std::string *pwd = new std::string(password);
+	_password = pwd;
+	delete pwd;
 };
 
 void			Channel::removePassword()
 {
-	_mode = (t_mode)_mode & (t_mode)K; 
-	if (!(_mode & (t_login)K))
-		std::cout << "le flag a ete enleve !" << std::endl;
+	if (!(_mode & (t_mode)KEY))
+	{
+		std::cout << "This channel already doesn't need a password." << std::endl;
+		return ;
+	}
+	else	
+		_mode = (t_mode)_mode & (t_mode)KEY; 
+	/* if (!(_mode & (t_login)K))
+		std::cout << "le flag a ete enleve !" << std::endl; */
 	std::cout << "this channel has no more password." << std::endl;
+	if (_password)
+		delete _password;
 };
 
 /* ************************************************************************** */
@@ -261,14 +279,14 @@ void			Channel::modLimit(std::string limit)
 		return (modeError('l'));
 		
 	n_lim = atoi(limit.c_str());
-	_limit = n_lim;
-	_mode = (t_mode)_mode | (t_mode)L; 
+	_limit = (size_t)n_lim;
+	_mode = (t_mode)_mode | (t_mode)LIMIT; 
 	std::cout << limit << "is the maximum number of user allowed in this channel." << std::endl;
 };
 
 void			Channel::removeLimit()
 {
-	_mode = (t_mode)_mode & (t_mode)L;
+	_mode = (t_mode)_mode & (t_mode)LIMIT;
 	std::cout << "This channel has no more user limit." << std::endl;
 };
 
@@ -278,13 +296,13 @@ void			Channel::removeLimit()
 
 void			Channel::inviteModeOn()
 {
-	_mode = (t_mode)_mode | (t_mode)I; 
+	_mode = (t_mode)_mode | (t_mode)INVITE; 
 	std::cout << "This channel is now accessible only through invitation." << std::endl;
 };
 
 void			Channel::inviteModeOff()
 {
-	_mode = (t_mode)_mode & (t_mode)I; 
+	_mode = (t_mode)_mode & (t_mode)INVITE; 
 	std::cout << "No more need to be invited to join this channel." << std::endl;
 };
 
@@ -294,12 +312,12 @@ void			Channel::inviteModeOff()
 
 void			Channel::topicModeOn()
 {
-	_mode = (t_mode)_mode | (t_mode)T; 
+	_mode = (t_mode)_mode | (t_mode)TOPIC; 
 	std::cout << "Topic cmd reserved for operqtors on this channel." << std::endl;
 };
 
 void			Channel::topicModeOff()
 {
-	_mode = (t_mode)_mode & (t_mode)T; 
+	_mode = (t_mode)_mode & (t_mode)TOPIC; 
 	std::cout << "Topic cmd enabled for everybody on this channel." << std::endl;
 };

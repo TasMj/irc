@@ -8,12 +8,12 @@ Channel::Channel(std::string name, std::string* password)
 	_mode = (t_mode)0;
     if (password != NULL) {
         _password = new std::string(*password);
-		_mode = (t_mode)K;
+		_mode = (t_mode)KEY;
     }
 }
 
-std::string*    Channel::join(Client* cli, std::string* password, bool fromInvite) {
-    if (_password && !fromInvite) {
+std::string*    Channel::join(Client* cli, std::string* password) {
+    if (_password) {
         if (password == NULL || (password != NULL && _password->compare(*password) != 0)) {
             return (new std::string("bad password\r\n"));
         }

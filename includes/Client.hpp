@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 15:31:56 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/14 18:21:05 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ public:
 	void			remove();
 
 	void			setBufferOut(std::string buff);
-	void			join(Channel* channel, std::string* password, bool fromInvite);
+	void			join(Channel* channel, std::string* password);
 
 /******************************************************************************/
 /*                              Socket IO                                     */

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 17:59:01 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/14 18:46:57 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 {
 	t_clients_map::iterator it;
 	bool					s_ok = false, r_ok = true;
+	std::string				password;
 	
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
@@ -72,7 +73,16 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 		return ;
 	}
 
-	if (_mode | (t_mode)I)
+	if (_mode & (t_mode)LIMIT)
+	{
+		if (_clients.size() + 1 > _limit)
+			std::cout << "this channel is already full" << std::endl;
+	}
+
+	if (_mode & (t_mode)KEY)
+		password = 	*(_password);
+
+	if (_mode & (t_mode)INVITE)
 	{
 		std::vector<Client*>::iterator jt;
 
@@ -81,7 +91,7 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 			if ((*jt)->get_userName() == sender->get_userName())
 			{
 				std::cout << receiver->get_nickName() << " join " << _name << std::endl;
-				join(receiver, NULL, true);
+				// join(receiver, NULL, true);
 				return ;
 			}
 		}
@@ -90,6 +100,6 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 	else
 	{
 		std::cout << receiver->get_nickName() << " join " << _name << std::endl;
-		join(receiver, NULL, true);
+		// join(receiver, NULL, true);
 	}
 }
