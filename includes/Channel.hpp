@@ -33,7 +33,7 @@ class Channel {
         Channel(std::string name, std::string* password);
         std::string     getName(void);
         void            sendToAllClients(std::string msg, Client* cli = NULL);
-        std::string*    join(Client* cli, std::string* password);
+        std::string*    join(Client* cli, std::string* password, bool fromInvite);
         t_channel       asPair(void);
 		bool			checkOperator(Client* cli);
 		void			addOperator(Client* cli, bool creation);
@@ -46,6 +46,7 @@ class Channel {
 		void			inviteModeOff();
 		void			topicModeOn();
 		void			topicModeOff();
+		void			inviteCmd(Client *sender, Client *receiver);
 };
 
 t_mode			operator|(t_mode oldFlag, t_mode newFlag);

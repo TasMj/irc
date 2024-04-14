@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/13 17:17:11 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/14 15:44:43 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ Server::Server(std::string password)
 	_cmd_list["PASS"]		= &Server::cmd_pass;
 	_cmd_list["PING"]		= &Server::cmd_ping;
 	_cmd_list["JOIN"]		= &Server::cmd_join;
+	_cmd_list["INVITE"]		= &Server::cmd_invite;
 	_cmd_list["MODE"]		= &Server::cmd_mode;
 	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
 	_cmd_list["QUIT"]		= &Server::cmd_quit;
@@ -129,6 +130,34 @@ Client* Server::getRefClientByName(std::string name)
 	}
 	return (NULL);
 }
+
+Client* Server::getRefClientByNick(std::string nick)
+{
+	std::deque<Client>::iterator	it = _clients.begin();
+	std::deque<Client>::iterator	itend = _clients.end();
+
+	while (it != itend)
+	{
+		if (it->get_nickName() == nick)
+			return (&(*it));
+		it++;
+	}
+	return (NULL);
+}
+
+/* Channel* Server::getRefChannelByName(std::string name)
+{
+	std::deque<Client>::iterator	it = _clients.begin();
+	std::deque<Client>::iterator	itend = _clients.end();
+
+	while (it != itend)
+	{
+		if (it->get_userName() == name)
+			return (&(*it));
+		it++;
+	}
+	return (NULL);
+} */
 
 
 void	Server::prepareMsgToClient(Client *cli)

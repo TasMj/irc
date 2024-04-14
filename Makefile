@@ -6,7 +6,7 @@
 #    By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/13 18:30:51 by tmalless         ###   ########.fr        #
+#    Updated: 2024/04/14 15:38:41 by tmalless         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ SRC_NAME 	+=	./srcs/Message.cpp
 SRC_NAME 	+=	./srcs/cmd/join.cpp
 SRC_NAME 	+=	./srcs/cmd/privmsg.cpp
 SRC_NAME 	+=	./srcs/cmd/mode.cpp
+SRC_NAME 	+=	./srcs/cmd/invite.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 

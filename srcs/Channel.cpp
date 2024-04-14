@@ -12,8 +12,8 @@ Channel::Channel(std::string name, std::string* password)
     }
 }
 
-std::string*    Channel::join(Client* cli, std::string* password) {
-    if (_password) {
+std::string*    Channel::join(Client* cli, std::string* password, bool fromInvite) {
+    if (_password && !fromInvite) {
         if (password == NULL || (password != NULL && _password->compare(*password) != 0)) {
             return (new std::string("bad password\r\n"));
         }
