@@ -30,6 +30,9 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
             // ERROR channel not found
             return;
         }
+		
+		if (!it->second->isInChannel(cli->get_nickName()))
+			return ;
         response = PRIVMSG(cli->get_nickName(), it->second->getName() ,msg->last_params);
         it->second->sendToAllClients(response, cli);
 	} else {

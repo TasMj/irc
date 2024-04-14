@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 19:29:06 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:30:44 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/14 19:58:40 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ class Channel {
 		bool			checkClientExist(std::string toKick);
 		void    		removeCliFromChan(std::string toKick);
 		void			inviteCmd(Client *sender, Client *receiver);
+
+		bool			isInChannel(std::string name);
 };
 
 /******************************************************************************/

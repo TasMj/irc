@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:34:12 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/14 19:48:01 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void    Channel::removeCliFromChan(std::string toKick)
 		if (it->first == toKick)
         {
             _clients.erase(it);
-            std::cout << toKick << " has been kicked" << std::endl;
+            // std::cout << toKick << " has been kicked" << std::endl;
             return ;
         }
 	}
@@ -94,7 +94,7 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     
     if (currentChan == NULL)
         ERR = errChannel(cli->get_nickName(), channelName, " Channel doesn't exist.");
-    else if (currentChan->checkOperator(cli->get_userName()) == false) // verifier que emitter a le droit de kick
+    else if (currentChan->checkOperator(cli) == false) // verifier que emitter a le droit de kick
         ERR = errOperator(cli->get_nickName(), channelName, " Not an operator.");
     else if (currentChan->checkClientExist(toKick) == false) //verifier que le client existe
         ERR = errClient(cli->get_nickName(), channelName, " Client not present in this channel");
