@@ -46,6 +46,9 @@ class Channel {
 		void			inviteModeOff();
 		void			topicModeOn();
 		void			topicModeOff();
+		
+		bool			checkClientExist(std::string toKick);
+		void    		removeCliFromChan(std::string toKick);
 };
 
 

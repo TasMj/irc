@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 19:01:40 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/13 17:27:40 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ Server::Server(std::string password)
 	_cmd_list["MODE"]		= &Server::cmd_mode;
 	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
 	_cmd_list["QUIT"]		= &Server::cmd_quit;
+	_cmd_list["KICK"]		= &Server::cmd_kick;
 
 }
 

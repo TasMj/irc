@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
+#    By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/12 17:10:30 by aclement         ###   ########.fr        #
+#    Updated: 2024/04/14 18:58:25 by tmejri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,8 @@ SRC_NAME 	+=	./srcs/Channel.cpp
 SRC_NAME 	+=	./srcs/Message.cpp
 SRC_NAME 	+=	./srcs/cmd/join.cpp
 SRC_NAME 	+=	./srcs/cmd/privmsg.cpp
+SRC_NAME 	+=	./srcs/cmd/kick.cpp
+SRC_NAME 	+=	./srcs/errors.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 
