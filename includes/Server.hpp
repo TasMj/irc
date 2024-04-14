@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:24:25 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/14 19:33:36 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ class Server
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
 		Transmission*				getTransmissionByFd(int fd);
-		//Channel*					getRefChannelByName(std::string chanName);
+		Channel*					getRefChannelByName(std::string chanName);
 
 
 		Client*	findNickName(std::string nickName);

@@ -6,7 +6,7 @@
 /*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:21:41 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/14 19:34:12 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ Channel *Server::getRefChannelByName(std::string name)
 
 	for (it = _channels.begin(); it != _channels.end(); it++)
 	{
-        // std::cout << CYA << "it->first: " << it->first << WHI << std::endl;
 		if (it->first == name)
             return (it->second);
 	}
