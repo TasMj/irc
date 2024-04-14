@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:22:29 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/14 19:33:46 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ class Server
 		typedef std::map<std::string, function> t_cmd_list;
 		t_cmd_list								_cmd_list;
 
-		std::map<std::string, Channel*>							_channels;
+		std::map<std::string, Channel*>			_channels;
 				
 	public:
 	
@@ -137,6 +137,7 @@ void	removeClient(Client& cli);
 		void    cmd_privmsg(Client* cli, t_message* msg);
 		void	cmd_invite(Client* cli, t_message* msg);
 		void	cmd_quit(Client* cli, t_message* msg);
+		void	cmd_kick(Client* cli, t_message* msg);
 };
 
 
@@ -164,3 +165,12 @@ void    	recup_userr(Client *cli, std::string buff_str);
 bool		expect_N_Params(t_message* msg, size_t n);
 bool		expect_At_Least_N_Params(t_message* msg, size_t n);
 bool		expect_LastParams(t_message* msg);
+
+std::string	kickMsg(std::string user, std::string channel, std::string kickedUser, std::string reason);
+
+
+/*ERRORS*/
+std::string	errChannel(std::string nickname, std::string channel, std::string reason);
+std::string errOperator(std::string nickname, std::string channel, std::string reason);
+std::string errClient(std::string nickname, std::string channel, std::string reason);
+std::string kickMsg(std::string nickname, std::string channel, std::string reason);
