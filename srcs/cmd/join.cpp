@@ -26,7 +26,7 @@ void	Server::cmd_join(Client* cli, t_message* msg) {
                 _channels[name] = new Channel(name, password);
 				_channels[name]->addOperator(cli, true);
 			}
-            cli->join(_channels[name], password, false);
+            cli->join(_channels[name], password);
             delete password;
         } else {
             //send 476 -> ERR_BADCHANMASK
