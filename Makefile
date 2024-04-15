@@ -6,7 +6,7 @@
 #    By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/16 00:07:48 by tmalless         ###   ########.fr        #
+#    Updated: 2024/04/16 01:04:40 by tmalless         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,6 +45,7 @@ SRC_NAME 	+=	./srcs/responses/ERR_CHANWRONGPASS.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_CHANPRIVSNEEDED.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_CHANNELUSERNOTINVIT.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_CHANNELISFULL.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_NOTONCHANNEL.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 

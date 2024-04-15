@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 18:53:37 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 00:00:24 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 01:21:55 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,3 +83,12 @@ std::string	ERR_CHANPRIVSNEEDED(std::string nick, std::string chan);
 /* ************************************************************************** */
 
 std::string	RPL_NICK(Client *cli, std::string newNick);
+
+/* ************************************************************************** */
+// PRIVMSG
+/* ************************************************************************** */
+
+std::string	ERR_NOTONCHANNEL(std::string nick, std::string chan, std::string reason);
+std::string	ERR_NOSUCHCHANNEL(std::string nick, std::string chan, std::string reason);
+std::string	ERR_NOSUCHNICK(std::string nick, std::string target, std::string reason);
+std::string	RPL_PRIVMSG(std::string sender, std::string target, std::string message);

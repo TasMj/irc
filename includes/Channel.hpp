@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 19:29:06 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 00:46:56 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 00:56:54 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ class Channel {
 		void			inviteModeOff(Client* cli);
 		void			topicModeOn(Client* cli);
 		void			topicModeOff(Client* cli);
-		
+		bool			isInChannel(std::string name);
 		bool			checkClientExist(std::string toKick);
 		void    		removeCliFromChan(std::string toKick);
 		void			inviteCmd(Client *sender, Client *receiver);
