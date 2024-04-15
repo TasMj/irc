@@ -1,5 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/14 19:29:06 by tmejri            #+#    #+#             */
+/*   Updated: 2024/04/16 00:46:56 by tmalless         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 
+/******************************************************************************/
+/*                                 Includes                                   */
+/******************************************************************************/
 # include <string>
 # include <utility>
 # include <map>
@@ -16,13 +31,29 @@ typedef std::map<std::string, Channel*>     t_channel_map;
 /* typedef enum e_mode {
 	START	= 0,
 
+/******************************************************************************/
+/*                                  Enum                                      */
+/******************************************************************************/
+/*
+typedef enum e_mode {
 	INVITE	= (1 << 0),
 	TOPIC	= (1 << 1),
 	KEY		= (1 << 2),
 	LIMIT	= (1 << 3),
-}	t_mode; */
+}	t_mode; 
+*/
+/******************************************************************************/
+/*                                  Class                                     */
+/******************************************************************************/
+class Client;
+typedef std::map<std::string, Client*>     t_clients_map;
+
+class Channel;
+typedef std::pair<std::string, Channel*>    t_channel;
+typedef std::map<std::string, Channel*>     t_channel_map;
 
 class Channel {
+   
     private:
         std::string    				_name;
         std::string*   				_password;
@@ -62,5 +93,14 @@ class Channel {
 
 /* t_mode			operator|(t_mode oldFlag, t_mode newFlag);
 
+
+		bool			isInChannel(std::string name);
+};
+
+/******************************************************************************/
+/*                                 Functions                                  */
+/******************************************************************************/
+/*
+t_mode			operator|(t_mode oldFlag, t_mode newFlag);
 t_mode			operator&(t_mode oldFlag, t_mode unsetFlag);
  */

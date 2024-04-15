@@ -58,6 +58,13 @@ std::string Channel::getName(void) {
     return (_name);
 }
 
+bool	Channel::isInChannel(std::string name)
+{
+    if (_clients.find(name) != _clients.end())
+        return (true);
+    return (false);
+}
+
 t_channel   Channel::asPair(void) {
     return (std::make_pair(_name, this));
 }

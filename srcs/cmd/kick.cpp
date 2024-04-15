@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/15 14:24:43 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 00:45:32 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 
 	for (it = _channels.begin(); it != _channels.end(); it++)
 	{
-        // std::cout << CYA << "it->first: " << it->first << WHI << std::endl;
 		if (it->first == name)
             return (it->second);
 	}
@@ -48,7 +47,7 @@ void    Channel::removeCliFromChan(std::string toKick)
 		if (it->first == toKick)
         {
             _clients.erase(it);
-            std::cout << toKick << " has been kicked" << std::endl;
+            // std::cout << toKick << " has been kicked" << std::endl;
             return ;
         }
 	}
