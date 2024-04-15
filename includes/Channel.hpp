@@ -13,12 +13,14 @@ class Channel;
 typedef std::pair<std::string, Channel*>    t_channel;
 typedef std::map<std::string, Channel*>     t_channel_map;
 
-typedef enum e_mode {
+/* typedef enum e_mode {
+	START	= 0,
+
 	INVITE	= (1 << 0),
 	TOPIC	= (1 << 1),
 	KEY		= (1 << 2),
 	LIMIT	= (1 << 3),
-}	t_mode;
+}	t_mode; */
 
 class Channel {
     private:
@@ -26,8 +28,13 @@ class Channel {
         std::string*   				_password;
         t_clients_map  				_clients;
 		std::vector<Client*>		_operators;
+		std::vector<Client*>		_invited;
 		size_t						_limit;
-		t_mode						_mode;
+		//t_mode						_mode;
+		bool						_inviteModeOn;
+		bool						_keyModeOn;
+		bool						_topicModeOn;
+		bool						_limitModeOn;
 
     public:
         Channel(std::string name, std::string* password);
@@ -36,22 +43,24 @@ class Channel {
         std::string*    join(Client* cli, std::string* password);
         t_channel       asPair(void);
 		bool			checkOperator(Client* cli);
-		void			addOperator(Client* cli, bool creation);
-		void			removeOperator(Client* cli);
-		void			modPassword(std::string password);
-		void			removePassword();
-		void			modLimit(std::string limit);
-		void			removeLimit();
-		void			inviteModeOn();
-		void			inviteModeOff();
-		void			topicModeOn();
-		void			topicModeOff();
+		void			addOperator(Client* sender, Client* receiver, bool creation);
+		void			removeOperator(Client* sender, Client* receiver);
+		void			modPassword(std::string password, Client* cli);
+		void			removePassword(Client* cli);
+		void			modLimit(std::string limit, Client* cli);
+		void			removeLimit(Client* cli);
+		void			inviteModeOn(Client* cli);
+		void			inviteModeOff(Client* cli);
+		void			topicModeOn(Client* cli);
+		void			topicModeOff(Client* cli);
 		
 		bool			checkClientExist(std::string toKick);
 		void    		removeCliFromChan(std::string toKick);
 		void			inviteCmd(Client *sender, Client *receiver);
+		bool			checkInvited(Client* cli);
 };
 
-t_mode			operator|(t_mode oldFlag, t_mode newFlag);
+/* t_mode			operator|(t_mode oldFlag, t_mode newFlag);
 
 t_mode			operator&(t_mode oldFlag, t_mode unsetFlag);
+ */

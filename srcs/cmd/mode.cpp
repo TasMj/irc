@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:08:43 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 00:15:34 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 // UTILS
 /* ************************************************************************** */
 
-static void	modeError(char c)
+/* static void	modeError(char c)
 {
 	if (c == 'o')
 	{
@@ -31,7 +31,7 @@ static void	modeError(char c)
 	{
 		std::cout << "Flag 'l' for command Mode need a number as parameter"<< std::endl;
 	}
-};
+}; */
 
 /* ************************************************************************** */
 // MODE COMMAND LOGIC
@@ -55,50 +55,59 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 		if (msg->params[1][i] == 'o')
 		{
 			if (n >= msg->params.size())
-				modeError('o');
+			{
+				cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a username (o).") , cli->get_fd());
+    			cli->get_Server()->prepareMsgToClient(cli);
+			}
 			else if (op == '+')
-				chan->addOperator(cli->get_Server()->getRefClientByName(msg->params[n]), false);
+				chan->addOperator(cli, cli->get_Server()->getRefClientByName(msg->params[n]), false);
 			else
-				chan->removeOperator(cli->get_Server()->getRefClientByName(msg->params[n]));
+				chan->removeOperator(cli, cli->get_Server()->getRefClientByName(msg->params[n]));
 			n++;
 		}
 		if (msg->params[1][i] == 'k')
 		{
 			if (n >= msg->params.size() && op == '+')
-				modeError('k');
+			{
+				cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide an alphanum password (+k).") , cli->get_fd());
+    			cli->get_Server()->prepareMsgToClient(cli);
+			}
 			else if (op == '+')
 			{
-				chan->modPassword(msg->params[n]);
+				chan->modPassword(msg->params[n], cli);
 				n++;
 			}
 			else
-				chan->removePassword();
+				chan->removePassword(cli);
 		}
 		if (msg->params[1][i] == 'l')
 		{
 			if (n >= msg->params.size() && op == '+')
-				modeError('l');
+			{
+				cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a numeric limit (+l).") , cli->get_fd());
+    			cli->get_Server()->prepareMsgToClient(cli);
+			}
 			else if (op == '+')
 			{
-				chan->modLimit(msg->params[n]);
+				chan->modLimit(msg->params[n], cli);
 				n++;
 			}
 			else
-				chan->removeLimit();
+				chan->removeLimit(cli);
 		}
 		if (msg->params[1][i] == 'i')
 		{
 			if (op == '+')
-				chan->inviteModeOn();
+				chan->inviteModeOn(cli);
 			else
-				chan->inviteModeOff();
+				chan->inviteModeOff(cli);
 		}
 		if (msg->params[1][i] == 't')
 		{
 			if (op == '+')
-				chan->topicModeOn();
+				chan->topicModeOn(cli);
 			else
-				chan->topicModeOff();
+				chan->topicModeOff(cli);
 		}
 	}
 	
@@ -108,6 +117,8 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 void	Server::cmd_mode(Client* cli, t_message* msg) {
 	
 	std::map<std::string, Channel *>::iterator	it;
+	if (msg->params[0][0] == '#')
+		msg->params[0].erase(0,1);
 
 	it = _channels.find(msg->params[0]);
 	//std::cout << "Channel : " << this->_channels[msg->params[0]] << std::endl << "Client : " << this->getRefClientByName(msg->params[0])->get_userName() << std::endl;
@@ -115,7 +126,7 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 	{
 		if (!it->second->checkOperator(cli))
 		{
-			cli->get_Server()->setUpTransmission(cli, ":localhost You need to be an Operator to use MODE command.\n", cli->get_fd());
+			cli->get_Server()->setUpTransmission(cli, ERR_CHANPRIVSNEEDED(cli->get_nickName(), it->second->getName()), cli->get_fd());
     		cli->get_Server()->prepareMsgToClient(cli);
 			return ;
 		}
@@ -129,16 +140,8 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 	}
 	else
 	{
-		if (msg->params[0][0] == '#')
-		{
-			cli->get_Server()->setUpTransmission(cli, ":localhost Please specify the flag(s) you want to change ([+|-]i|t|k|o|l).\n", cli->get_fd());
-			cli->get_Server()->prepareMsgToClient(cli);
-		}
-		else
-		{	
-			cli->get_Server()->setUpTransmission(cli, ":localhost Please specify a valid channel for MODE command.\n", cli->get_fd());
-			cli->get_Server()->prepareMsgToClient(cli);
-		}
+		cli->get_Server()->setUpTransmission(cli, ":localhost Please specify a valid channel for MODE command.\n", cli->get_fd());
+		cli->get_Server()->prepareMsgToClient(cli);
 	}
 }
 
@@ -162,14 +165,15 @@ bool			Channel::checkOperator(Client* cli)
 	return (false);
 };
 
-void			Channel::addOperator(Client* cli, bool creation)
+void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 {
+	std::string msg;
 	/* if (!cli->get_Server()->getRefClientByName(name))
 	{
 		std::cout << name << " : this user doesn't exist." << std::endl;
 		return ;
 	} */
-	if (!cli)
+	if (!receiver)
 	{
 		std::cout << "This user doesn't exist." << std::endl;
 		return ;
@@ -181,112 +185,129 @@ void			Channel::addOperator(Client* cli, bool creation)
 		
 		for (it = _clients.begin(); it != _clients.end(); it++)
 		{
-			if (it->second->get_userName() == cli->get_userName())
+			if (it->second->get_userName() == receiver->get_userName())
 				break ;
 		}
 		
 		if (it == _clients.end())
 		{
-			std::cout << cli->get_userName() << " : this user is not in this channel." << std::endl;
+			std::cout << receiver->get_userName() << " : this user is not in this channel." << std::endl;
 			return ;
 		}
 	}
 	
 	for (size_t i = 0; i < _operators.size(); i++)
 	{
-		if (_operators[i]->get_userName() == cli->get_userName())
+		if (_operators[i]->get_userName() == receiver->get_userName())
 		{
-			std::cout << cli->get_userName() << " is already an operator of this channel." << std::endl;
+			std::cout << receiver->get_userName() << " is already an operator of this channel." << std::endl;
 			return ;
 		}
 	}
-	std::cout << cli->get_userName() << " is a new operator of this channel." << std::endl;
-	_operators.push_back(cli);
+	msg = receiver->get_userName() + " is a new operator of this channel.";
+	sender->get_Server()->sendToAll(sender, RPL_MODE(sender->get_nickName(), _name, "+", "o", msg), _clients);
+	_operators.push_back(receiver);
 };
 
-void			Channel::removeOperator(Client* cli)
+void			Channel::removeOperator(Client* sender, Client* receiver)
 {
-	if (!cli)
+	std::string msg;
+	if (!receiver)
 		return ;
-	if (!cli->get_Server()->getRefClientByName(cli->get_userName()))
+	/* if (!cli->get_Server()->getRefClientByName(cli->get_userName()))
 	{
 		std::cout << cli->get_userName() << " : this user doesn't exist." << std::endl;
 		return ;
-	}
+	} */
 	std::vector<Client*>::iterator it;
 	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
-		if ((*it)->get_userName() == cli->get_userName())
+		if ((*it)->get_userName() == receiver->get_userName())
 		{
 			_operators.erase(it);
-			std::cout << cli->get_userName() << " is no more an operator of this channel." << std::endl;
+			msg = receiver->get_userName() + " is no more an operator of this channel.";
+			sender->get_Server()->sendToAll(sender, RPL_MODE(sender->get_nickName(), _name, "-", "o", msg), _clients);
 			return ;
 		}
 	}
 	
-	std::cout << cli->get_userName() << " was not an operator of this channel." << std::endl;
+	std::cout << receiver->get_userName() << " was not an operator of this channel." << std::endl;
 };
 
 /* ************************************************************************** */
 // HANDLE PASSWORD FLAG
 /* ************************************************************************** */
 
-void			Channel::modPassword(std::string password)
+void			Channel::modPassword(std::string password, Client* cli)
 {
+	std::string msg;
 	//if (!(_mode & (t_mode)K))
-	if (_mode & (t_mode)KEY)
+	if (_keyModeOn)
 	{
 		std::cout << "This channel already ask for a password to enter." << std::endl;
+		if (_password)
+			_password->erase();
+		std::string *pwd = new std::string(password);
+		_password = pwd;
+		delete pwd;
+	}
+	else
+		_keyModeOn = true;
+		//_mode = (t_mode)_mode | (t_mode)KEY; 
+	/* if ((_mode & (t_login)K))
+		std::cout << "le flag a ete ajoute !" << std::endl; */
+	msg = password + " is the new password of this channel.";
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "k", msg), _clients);
+	
+};
+
+void			Channel::removePassword(Client* cli)
+{
+	if (!_keyModeOn)
+	{
+		std::cout << "This channel already doesn't have any password." << std::endl;
 		return ;
 	}
 	else
-		_mode = (t_mode)_mode | (t_mode)KEY; 
-	/* if ((_mode & (t_login)K))
-		std::cout << "le flag a ete ajoute !" << std::endl; */
-	std::cout << password << " is the new password of this channel." << std::endl;
-	if (_password)
-		delete _password;
-	std::string *pwd = new std::string(password);
-	_password = pwd;
-	delete pwd;
-};
-
-void			Channel::removePassword()
-{
-	if (!(_mode & (t_mode)KEY))
-	{
-		std::cout << "This channel already doesn't need a password." << std::endl;
-		return ;
-	}
-	else	
-		_mode = (t_mode)_mode & (t_mode)KEY; 
+		_keyModeOn = false;	
+		//_mode = (t_mode)_mode & (t_mode)KEY; 
 	/* if (!(_mode & (t_login)K))
 		std::cout << "le flag a ete enleve !" << std::endl; */
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "k", "This channel has no more password."), _clients);
 	std::cout << "this channel has no more password." << std::endl;
 	if (_password)
-		delete _password;
+		_password->erase();
 };
 
 /* ************************************************************************** */
 // HANDLE LIMIT FLAG
 /* ************************************************************************** */
 
-void			Channel::modLimit(std::string limit)
+void			Channel::modLimit(std::string limit, Client* cli)
 {
+	std::string msg;
 	int	n_lim;
 	
 	if (limit.find_first_not_of("0123456789") != std::string::npos)
-		return (modeError('l'));
+	{
+		cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Need a numeric limit (+l).") , cli->get_fd());
+    	cli->get_Server()->prepareMsgToClient(cli);
+		return ;
+	}
 		
 	n_lim = atoi(limit.c_str());
 	_limit = (size_t)n_lim;
-	_mode = (t_mode)_mode | (t_mode)LIMIT; 
-	std::cout << limit << "is the maximum number of user allowed in this channel." << std::endl;
+	//_mode = (t_mode)_mode | (t_mode)LIMIT; 
+	_limitModeOn = true;
+	msg = limit + " is the maximum number of user allowed in this channel.";
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "l", msg), _clients);
 };
 
-void			Channel::removeLimit()
+void			Channel::removeLimit(Client* cli)
 {
-	_mode = (t_mode)_mode & (t_mode)LIMIT;
+	//_mode = (t_mode)_mode & (t_mode)LIMIT;
+	_limitModeOn = false;
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "l", "This channel has no more user limit."), _clients);
 	std::cout << "This channel has no more user limit." << std::endl;
 };
 
@@ -294,15 +315,19 @@ void			Channel::removeLimit()
 // HANDLE INVITE FLAG
 /* ************************************************************************** */
 
-void			Channel::inviteModeOn()
+void			Channel::inviteModeOn(Client* cli)
 {
-	_mode = (t_mode)_mode | (t_mode)INVITE; 
+	//_mode = (t_mode)_mode | (t_mode)INVITE; 
+	_inviteModeOn = true;
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "i", "This channel is now accessible only through invitation."), _clients);
 	std::cout << "This channel is now accessible only through invitation." << std::endl;
 };
 
-void			Channel::inviteModeOff()
+void			Channel::inviteModeOff(Client* cli)
 {
-	_mode = (t_mode)_mode & (t_mode)INVITE; 
+	//_mode = (t_mode)_mode & (t_mode)INVITE; 
+	_inviteModeOn = false;
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "i", "No more need to be invited to join this channel."), _clients);
 	std::cout << "No more need to be invited to join this channel." << std::endl;
 };
 
@@ -310,14 +335,18 @@ void			Channel::inviteModeOff()
 // HANDLE TOPIC FLAG
 /* ************************************************************************** */
 
-void			Channel::topicModeOn()
+void			Channel::topicModeOn(Client* cli)
 {
-	_mode = (t_mode)_mode | (t_mode)TOPIC; 
+	//_mode = (t_mode)_mode | (t_mode)TOPIC;
+	_topicModeOn = true;
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "t", "Topic cmd reserved for operators on this channel."), _clients);
 	std::cout << "Topic cmd reserved for operqtors on this channel." << std::endl;
 };
 
-void			Channel::topicModeOff()
+void			Channel::topicModeOff(Client* cli)
 {
-	_mode = (t_mode)_mode & (t_mode)TOPIC; 
+	//_mode = (t_mode)_mode & (t_mode)TOPIC;
+	_topicModeOn = false;
+	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "t", "Topic cmd enabled for every user on this channel."), _clients);
 	std::cout << "Topic cmd enabled for everybody on this channel." << std::endl;
 };

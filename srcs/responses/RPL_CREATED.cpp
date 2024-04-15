@@ -1,20 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ERR_NEEDMOREPARAMS.cpp                             :+:      :+:    :+:   */
+/*   RPL_CREATED.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/14 18:03:43 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 18:07:04 by tmalless         ###   ########.fr       */
+/*   Created: 2024/04/15 14:09:48 by tmalless          #+#    #+#             */
+/*   Updated: 2024/04/15 14:14:58 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-461
+#include "../../includes/Responses.hpp"
 
-# include <string>
-
-std::string	ERR_NEEDMOREPARAMS(std::string chan, std::string cmd, std::string reason)
+std::string	RPL_CREATED()
 {
-	
-}
+	std::stringstream output;
+
+	output << ":" << PREFIXE;
+	output << " 003 ";
+	output << ": The server was created on ";
+	output << CREATION << ".\r\n" ;
+
+	return (output.str());
+}	

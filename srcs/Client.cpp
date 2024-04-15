@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:10:28 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/15 23:38:14 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,29 @@ void	Client::write_stream(void) {
 void	Client::join(Channel* channel, std::string* password) {
 	std::string* response = channel->join(this, password);
 	if (response) {
-		_bufferOut.append(*response);
-		std::cout << GRE << *response << " " << _bufferOut << WHI << std::endl;
+		if (response->compare("bad password\r\n") == 0)
+		{
+			_server->setUpTransmission(this, ERR_CHANWRONGPASS(_nickName, channel->getName(), "Cannot join channel (+k)"), _fd);
+			_server->prepareMsgToClient(this);
+		}
+		if (response->compare("not invited\r\n") == 0)
+		{
+			_server->setUpTransmission(this, ERR_CHANNELUSERNOTINVIT(_nickName, channel->getName(), "Cannot join channel (+i)"), _fd);
+			_server->prepareMsgToClient(this);
+		}
+		if (response->compare("limit reached\r\n") == 0)
+		{
+			_server->setUpTransmission(this, ERR_CHANNELISFULL(_nickName, channel->getName(), "Cannot join channel, it is full."), _fd);
+			_server->prepareMsgToClient(this);
+		}
+		/* _bufferOut.append(*response);
+		std::cout << GRE << *response << " " << _bufferOut << WHI << std::endl; */
 	}
 	else
+	{
 		_channels.insert(channel->asPair());
+		
+	}
 }
 
 void	Client::isWelcomed(std::string flag) {
@@ -161,9 +179,17 @@ void	Client::isWelcomed(std::string flag) {
 		std::string	welcome;
 		std::string	prefixe = PREFIXE;
 	
-		welcome = ":" + prefixe + " 001 " + get_nickName() + ": \n" + INTERCEPT +"\nsi la famille !\n";
-		get_Server()->setUpTransmission(this, welcome, get_fd());
-    	get_Server()->prepareMsgToClient(this);
+		//welcome = ":" + prefixe + " 001 " + get_nickName() + ": \n" + INTERCEPT +"\nsi la famille !\n";
+		get_Server()->setUpTransmission(this, RPL_WELCOME(this), get_fd());
+		get_Server()->prepareMsgToClient(this);
+		get_Server()->setUpTransmission(this, RPL_YOURHOST(), get_fd());
+		get_Server()->prepareMsgToClient(this);
+		get_Server()->setUpTransmission(this, RPL_CREATED(), get_fd());
+		get_Server()->prepareMsgToClient(this);
+		get_Server()->setUpTransmission(this, RPL_MYINFO(), get_fd());
+		get_Server()->prepareMsgToClient(this);
+	/* 	get_Server()->setUpTransmission(this, ":localhost 221 " + get_nickName() + " +i\r\n", get_fd());
+    	get_Server()->prepareMsgToClient(this); */
 		//send welcome
 	}
 }

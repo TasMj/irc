@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 18:46:57 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 00:14:53 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,9 @@ void	Server::cmd_invite(Client *cli, t_message *msg)
 void	Channel::inviteCmd(Client *sender, Client *receiver)
 {
 	t_clients_map::iterator it;
-	bool					s_ok = false, r_ok = true;
+	bool					s_ok = false, r_ok = true; /* need_ops = false */
 	std::string				password;
+	std::string				response;
 	
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
@@ -73,33 +74,68 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 		return ;
 	}
 
-	if (_mode & (t_mode)LIMIT)
+	if (_limitModeOn/* _mode & (t_mode)LIMIT */)
 	{
 		if (_clients.size() + 1 > _limit)
-			std::cout << "this channel is already full" << std::endl;
+		{
+			sender->get_Server()->setUpTransmission(sender, ERR_CHANNELISFULL(sender->get_nickName(), _name, "Cannot invite in this channel, it is full."), sender->get_fd());
+			sender->get_Server()->prepareMsgToClient(sender);
+		}
 	}
 
-	if (_mode & (t_mode)KEY)
+	if (_keyModeOn/* _mode & (t_mode)KEY */)
+	{
 		password = 	*(_password);
+		//need_ops = true;
+		std::cout << "KEY ACTIF" << std::endl;
+	}
 
-	if (_mode & (t_mode)INVITE)
+	if (/* (_mode & (t_mode)INVITE) */_inviteModeOn || _keyModeOn /* need_ops */)
 	{
 		std::vector<Client*>::iterator jt;
 
+		std::cout << "INVITE ACTIF" << std::endl;
 		for (jt = _operators.begin(); jt != _operators.end(); jt++)
 		{
 			if ((*jt)->get_userName() == sender->get_userName())
 			{
-				std::cout << receiver->get_nickName() << " join " << _name << std::endl;
+				if (!password.empty())
+				{
+					response = "Invitation send to " + receiver->get_nickName() +", password is : " + password;
+					sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name, response), receiver->get_fd());
+    				sender->get_Server()->prepareMsgToClient(sender);
+				}
+				else	
+					std::cout << receiver->get_nickName() << " join " << _name << std::endl;
 				// join(receiver, NULL, true);
+				if (!checkInvited(receiver))
+					_invited.push_back(receiver);
 				return ;
 			}
 		}
-		std::cout << "You need to be operator on this channel to invite new members." << std::endl;
+		sender->get_Server()->setUpTransmission(sender, ERR_CHANPRIVSNEEDED(sender->get_nickName(), _name), sender->get_fd());
+    	sender->get_Server()->prepareMsgToClient(sender);
 	}
 	else
 	{
-		std::cout << receiver->get_nickName() << " join " << _name << std::endl;
-		// join(receiver, NULL, true);
+		response = " Invitation send to " + receiver->get_nickName();
+		sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name, response), receiver->get_fd());
+    	sender->get_Server()->prepareMsgToClient(sender);
 	}
 }
+
+bool			Channel::checkInvited(Client* cli)
+{
+	if (!cli)
+		return (false);
+	for (size_t i = 0; i < _invited.size(); i++)
+	{
+		if (_invited[i]->get_nickName() == cli->get_nickName())
+		{
+			std::cout << cli->get_nickName() << " is invited in this channel." << std::endl;
+			return (true);
+		}
+	}
+	std::cout << cli->get_nickName() << " is not invited in this channel." << std::endl;
+	return (false);
+};

@@ -4,11 +4,16 @@
 Channel::Channel(std::string name, std::string* password)
     : _name(name)
     , _password(NULL)
+	, _inviteModeOn(false)
+	, _keyModeOn(false)
+	, _topicModeOn(false)
+	, _limitModeOn(false)
 {
-	_mode = (t_mode)0;
+	// _mode = (t_mode)0;
     if (password != NULL) {
         _password = new std::string(*password);
-		_mode = (t_mode)KEY;
+		//_mode = _mode | (t_mode)KEY;
+		_keyModeOn = true;
     }
 }
 
@@ -19,7 +24,22 @@ std::string*    Channel::join(Client* cli, std::string* password) {
         }
         //send THE RIGHT ERROR MSG
     }
+	if (_inviteModeOn)
+	{
+		if (!checkInvited(cli))
+		{
+			return (new std::string("not invited\r\n"));
+		}
+	}
+	if (_limitModeOn)
+	{
+		if (_clients.size() + 1 >= _limit)
+		{
+			return (new std::string("limit reached\r\n"));
+		}
+	}
     _clients.insert(std::make_pair(cli->get_nickName(), cli));
+	cli->get_Server()->sendToAll(cli, RPL_JOIN(cli, _name), _clients);
     return (NULL);
 }
 
@@ -42,7 +62,7 @@ t_channel   Channel::asPair(void) {
     return (std::make_pair(_name, this));
 }
 
-t_mode			operator|(t_mode oldFlag, t_mode newFlag)
+/* t_mode			operator|(t_mode oldFlag, t_mode newFlag)
 {
 	return ((t_mode)((int)oldFlag | (int)newFlag));
 }
@@ -50,4 +70,4 @@ t_mode			operator|(t_mode oldFlag, t_mode newFlag)
 t_mode			operator&(t_mode oldFlag, t_mode unsetFlag)
 {
 	return ((t_mode)((int)oldFlag & ~(int)unsetFlag));
-}
+} */

@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:21:41 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/15 14:24:43 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Channel.hpp"
 
-Channel *Server::getRefChannelByName(std::string name)
+/* Channel *Server::getRefChannelByName(std::string name)
 {
 	std::map<std::string, Channel*>::iterator it = _channels.begin();
 
@@ -24,7 +24,7 @@ Channel *Server::getRefChannelByName(std::string name)
             return (it->second);
 	}
     return (NULL);
-}
+} */
 
 bool    Channel::checkClientExist(std::string toKick)
 {
@@ -88,14 +88,15 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     // std::cout << "Channel: " << channelName << std::endl;
     // std::cout << "Name: <" << toKick << ">" << std::endl;
     // std::cout << "Reason: " << reason << std::endl;
-
-    Channel *currentChan = Server::getRefChannelByName(channelName); //recup Channel
+	t_channel_map::iterator it;
+	it = _channels.find(channelName);
+    Channel *currentChan = it->second; //recup Channel
     std::string ERR;
     std::string output;
     
-    if (currentChan == NULL)
+    if (it == _channels.end())
         ERR = errChannel(cli->get_nickName(), channelName, " Channel doesn't exist.");
-    else if (currentChan->checkOperator(cli->get_userName()) == false) // verifier que emitter a le droit de kick
+    else if (currentChan->checkOperator(cli) == false) // verifier que emitter a le droit de kick
         ERR = errOperator(cli->get_nickName(), channelName, " Not an operator.");
     else if (currentChan->checkClientExist(toKick) == false) //verifier que le client existe
         ERR = errClient(cli->get_nickName(), channelName, " Client not present in this channel");
