@@ -33,18 +33,18 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
         std::string nick = name;
         std::string msgToSend = msg->last_params;
 
-		int		fd_to_send;
+		//int		fd_to_send;
 		Client* found = findNickName(nick);
         if (found) {
-        	setUpTransmission(cli, RPL_PRIVMSG(cli->get_nickName(), nick, msgToSend), cli->get_fd());
+        	setUpTransmission(cli, RPL_PRIVMSG(cli->get_nickName(), nick, msgToSend), found->get_fd());
         	prepareMsgToClient(cli);
         }
 		else
         {
-			setUpTransmission(cli, ERR_NOSUCHCHANNEL(cli->get_nickName(), nick, "No user matching with" + nick + "."), cli->get_fd());
+			setUpTransmission(cli, ERR_NOSUCHNICK(cli->get_nickName(), nick, "No user matching with" + nick + "."), cli->get_fd());
         	prepareMsgToClient(cli);
         }
-		setUpTransmission(cli, response, fd_to_send);
-        prepareMsgToClient(cli);
+		/* setUpTransmission(cli, response, found->get_fd());
+        prepareMsgToClient(cli); */
     }
 }

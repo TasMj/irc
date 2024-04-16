@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 18:53:37 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 01:21:55 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:33:59 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ std::string	ERR_CHANNELUSERNOTINVIT(std::string nick, std::string chan, std::str
 /* ************************************************************************** */
 
 std::string	ERR_NEEDMOREPARAMS(std::string nick, std::string cmd, std::string reason);
-std::string	RPL_INVITE(std::string sender, std::string receiver, std::string chan, std::string reason);
+std::string	RPL_INVITE(std::string sender, std::string receiver, std::string chan);
 
 /* ************************************************************************** */
 // MODE

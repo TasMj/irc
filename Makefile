@@ -6,7 +6,7 @@
 #    By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/16 01:04:40 by tmalless         ###   ########.fr        #
+#    Updated: 2024/04/16 15:12:34 by tmalless         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ SRC_NAME 	+=	./srcs/responses/RPL_JOIN.cpp
 SRC_NAME 	+=	./srcs/responses/RPL_INVITE.cpp
 SRC_NAME 	+=	./srcs/responses/RPL_NICK.cpp
 SRC_NAME 	+=	./srcs/responses/RPL_MODE.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_PRIVMSG.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_NICKNAMEINUSE.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_NEEDMOREPARAMS.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_CHANWRONGPASS.cpp
@@ -46,6 +47,8 @@ SRC_NAME 	+=	./srcs/responses/ERR_CHANPRIVSNEEDED.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_CHANNELUSERNOTINVIT.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_CHANNELISFULL.cpp
 SRC_NAME 	+=	./srcs/responses/ERR_NOTONCHANNEL.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_NOSUCHCHANNEL.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_NOSUCHNICK.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 00:14:53 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:23:50 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 
 	if (_keyModeOn/* _mode & (t_mode)KEY */)
 	{
-		password = 	*(_password);
+		std::cout << "KEY PAS ACTIF" << std::endl;
+		password = 	_password->c_str();
 		//need_ops = true;
 		std::cout << "KEY ACTIF" << std::endl;
 	}
@@ -101,8 +102,8 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 			{
 				if (!password.empty())
 				{
-					response = "Invitation send to " + receiver->get_nickName() +", password is : " + password;
-					sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name, response), receiver->get_fd());
+					response = " Invitation send to " + receiver->get_nickName() +", password is : " + password;
+					sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name), receiver->get_fd());
     				sender->get_Server()->prepareMsgToClient(sender);
 				}
 				else	
@@ -119,7 +120,7 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 	else
 	{
 		response = " Invitation send to " + receiver->get_nickName();
-		sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name, response), receiver->get_fd());
+		sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name), receiver->get_fd());
     	sender->get_Server()->prepareMsgToClient(sender);
 	}
 }
