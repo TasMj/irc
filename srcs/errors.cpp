@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 18:15:29 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/15 23:30:43 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:46:14 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,6 @@ std::string ERR_CHANOPRIVSNEEDED(std::string nickname, std::string channel, std:
     
     output << ":" << PREFIXE;
 	output << " 482 #";
-	output << " " << nickname;
-	output << " #" << channel;
-	output << " :" << reason;
-	output << "\r\n";
-	return (output.str());
-}
-
-std::string ERR_NOTONCHANNEL(std::string nickname, std::string channel, std::string reason)
-{
-	std::stringstream	output;
-    
-    output << ":" << PREFIXE;
-	output << " 442 #";
 	output << " " << nickname;
 	output << " #" << channel;
 	output << " :" << reason;
@@ -77,20 +64,6 @@ std::string RPL_NOTOPIC(std::string nickname, std::string channel, std::string r
 	return (output.str());
 }
 
-std::string ERR_NEEDMOREPARAMS(std::string channel, std::string cmd, std::string reason)
-{
-    std::stringstream	output;
-
-	(void)channel;
-	output << ":" << PREFIXE;
-	output << " 461";
-	if (channel.size())
-		output << " #" << channel;
-	output << " " << cmd;
-	output << " :" << reason;
-	output << "\r\n";
-	return (output.str());
-}
 
 std::string	RPL_TOPIC(std::string nickname, std::string channel, std::string topic)
 {

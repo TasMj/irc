@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Responses.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 18:53:37 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 01:21:55 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:27:38 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ std::string	RPL_INVITE(std::string sender, std::string receiver, std::string cha
 // MODE
 /* ************************************************************************** */
 
-std::string	ERR_NEEDMOREPARAMS(std::string nick, std::string cmd, std::string reason);
 std::string	RPL_MODE(std::string nick, std::string chan, std::string sign, std::string flag, std::string reason);
 std::string	ERR_CHANPRIVSNEEDED(std::string nick, std::string chan);
 

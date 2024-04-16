@@ -29,7 +29,7 @@ void	Server::cmd_join(Client* cli, t_message* msg) {
             cli->join(_channels[name], password);
             delete password;
         } else {
-            //send 476 -> ERR_BADCHANMASK
+            //TODO send 476 -> ERR_BADCHANMASK 
         }
 	}	
 }

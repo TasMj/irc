@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 00:15:34 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:25:38 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,9 @@
 /* ************************************************************************** */
 
 static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
-	//bool		i = false, t = false, k = false, o = false, l = false;
+	std::string response;
 	std::string	userName;
 	std::string	password;
-	//size_t		limit;
-	//size_t		nParamsNeeded = n_params_wanted(msg->params[1].c_str());
 	char		op = '+';
 
 	if (msg->params[1][0] == '-')
@@ -56,8 +54,8 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 		{
 			if (n >= msg->params.size())
 			{
-				cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a username (o).") , cli->get_fd());
-    			cli->get_Server()->prepareMsgToClient(cli);
+				response = ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a username (o).");
+				cli->setBufferOut(response);
 			}
 			else if (op == '+')
 				chan->addOperator(cli, cli->get_Server()->getRefClientByName(msg->params[n]), false);
@@ -69,8 +67,8 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 		{
 			if (n >= msg->params.size() && op == '+')
 			{
-				cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide an alphanum password (+k).") , cli->get_fd());
-    			cli->get_Server()->prepareMsgToClient(cli);
+				response = ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide an alphanum password (+k).");
+				cli->setBufferOut(response);
 			}
 			else if (op == '+')
 			{
@@ -84,8 +82,8 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 		{
 			if (n >= msg->params.size() && op == '+')
 			{
-				cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a numeric limit (+l).") , cli->get_fd());
-    			cli->get_Server()->prepareMsgToClient(cli);
+				response = ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a numeric limit (+l).");
+				cli->setBufferOut(response);
 			}
 			else if (op == '+')
 			{
@@ -115,7 +113,7 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 }
 
 void	Server::cmd_mode(Client* cli, t_message* msg) {
-	
+	std::string response;
 	std::map<std::string, Channel *>::iterator	it;
 	if (msg->params[0][0] == '#')
 		msg->params[0].erase(0,1);
@@ -126,22 +124,22 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 	{
 		if (!it->second->checkOperator(cli))
 		{
-			cli->get_Server()->setUpTransmission(cli, ERR_CHANPRIVSNEEDED(cli->get_nickName(), it->second->getName()), cli->get_fd());
-    		cli->get_Server()->prepareMsgToClient(cli);
+			response = ERR_CHANPRIVSNEEDED(cli->get_nickName(), it->second->getName()), cli->get_fd();
+			cli->setBufferOut(response);
 			return ;
 		}
 		if (msg->params[1].find_first_not_of("+-itkol", 0) != std::string::npos)
 		{
-			cli->get_Server()->setUpTransmission(cli, ":localhost Flags are incorect ([+|-]i|t|k|o|l).\n", cli->get_fd());
-			cli->get_Server()->prepareMsgToClient(cli);
+			response = ":localhost Flags are incorect ([+|-]i|t|k|o|l).\n";
+			cli->setBufferOut(response);
 		}
 		else
 			cmd_mode_chan(cli, msg, it->second);
 	}
 	else
 	{
-		cli->get_Server()->setUpTransmission(cli, ":localhost Please specify a valid channel for MODE command.\n", cli->get_fd());
-		cli->get_Server()->prepareMsgToClient(cli);
+		response = ":localhost Please specify a valid channel for MODE command.\n";
+		cli->setBufferOut(response);
 	}
 }
 
@@ -168,11 +166,6 @@ bool			Channel::checkOperator(Client* cli)
 void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 {
 	std::string msg;
-	/* if (!cli->get_Server()->getRefClientByName(name))
-	{
-		std::cout << name << " : this user doesn't exist." << std::endl;
-		return ;
-	} */
 	if (!receiver)
 	{
 		std::cout << "This user doesn't exist." << std::endl;
@@ -205,7 +198,8 @@ void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 		}
 	}
 	msg = receiver->get_userName() + " is a new operator of this channel.";
-	sender->get_Server()->sendToAll(sender, RPL_MODE(sender->get_nickName(), _name, "+", "o", msg), _clients);
+	msg = RPL_MODE(sender->get_nickName(), _name, "+", "o", msg);
+	sendToAllClients(msg);
 	_operators.push_back(receiver);
 };
 
@@ -226,7 +220,8 @@ void			Channel::removeOperator(Client* sender, Client* receiver)
 		{
 			_operators.erase(it);
 			msg = receiver->get_userName() + " is no more an operator of this channel.";
-			sender->get_Server()->sendToAll(sender, RPL_MODE(sender->get_nickName(), _name, "-", "o", msg), _clients);
+			msg = RPL_MODE(sender->get_nickName(), _name, "-", "o", msg);
+			sendToAllClients(msg);
 			return ;
 		}
 	}
@@ -257,7 +252,8 @@ void			Channel::modPassword(std::string password, Client* cli)
 	/* if ((_mode & (t_login)K))
 		std::cout << "le flag a ete ajoute !" << std::endl; */
 	msg = password + " is the new password of this channel.";
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "k", msg), _clients);
+	msg = RPL_MODE(cli->get_nickName(), _name, "+", "k", msg);
+	sendToAllClients(msg);
 	
 };
 
@@ -270,11 +266,9 @@ void			Channel::removePassword(Client* cli)
 	}
 	else
 		_keyModeOn = false;	
-		//_mode = (t_mode)_mode & (t_mode)KEY; 
-	/* if (!(_mode & (t_login)K))
-		std::cout << "le flag a ete enleve !" << std::endl; */
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "k", "This channel has no more password."), _clients);
-	std::cout << "this channel has no more password." << std::endl;
+
+	std::string msg = RPL_MODE(cli->get_nickName(), _name, "-", "k", "This channel has no more password.");
+	sendToAllClients(msg);
 	if (_password)
 		_password->erase();
 };
@@ -290,8 +284,9 @@ void			Channel::modLimit(std::string limit, Client* cli)
 	
 	if (limit.find_first_not_of("0123456789") != std::string::npos)
 	{
-		cli->get_Server()->setUpTransmission(cli, ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Need a numeric limit (+l).") , cli->get_fd());
-    	cli->get_Server()->prepareMsgToClient(cli);
+		
+		msg = ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Need a numeric limit (+l).");
+		cli->setBufferOut(msg);
 		return ;
 	}
 		
@@ -300,15 +295,15 @@ void			Channel::modLimit(std::string limit, Client* cli)
 	//_mode = (t_mode)_mode | (t_mode)LIMIT; 
 	_limitModeOn = true;
 	msg = limit + " is the maximum number of user allowed in this channel.";
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "l", msg), _clients);
+	msg = RPL_MODE(cli->get_nickName(), _name, "+", "l", msg);
+	sendToAllClients(msg);
 };
 
 void			Channel::removeLimit(Client* cli)
 {
-	//_mode = (t_mode)_mode & (t_mode)LIMIT;
 	_limitModeOn = false;
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "l", "This channel has no more user limit."), _clients);
-	std::cout << "This channel has no more user limit." << std::endl;
+	std::string msg = RPL_MODE(cli->get_nickName(), _name, "-", "l", "This channel has no more user limit.");
+	sendToAllClients(msg);
 };
 
 /* ************************************************************************** */
@@ -317,18 +312,16 @@ void			Channel::removeLimit(Client* cli)
 
 void			Channel::inviteModeOn(Client* cli)
 {
-	//_mode = (t_mode)_mode | (t_mode)INVITE; 
 	_inviteModeOn = true;
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "i", "This channel is now accessible only through invitation."), _clients);
-	std::cout << "This channel is now accessible only through invitation." << std::endl;
+	std::string msg = RPL_MODE(cli->get_nickName(), _name, "+", "i", "This channel is now accessible only through invitation.");
+	sendToAllClients(msg);
 };
 
 void			Channel::inviteModeOff(Client* cli)
 {
-	//_mode = (t_mode)_mode & (t_mode)INVITE; 
 	_inviteModeOn = false;
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "i", "No more need to be invited to join this channel."), _clients);
-	std::cout << "No more need to be invited to join this channel." << std::endl;
+	std::string msg = RPL_MODE(cli->get_nickName(), _name, "-", "i", "No more need to be invited to join this channel.");
+	sendToAllClients(msg);
 };
 
 /* ************************************************************************** */
@@ -337,16 +330,14 @@ void			Channel::inviteModeOff(Client* cli)
 
 void			Channel::topicModeOn(Client* cli)
 {
-	//_mode = (t_mode)_mode | (t_mode)TOPIC;
 	_topicModeOn = true;
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "+", "t", "Topic cmd reserved for operators on this channel."), _clients);
-	std::cout << "Topic cmd reserved for operqtors on this channel." << std::endl;
+	std::string msg = RPL_MODE(cli->get_nickName(), _name, "+", "t", "Topic cmd reserved for operators on this channel.");
+	sendToAllClients(msg);	
 };
 
 void			Channel::topicModeOff(Client* cli)
 {
-	//_mode = (t_mode)_mode & (t_mode)TOPIC;
 	_topicModeOn = false;
-	cli->get_Server()->sendToAll(cli, RPL_MODE(cli->get_nickName(), _name, "-", "t", "Topic cmd enabled for every user on this channel."), _clients);
-	std::cout << "Topic cmd enabled for everybody on this channel." << std::endl;
+	std::string msg = RPL_MODE(cli->get_nickName(), _name, "-", "t", "Topic cmd enabled for every user on this channel.");
+	sendToAllClients(msg);	
 };

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 18:21:05 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:17:57 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,13 @@
 
 # include "Message.hpp"
 # include "Channel.hpp"
-# include "Transmission.hpp"
+# include "Responses.hpp"
 
 
 /******************************************************************************/
 /*                                  Class                                     */
 /******************************************************************************/
 
-class Transmission;
 class Server;
 
 typedef enum e_login {
@@ -102,5 +101,5 @@ public:
 	void			write_stream(void);
 };
 
-	t_login			operator|(t_login oldFlag, t_login newFlag);
+t_login			operator|(t_login oldFlag, t_login newFlag);
 	

@@ -6,14 +6,14 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 15:19:38 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:27:07 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Channel.hpp"
 
-/* Channel *Server::getRefChannelByName(std::string name)
+Channel *Server::getRefChannelByName(std::string name)
 {
 	std::map<std::string, Channel*>::iterator it = _channels.begin();
 
@@ -23,7 +23,7 @@
             return (it->second);
 	}
     return (NULL);
-} */
+}
 
 bool    Channel::checkClientExist(std::string toKick)
 {
@@ -83,56 +83,6 @@ std::string Channel::getTopic()
     return (this->_topic);
 }
 
-void	Server::cmd_topic(Client* cli, t_message* msg)
-{
-    (void)cli;
-    std::string ERR;
-    std::string output;
-    std::cout << msg->raw << std::endl;
-    if (0 || !expect_N_Params(msg, 1))
-    {
-        ERR = ERR_NEEDMOREPARAMS("", "TOPIC", "need more param.");        
-        return;
-    }
-    std::string &channelName = msg->params[0];
-    channelName = channelName.substr(1);
-    // std::cout << "Channel: " << channelName << std::endl;
-    // std::cout << "Topic: " <<  << std::endl;
-
-    Channel *currentChan = Server::getRefChannelByName(channelName); //recup Channel
-    if (currentChan == NULL)
-        ERR = ERR_NOSUCHCHANNEL(cli->get_nickName(), channelName, " Channel doesn't exist.");
-    else if (currentChan->checkClientExist(cli->get_nickName()) == false) //verifier que le client existe
-        ERR = ERR_NOTONCHANNEL(cli->get_nickName(), channelName, " Client not present in this channel");
-    else if (!expect_LastParams(msg))
-    {
-        if (currentChan->getTopic() != "")
-            output = RPL_TOPIC(cli->get_nickName(), channelName, currentChan->getTopic());
-        else
-            ERR = RPL_NOTOPIC(cli->get_nickName(), channelName, "NO TOPIC YET");
-    }
-    else
-    {
-        // if ( && currentChan->checkOperator(cli) == false) modif topic mode operator??
-            ERR = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), channelName, " Not an operator.");
-        std::string new_top = msg->last_params;
-        if (new_top != "" && new_top[0] == ':')
-            new_top = new_top.substr(1);
-        currentChan->setTopic(new_top);
-        output = RPL_TOPIC(cli->get_nickName(), channelName, new_top);
-        currentChan->sendToAllClients(output, cli);
-    }
-    
-       
-       
-    if (!ERR.empty())
-        cli->get_Server()->setUpTransmission(cli, ERR, cli->get_fd()); //
-    else if (!output.empty())
-        cli->get_Server()->setUpTransmission(cli, output, cli->get_fd()); //
-    cli->get_Server()->prepareMsgToClient(cli);
-
-}
-
 void	Server::cmd_kick(Client* cli, t_message* msg)
 {
     (void)cli;
@@ -150,10 +100,7 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     else
         toKick.erase(toKick.length() - 1, toKick.length() - 2);
     std::string reason = nameAndReason[1];
-    
-    // std::cout << "Channel: " << channelName << std::endl;
-    // std::cout << "Name: <" << toKick << ">" << std::endl;
-    // std::cout << "Reason: " << reason << std::endl;
+
 	t_channel_map::iterator it;
 	it = _channels.find(channelName);
     Channel *currentChan = it->second; //recup Channel
@@ -173,8 +120,7 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
         currentChan->sendToAllClients(output, cli);
     }
     if (!ERR.empty())
-        cli->get_Server()->setUpTransmission(cli, ERR, cli->get_fd()); //
+        cli->setBufferOut(ERR);
     else if (!output.empty())
-        cli->get_Server()->setUpTransmission(cli, output, cli->get_fd()); //
-    cli->get_Server()->prepareMsgToClient(cli);
+        cli->setBufferOut(output);
 }

@@ -15,15 +15,15 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
         name.erase(0,1);
         std::map<std::string, Channel*>::iterator it = _channels.find(name);
         if (it == _channels.end()) {
-            setUpTransmission(cli, ERR_NOSUCHCHANNEL(cli->get_nickName(), it->second->getName(), name + "is not an existing channel."), cli->get_fd());
-        	prepareMsgToClient(cli);
+            response = ERR_NOSUCHCHANNEL(cli->get_nickName(), it->second->getName(), name + "is not an existing channel.");
+			cli->setBufferOut(response);
             return;
         }
 
 		if (!it->second->isInChannel(cli->get_nickName()))
 		{
-			setUpTransmission(cli, ERR_NOTONCHANNEL(cli->get_nickName(), it->second->getName(), "You're not on that channel."), cli->get_fd());
-        	prepareMsgToClient(cli);
+			response = ERR_NOTONCHANNEL(cli->get_nickName(), it->second->getName(), "You're not on that channel.");
+			cli->setBufferOut(response);
 			return ;
 		}
         response = RPL_PRIVMSG(cli->get_nickName(), "#" + it->second->getName() ,msg->last_params);
@@ -33,18 +33,16 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
         std::string nick = name;
         std::string msgToSend = msg->last_params;
 
-		int		fd_to_send;
-		Client* found = findNickName(nick);
+		Client* found = getRefClientByNick(nick);
         if (found) {
-        	setUpTransmission(cli, RPL_PRIVMSG(cli->get_nickName(), nick, msgToSend), cli->get_fd());
-        	prepareMsgToClient(cli);
+        	response = RPL_PRIVMSG(cli->get_nickName(), nick, msgToSend);
+			cli->setBufferOut(response);
         }
 		else
         {
-			setUpTransmission(cli, ERR_NOSUCHCHANNEL(cli->get_nickName(), nick, "No user matching with" + nick + "."), cli->get_fd());
-        	prepareMsgToClient(cli);
+			response = ERR_NOSUCHCHANNEL(cli->get_nickName(), nick, "No user matching with" + nick + ".");
+			cli->setBufferOut(response);
         }
-		setUpTransmission(cli, response, fd_to_send);
-        prepareMsgToClient(cli);
+		cli->setBufferOut(response);
     }
 }

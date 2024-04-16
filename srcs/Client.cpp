@@ -3,22 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/15 23:38:14 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:23:47 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
+#include "Client.hpp"
 
 Client::Client()
 	: _bufferOut("")
 	, _isOps(false)
 	, _login(UNSET)
-{
-	//_login = (t_login)UNSET;
-}
+{}
 
 Client::~Client()
 {
@@ -137,31 +135,8 @@ void	Client::write_stream(void) {
 }
 
 void	Client::join(Channel* channel, std::string* password) {
-	std::string* response = channel->join(this, password);
-	if (response) {
-		if (response->compare("bad password\r\n") == 0)
-		{
-			_server->setUpTransmission(this, ERR_CHANWRONGPASS(_nickName, channel->getName(), "Cannot join channel (+k)"), _fd);
-			_server->prepareMsgToClient(this);
-		}
-		if (response->compare("not invited\r\n") == 0)
-		{
-			_server->setUpTransmission(this, ERR_CHANNELUSERNOTINVIT(_nickName, channel->getName(), "Cannot join channel (+i)"), _fd);
-			_server->prepareMsgToClient(this);
-		}
-		if (response->compare("limit reached\r\n") == 0)
-		{
-			_server->setUpTransmission(this, ERR_CHANNELISFULL(_nickName, channel->getName(), "Cannot join channel, it is full."), _fd);
-			_server->prepareMsgToClient(this);
-		}
-		/* _bufferOut.append(*response);
-		std::cout << GRE << *response << " " << _bufferOut << WHI << std::endl; */
-	}
-	else
-	{
-		_channels.insert(channel->asPair());
-		
-	}
+	if (channel->join(this, password))
+		_channels.insert(channel->asPair());	
 }
 
 void	Client::isWelcomed(std::string flag) {
@@ -179,18 +154,10 @@ void	Client::isWelcomed(std::string flag) {
 		std::string	welcome;
 		std::string	prefixe = PREFIXE;
 	
-		//welcome = ":" + prefixe + " 001 " + get_nickName() + ": \n" + INTERCEPT +"\nsi la famille !\n";
-		get_Server()->setUpTransmission(this, RPL_WELCOME(this), get_fd());
-		get_Server()->prepareMsgToClient(this);
-		get_Server()->setUpTransmission(this, RPL_YOURHOST(), get_fd());
-		get_Server()->prepareMsgToClient(this);
-		get_Server()->setUpTransmission(this, RPL_CREATED(), get_fd());
-		get_Server()->prepareMsgToClient(this);
-		get_Server()->setUpTransmission(this, RPL_MYINFO(), get_fd());
-		get_Server()->prepareMsgToClient(this);
-	/* 	get_Server()->setUpTransmission(this, ":localhost 221 " + get_nickName() + " +i\r\n", get_fd());
-    	get_Server()->prepareMsgToClient(this); */
-		//send welcome
+		setBufferOut(RPL_WELCOME(this));
+		setBufferOut(RPL_YOURHOST());
+		setBufferOut(RPL_CREATED());
+		setBufferOut(RPL_MYINFO());
 	}
 }
 

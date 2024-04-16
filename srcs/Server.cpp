@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 15:18:31 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:13:28 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,107 +104,18 @@ void Server::addNewClient() {
 	this->_polls.push_back(new_poll);
 }
 
-Client* Server::getRefClientByFd(int fd)
+int Server::execute_cmd(Client* cli, t_message* msg)
 {
-	std::deque<Client>::iterator	it = _clients.begin();
-	std::deque<Client>::iterator	itend = _clients.end();
-
-	while (it != itend)
-	{
-		if (it->get_fd() == fd)
-			return (&(*it));
-		it++;
+	if (!cli || ! msg)
+		return (-1);
+	t_cmd_list::iterator	it = _cmd_list.find(msg->command);
+	if (it != _cmd_list.end()) {
+		function toExecute = it->second;
+		(this->*(toExecute))(cli, msg);
 	}
-	return (NULL);
+	return (0);
 }
 
-Client* Server::getRefClientByName(std::string name)
-{
-	std::deque<Client>::iterator	it = _clients.begin();
-	std::deque<Client>::iterator	itend = _clients.end();
-
-	while (it != itend)
-	{
-		if (it->get_userName() == name)
-			return (&(*it));
-		it++;
-	}
-	return (NULL);
-}
-
-Client* Server::getRefClientByNick(std::string nick)
-{
-	std::deque<Client>::iterator	it = _clients.begin();
-	std::deque<Client>::iterator	itend = _clients.end();
-
-	while (it != itend)
-	{
-		if (it->get_nickName() == nick)
-			return (&(*it));
-		it++;
-	}
-	return (NULL);
-}
-
-/* Channel* Server::getRefChannelByName(std::string name)
-{
-	std::deque<Client>::iterator	it = _clients.begin();
-	std::deque<Client>::iterator	itend = _clients.end();
-
-	while (it != itend)
-	{
-		if (it->get_userName() == name)
-			return (&(*it));
-		it++;
-	}
-	return (NULL);
-} */
-
-void	Server::sendToAll(Client* sender, std::string msg, t_clients_map _clients)
-{
-	t_clients_map::iterator it;
-	
-	for (it = _clients.begin(); it != _clients.end(); it++)
-	{
-		setUpTransmission(sender, msg , it->second->get_fd());
-    	prepareMsgToClient(sender);
-	}
-}
-
-void	Server::prepareMsgToClient(Client *cli)
-{
-	int					client_fd = cli->get_fd();
-	Transmission*		transmission = this->getTransmissionByFd(client_fd);
-	if (transmission == NULL)
-		return;
-	std::string			toSend = transmission->getMsg(); 
-	std::vector<int>	destinataire = transmission->getFdDest();
-
-	for (size_t i = 0; i < destinataire.size(); i++) {
-		Client* dest = getRefClientByFd(destinataire[i]);
-		if (dest)
-			dest->setBufferOut(toSend);
-	}
-
-	std::vector<Transmission>::iterator	it;
-	
-	for (it = this->_transmission.begin(); it < this->_transmission.end(); it++)
-	{
-		if (it->getFdEmitter() == cli->get_fd())
-			break ;
-	}
-	this->_transmission.erase(it);
-	
-}
-
-void Server::setUpTransmission(Client *cli, std::string msg, int fdDest) {
-    Transmission newTrans;
-    
-    newTrans.setFdEmitter(cli->get_fd());
-    newTrans.setMsg(msg);
-    newTrans.addNewFdDest(fdDest);
-	this->_transmission.push_back(newTrans);
-}
 
 void Server::cleanServer()
 {
@@ -214,24 +125,11 @@ void Server::cleanServer()
 	for (it = this->_polls.begin(); it != this->_polls.end(); it++) {
 		close(it->fd);
 	}
-	for (ite = _channels.begin(); ite != _channels.end(); ++ite) {
+	for (ite = _channels.begin(); ite != _channels.end(); ite++) {
         delete ite->second;
 	}
 	// clean channels!!
 	delete this;
-}
-
-Transmission*	Server::getTransmissionByFd(int fd)
-{
-	std::vector<Transmission>::iterator	it;
-	Transmission						ret;
-
-	for (it = _transmission.begin(); it < _transmission.end(); it++)
-	{
-		if (it->getFdEmitter() == fd)
-			return (&(*it));
-	}
-	return (NULL);
 }
 
 void	Server::removeClient(Client& cli) {
@@ -261,8 +159,7 @@ void	Server::removeClient(Client& cli) {
 int		Server::serverLoop() {
 	g_isRunning = true;
 	size_t 			i;
-	while (g_isRunning)
-	{
+	while (g_isRunning) {
 		for (i = 0; i < _polls.size(); i++)
 		{
 			if (poll(&_polls[0], _polls.size(), -1) == -1 && g_isRunning)
@@ -302,12 +199,4 @@ int		Server::serverLoop() {
 	}
 	cleanServer();
 	return (0);
-}
-
-Transmission Server::getFirstTransmission()
-{
-	Transmission ret;
-	ret = this->_transmission[0];
-	this->_transmission.erase(this->_transmission.begin());
-	return (ret);
 }
