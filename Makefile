@@ -6,7 +6,11 @@
 #    By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
+<<<<<<< HEAD
 #    Updated: 2024/04/16 17:30:05 by tmalless         ###   ########.fr        #
+=======
+#    Updated: 2024/04/16 19:54:24 by aclement         ###   ########.fr        #
+>>>>>>> 503dcde (CTRL-C To debug + invite, topic)
 #                                                                              #
 # **************************************************************************** #
 

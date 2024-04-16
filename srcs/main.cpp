@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:18:08 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:15:08 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 18:56:42 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ int main(int ac, char **av)
 	char			*port = av[1];
 	std::string		psw = av[2];
 	unsigned int	portDigit = atoi(port);
-		
-	Server *server = new Server(psw);
 	
 	signal(SIGINT, signalHandler);
-	if (server->initServer(portDigit) != 0) {
-		std::cout << RED << "Error" << WHI << std::endl;
-		exit(EXIT_FAILURE);
+	try {
+		Server server (psw, portDigit);
+		server.serverLoop();
+	} catch (std::exception &e) {
+		std::cout << RED << "ERROR: " << e.what() << WHI << std::endl;
 	}
-	server->serverLoop();
+	return (0);
 }

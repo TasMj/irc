@@ -6,64 +6,38 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 17:23:47 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 20:00:13 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client()
-	: _bufferOut("")
-	, _isOps(false)
+Client::Client(int fd, Server* server)
+	: _fd(fd)
+	, _server(server)
+	, _bufferOut("")
 	, _login(UNSET)
-{}
-
-Client::~Client()
 {
-
+	std::cout << "New Client: " << _fd << std::endl;
 }
 
-Server*	Client::get_Server()
+Client::~Client() {
+	std::map<std::string, Channel*>::iterator	it;
+	for (it = _channels.begin(); it != _channels.end(); it++)
+		it->second->removeClient(this);
+}
+
+Server*		Client::get_Server()
 {
 	return(this->_server);
 }
 
-void	Client::set_Server(Server *server)
-{
-	this->_server = server;
-}
-
-void	Client::set_fd(int fd)
-{
-	this->_fd = fd;
-}
-
-void	Client::set_ip(std::string ip)
-{
-	this->_ipAdd = ip;
-}
-
-int		Client::get_fd()
+int			Client::get_fd()
 {
 	return (this->_fd);
 }
 
-std::string Client::get_ip()
-{
-	return (this->_ipAdd);
-}
-
-void	Client::init_nickName(std::string nick, int fd)
-{
-	std::stringstream ss;
-	ss << fd;
-	 
-	std::string fd_str = ss.str();
-	
-	this->_nickName = nick.append(fd_str);
-}
-
-void	Client::set_nickName(std::string nick)
+void		Client::set_nickName(std::string nick)
 {
 	this->_nickName = nick;
 }
@@ -73,7 +47,7 @@ std::string Client::get_nickName()
 	return (this->_nickName);
 }
 
-void	Client::set_userName(std::string user)
+void		Client::set_userName(std::string user)
 {
 	this->_userName = user;
 }
@@ -83,37 +57,16 @@ std::string Client::get_userName()
 	return (this->_userName);
 }
 
-bool		Client::getFlagIO()
-{
-	return (this->_flagIO);
-}
-
-void	Client::setFlagIO(bool status)
-{
-	this->_flagIO = status;
-}
-
-bool		Client::getIsOps()
-{
-	return (this->_isOps);
-}
-
-void	Client::setIsOps(bool status)
-{
-	this->_isOps = status;
-}
-
 void		Client::setBufferOut(std::string buff) {
 	_bufferOut.append(buff);
 };
-
 
 bool	Client::read_stream(std::deque<t_message*>& output) {
 	char buff[1024] = { 0 };
 	ssize_t bytes = recv(_fd, buff, sizeof(buff) - 1, 0);
 
 	if (bytes <= 0) {
-		close(_fd);
+		_server->removeClient(*this);
 		return (false);
 	}
 	_bufferIn.append(buff);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 19:29:06 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 17:31:23 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 20:08:10 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <utility>
 # include <map>
 # include <vector>
+# include <algorithm>
 # include "Client.hpp"
 
 class Client;
@@ -55,19 +56,17 @@ class Channel {
 
         std::string     getName(void);
         void            sendToAllClients(std::string msg, Client* cli = NULL);
-        bool    join(Client* cli, std::string* password);
+        bool    		join(Client* cli, std::string* password);
         t_channel       asPair(void);
+		
 		bool			checkOperator(Client* cli);
 		void			addOperator(Client* cli, bool creation);
 		void			removeOperator(Client* cli);
-		void			modPassword(std::string password);
-		void			removePassword();
+		
 		void			modLimit(std::string limit);
 		void			removeLimit();
-		void			inviteModeOn();
-		void			inviteModeOff();
-		void			topicModeOn();
-		void			topicModeOff();
+		
+		
 		
 		bool			checkTopicExist();
 		void			setTopic(std::string topic);
@@ -75,14 +74,19 @@ class Channel {
 		
 		void			addOperator(Client* sender, Client* receiver, bool creation);
 		void			removeOperator(Client* sender, Client* receiver);
+		
 		void			modPassword(std::string password, Client* cli);
 		void			removePassword(Client* cli);
+		
 		void			modLimit(std::string limit, Client* cli);
 		void			removeLimit(Client* cli);
+		
 		void			inviteModeOn(Client* cli);
 		void			inviteModeOff(Client* cli);
+		
 		void			topicModeOn(Client* cli);
 		void			topicModeOff(Client* cli);
+		
 		bool			isInChannel(std::string name);
 		bool			checkClientExist(std::string toKick);
 		void    		removeCliFromChan(std::string toKick);
@@ -93,4 +97,6 @@ class Channel {
 		bool						_keyModeOn;
 		bool						_topicModeOn;
 		bool						_limitModeOn;
+
+		void			removeClient(Client* cli);
 };

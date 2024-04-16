@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 18:15:29 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 17:33:20 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 20:08:02 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ std::string kickMsg(std::string nickname, std::string channel, std::string reaso
     std::stringstream	output;
     
     output << ":" << PREFIXE;
-	output << " 40?";
+	output << " 40?"; // TODO
 	output << " " << nickname;
 	output << " #" << channel;
 	output << " :" << reason;

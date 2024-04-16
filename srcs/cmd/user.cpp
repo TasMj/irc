@@ -26,10 +26,6 @@ void    Server::cmd_user(Client* cli, t_message* msg) {
 	else
     	response = ":localhost Your username is : " + userName + "\n"; 
 	cli->set_userName(userName);
-	if (cli->get_userName()[0] == '&')
-		cli->setIsOps(true);
-	else
-		cli->setIsOps(false);
 
 	// SENDING
 	cli->setBufferOut(response);

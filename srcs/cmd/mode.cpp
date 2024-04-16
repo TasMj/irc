@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:25:38 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 18:14:12 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,11 +208,6 @@ void			Channel::removeOperator(Client* sender, Client* receiver)
 	std::string msg;
 	if (!receiver)
 		return ;
-	/* if (!cli->get_Server()->getRefClientByName(cli->get_userName()))
-	{
-		std::cout << cli->get_userName() << " : this user doesn't exist." << std::endl;
-		return ;
-	} */
 	std::vector<Client*>::iterator it;
 	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
