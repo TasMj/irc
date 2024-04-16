@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+         #
+#    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/14 19:23:43 by tmejri           ###   ########.fr        #
+#    Updated: 2024/04/15 21:52:50 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ SRC_NAME 	+=	./srcs/Channel.cpp
 SRC_NAME 	+=	./srcs/Message.cpp
 SRC_NAME 	+=	./srcs/cmd/join.cpp
 SRC_NAME 	+=	./srcs/cmd/privmsg.cpp
-SRC_NAME 	+=	./srcs/cmd/kick.cpp
+SRC_NAME 	+=	./srcs/cmd/kick_topic.cpp
 SRC_NAME 	+=	./srcs/errors.cpp
 SRC_NAME 	+=	./srcs/cmd/mode.cpp
 SRC_NAME 	+=	./srcs/cmd/invite.cpp

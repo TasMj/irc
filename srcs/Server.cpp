@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:24:36 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/16 01:06:26 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Server::Server(std::string password)
 	_cmd_list["PRIVMSG"]	= &Server::cmd_privmsg;
 	_cmd_list["QUIT"]		= &Server::cmd_quit;
 	_cmd_list["KICK"]		= &Server::cmd_kick;
-
+	_cmd_list["TOPIC"]		= &Server::cmd_topic;
 }
 
 Server::~Server()
@@ -199,9 +199,13 @@ void Server::setUpTransmission(Client *cli, std::string msg, int fdDest) {
 void Server::cleanServer()
 {
 	std::vector<pollfd>::iterator it;
+	std::map<std::string, Channel*>::iterator ite;
 
 	for (it = this->_polls.begin(); it != this->_polls.end(); it++) {
 		close(it->fd);
+	}
+	for (ite = _channels.begin(); ite != _channels.end(); ++ite) {
+        delete ite->second;
 	}
 	// clean channels!!
 	delete this;

@@ -6,6 +6,7 @@ Channel::Channel(std::string name, std::string* password)
     , _password(NULL)
 {
 	_mode = (t_mode)0;
+    _topic = "";
     if (password != NULL) {
         _password = new std::string(*password);
 		_mode = (t_mode)KEY;

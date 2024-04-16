@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   kick.cpp                                           :+:      :+:    :+:   */
+/*   kick_topic.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:48:01 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/16 15:14:58 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,74 @@ std::string	kickMsg(std::string user, std::string channel, std::string kickedUse
 	return (output.str());
 }
 
+bool    Channel::checkTopicExist()
+{
+    if (this->_topic.empty())
+        return (false);
+    return (true);
+}
+
+void    Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
+
+std::string Channel::getTopic()
+{
+    return (this->_topic);
+}
+
+void	Server::cmd_topic(Client* cli, t_message* msg)
+{
+    (void)cli;
+    std::string ERR;
+    std::string output;
+    std::cout << msg->raw << std::endl;
+    if (0 || !expect_N_Params(msg, 1))
+    {
+        ERR = ERR_NEEDMOREPARAMS("", "TOPIC", "need more param.");        
+        return;
+    }
+    std::string &channelName = msg->params[0];
+    channelName = channelName.substr(1);
+    // std::cout << "Channel: " << channelName << std::endl;
+    // std::cout << "Topic: " <<  << std::endl;
+
+    Channel *currentChan = Server::getRefChannelByName(channelName); //recup Channel
+    if (currentChan == NULL)
+        ERR = ERR_NOSUCHCHANNEL(cli->get_nickName(), channelName, " Channel doesn't exist.");
+    else if (currentChan->checkClientExist(cli->get_nickName()) == false) //verifier que le client existe
+        ERR = ERR_NOTONCHANNEL(cli->get_nickName(), channelName, " Client not present in this channel");
+    else if (!expect_LastParams(msg))
+    {
+        if (currentChan->getTopic() != "")
+            output = RPL_TOPIC(cli->get_nickName(), channelName, currentChan->getTopic());
+        else
+            ERR = RPL_NOTOPIC(cli->get_nickName(), channelName, "NO TOPIC YET");
+    }
+    else
+    {
+        // if ( && currentChan->checkOperator(cli) == false) modif topic mode operator??
+            ERR = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), channelName, " Not an operator.");
+        std::string new_top = msg->last_params;
+        if (new_top != "" && new_top[0] == ':')
+            new_top = new_top.substr(1);
+        currentChan->setTopic(new_top);
+        output = RPL_TOPIC(cli->get_nickName(), channelName, new_top);
+        currentChan->sendToAllClients(output, cli);
+    }
+    
+    else if () // verifier que emitter a le droit de kick
+       
+       
+    if (!ERR.empty())
+        cli->get_Server()->setUpTransmission(cli, ERR, cli->get_fd()); //
+    else if (!output.empty())
+        cli->get_Server()->setUpTransmission(cli, output, cli->get_fd()); //
+    cli->get_Server()->prepareMsgToClient(cli);
+
+}
+
 void	Server::cmd_kick(Client* cli, t_message* msg)
 {
     (void)cli;
@@ -93,11 +161,11 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     std::string output;
     
     if (currentChan == NULL)
-        ERR = errChannel(cli->get_nickName(), channelName, " Channel doesn't exist.");
+        ERR = ERR_NOSUCHCHANNEL(cli->get_nickName(), channelName, " Channel doesn't exist.");
     else if (currentChan->checkOperator(cli) == false) // verifier que emitter a le droit de kick
-        ERR = errOperator(cli->get_nickName(), channelName, " Not an operator.");
+        ERR = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), channelName, " Not an operator.");
     else if (currentChan->checkClientExist(toKick) == false) //verifier que le client existe
-        ERR = errClient(cli->get_nickName(), channelName, " Client not present in this channel");
+        ERR = ERR_NOTONCHANNEL(cli->get_nickName(), channelName, " Client not present in this channel");
     else
     {
         currentChan->removeCliFromChan(toKick); //si il existe, le remove de la map channel

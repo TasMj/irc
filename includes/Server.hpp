@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:35:26 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/15 23:09:13 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ void	removeClient(Client& cli);
 		void	cmd_invite(Client* cli, t_message* msg);
 		void	cmd_quit(Client* cli, t_message* msg);
 		void	cmd_kick(Client* cli, t_message* msg);
+		void	cmd_topic(Client* cli, t_message* msg);
 };
 
 
@@ -170,7 +171,12 @@ std::string	kickMsg(std::string user, std::string channel, std::string kickedUse
 
 
 /*ERRORS*/
-std::string	errChannel(std::string nickname, std::string channel, std::string reason);
-std::string errOperator(std::string nickname, std::string channel, std::string reason);
-std::string errClient(std::string nickname, std::string channel, std::string reason);
+std::string	ERR_NOSUCHCHANNEL(std::string nickname, std::string channel, std::string reason);
+std::string ERR_CHANOPRIVSNEEDED(std::string nickname, std::string channel, std::string reason);
+std::string ERR_NOTONCHANNEL(std::string nickname, std::string channel, std::string reason);
 std::string kickMsg(std::string nickname, std::string channel, std::string reason);
+
+//TOPICS
+std::string ERR_NEEDMOREPARAMS(std::string channel, std::string cmd, std::string reason);
+std::string RPL_NOTOPIC(std::string nickname, std::string channel, std::string reason);
+std::string	RPL_TOPIC(std::string nickname, std::string channel, std::string topic);

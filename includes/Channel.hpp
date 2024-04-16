@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 19:29:06 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/14 19:58:40 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/16 01:02:30 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Channel {
 		std::vector<Client*>		_operators;
 		size_t						_limit;
 		t_mode						_mode;
+		std::string					_topic;
 
     public:
         Channel(std::string name, std::string* password);
@@ -68,6 +69,10 @@ class Channel {
 		void			inviteModeOff();
 		void			topicModeOn();
 		void			topicModeOff();
+		
+		bool			checkTopicExist();
+		void			setTopic(std::string topic);
+		std::string		getTopic();
 		
 		bool			checkClientExist(std::string toKick);
 		void    		removeCliFromChan(std::string toKick);
