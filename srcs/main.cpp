@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:18:08 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/12 14:50:54 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:15:08 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ int main(int ac, char **av)
 	char			*port = av[1];
 	std::string		psw = av[2];
 	unsigned int	portDigit = atoi(port);
-	/* if (!checkElt(av[0], portDigit, psw))
-		return (1); */
 		
 	Server *server = new Server(psw);
 	

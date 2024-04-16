@@ -9,38 +9,38 @@ Channel::Channel(std::string name, std::string* password)
 	, _topicModeOn(false)
 	, _limitModeOn(false)
 {
-	// _mode = (t_mode)0;
+    _topic = "";
     if (password != NULL) {
         _password = new std::string(*password);
-		//_mode = _mode | (t_mode)KEY;
 		_keyModeOn = true;
     }
 }
 
-std::string*    Channel::join(Client* cli, std::string* password) {
+Channel::~Channel() {
+	delete _password;
+}
+
+bool    Channel::join(Client* cli, std::string* password) {
+	std::string nickName = cli->get_nickName();
     if (_password) {
         if (password == NULL || (password != NULL && _password->compare(*password) != 0)) {
-            return (new std::string("bad password\r\n"));
-        }
-        //send THE RIGHT ERROR MSG
+			cli->setBufferOut (ERR_CHANWRONGPASS(nickName, _name, "Cannot join channel (+k)"));
+			return (false);
+		}
     }
-	if (_inviteModeOn)
-	{
-		if (!checkInvited(cli))
-		{
-			return (new std::string("not invited\r\n"));
-		}
+	if (_inviteModeOn && !checkInvited(cli)) {
+		cli->setBufferOut (ERR_CHANNELUSERNOTINVIT(nickName, _name, "Cannot join channel (+i)"));
+		return (false);
 	}
-	if (_limitModeOn)
-	{
-		if (_clients.size() + 1 >= _limit)
-		{
-			return (new std::string("limit reached\r\n"));
-		}
+
+	if (_limitModeOn && _clients.size() + 1 >= _limit) {
+		cli->setBufferOut (ERR_CHANNELISFULL(nickName, _name, "Cannot join channel, it is full."));
+		return (false);
 	}
+
     _clients.insert(std::make_pair(cli->get_nickName(), cli));
-	cli->get_Server()->sendToAll(cli, RPL_JOIN(cli, _name), _clients);
-    return (NULL);
+	sendToAllClients(RPL_JOIN(cli, _name));
+    return (true);
 }
 
 void        Channel::sendToAllClients(std::string msg, Client* cli) {
@@ -68,13 +68,3 @@ bool	Channel::isInChannel(std::string name)
 t_channel   Channel::asPair(void) {
     return (std::make_pair(_name, this));
 }
-
-/* t_mode			operator|(t_mode oldFlag, t_mode newFlag)
-{
-	return ((t_mode)((int)oldFlag | (int)newFlag));
-}
-
-t_mode			operator&(t_mode oldFlag, t_mode unsetFlag)
-{
-	return ((t_mode)((int)oldFlag & ~(int)unsetFlag));
-} */

@@ -95,15 +95,3 @@
 >> :NickServ!service@dal.net NOTICE gg :This nick is owned by someone else. Please choose another.
 >> :NickServ!service@dal.net NOTICE gg :If this is your nick, type: /msg NickServ@services.dal.net IDENTIFY <password>
 >> :NickServ!service@dal.net NOTICE gg :Your nick will be changed in 60 seconds if you do not comply.
->> :NickServ!service@dal.net NOTICE gg :You now have 40 seconds to change your nick. The nick you are
->> :NickServ!service@dal.net NOTICE gg :currently using is registered to another user.
-<< PING sakura.jp.as.dal.net
->> :sakura.jp.as.dal.net PONG sakura.jp.as.dal.net :gg
---> lag pong
->> :NickServ!service@dal.net NOTICE gg :You now have 20 seconds to change your nick. If you do not
->> :NickServ!service@dal.net NOTICE gg :comply, I will change your nick for you. This is your final warning.
->> :services.dal.net 433 gg gg :Nickname is registered to someone else.
->> :NickServ!service@dal.net NOTICE gg :Your nick has been changed to Guest19162. For more help on services,
->> :NickServ!service@dal.net NOTICE gg :please visit http://www.dal.net/services
->> :gg!~user@7e6c-3f29-2fdb-8642-d8da.210.62.ip NICK :Guest19162
-<< QUIT :leaving

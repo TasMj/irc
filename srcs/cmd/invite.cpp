@@ -6,12 +6,12 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 15:23:50 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:30:51 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../includes/Server.hpp"
-# include "../../includes/Channel.hpp"
+# include "Server.hpp"
+# include "Channel.hpp"
 
 void	Server::cmd_invite(Client *cli, t_message *msg)
 {
@@ -78,8 +78,8 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 	{
 		if (_clients.size() + 1 > _limit)
 		{
-			sender->get_Server()->setUpTransmission(sender, ERR_CHANNELISFULL(sender->get_nickName(), _name, "Cannot invite in this channel, it is full."), sender->get_fd());
-			sender->get_Server()->prepareMsgToClient(sender);
+			response = ERR_CHANNELISFULL(sender->get_nickName(), _name, "Cannot invite in this channel, it is full.");
+			sender->setBufferOut(response);
 		}
 	}
 
@@ -102,26 +102,25 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 			{
 				if (!password.empty())
 				{
-					response = " Invitation send to " + receiver->get_nickName() +", password is : " + password;
-					sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name), receiver->get_fd());
-    				sender->get_Server()->prepareMsgToClient(sender);
+					response = "Invitation send to " + receiver->get_nickName() +", password is : " + password;
+					response = RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name);
+					sender->setBufferOut(response);
 				}
 				else	
 					std::cout << receiver->get_nickName() << " join " << _name << std::endl;
-				// join(receiver, NULL, true);
 				if (!checkInvited(receiver))
 					_invited.push_back(receiver);
 				return ;
 			}
 		}
-		sender->get_Server()->setUpTransmission(sender, ERR_CHANPRIVSNEEDED(sender->get_nickName(), _name), sender->get_fd());
-    	sender->get_Server()->prepareMsgToClient(sender);
+		response = ERR_CHANPRIVSNEEDED(sender->get_nickName(), _name);
+		sender->setBufferOut(response);
 	}
 	else
 	{
 		response = " Invitation send to " + receiver->get_nickName();
-		sender->get_Server()->setUpTransmission(sender, RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name), receiver->get_fd());
-    	sender->get_Server()->prepareMsgToClient(sender);
+		response = RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name);
+		sender->setBufferOut(response);
 	}
 }
 

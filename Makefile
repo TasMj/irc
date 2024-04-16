@@ -6,7 +6,7 @@
 #    By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/16 15:12:34 by tmalless         ###   ########.fr        #
+#    Updated: 2024/04/16 17:30:05 by tmalless         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,21 +16,28 @@ OBJ_PATH 	= obj/
 INC_PATH 	= includes/
 
 SRC_NAME 	+=	./srcs/Client.cpp
-SRC_NAME 	+=	./srcs/ServerCommands.cpp
+SRC_NAME 	+=	./srcs/ServerUtils.cpp
 SRC_NAME 	+=	./srcs/main.cpp
-SRC_NAME 	+=	./srcs/Nick.cpp
 SRC_NAME 	+=	./srcs/Parsing.cpp
 SRC_NAME 	+=	./srcs/Server.cpp
 SRC_NAME 	+=	./srcs/Utils.cpp
-SRC_NAME 	+=	./srcs/Transmission.cpp
 SRC_NAME 	+=	./srcs/Channel.cpp
 SRC_NAME 	+=	./srcs/Message.cpp
+
 SRC_NAME 	+=	./srcs/cmd/join.cpp
 SRC_NAME 	+=	./srcs/cmd/privmsg.cpp
+SRC_NAME 	+=	./srcs/cmd/topic.cpp
 SRC_NAME 	+=	./srcs/cmd/kick.cpp
 SRC_NAME 	+=	./srcs/errors.cpp
 SRC_NAME 	+=	./srcs/cmd/mode.cpp
 SRC_NAME 	+=	./srcs/cmd/invite.cpp
+SRC_NAME 	+=	./srcs/cmd/quit.cpp
+
+SRC_NAME 	+=	./srcs/cmd/nick.cpp
+SRC_NAME 	+=	./srcs/cmd/user.cpp
+SRC_NAME 	+=	./srcs/cmd/ping.cpp
+SRC_NAME 	+=	./srcs/cmd/pass.cpp
+
 SRC_NAME 	+=	./srcs/responses/RPL_WELCOME.cpp
 SRC_NAME 	+=	./srcs/responses/RPL_YOURHOST.cpp
 SRC_NAME 	+=	./srcs/responses/RPL_CREATED.cpp
@@ -70,8 +77,9 @@ $(NAME): Makefile $(OBJ)
 		@$(CC) $(FLAGS) -I $(INC_PATH) $(OBJ) -o $(NAME) $(LIBS) -MMD
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
-		mkdir -p $(@D)
-		$(CC) $(FLAGS) -I $(INC_PATH) -MMD -o $@ -c $<
+		@mkdir -p $(@D)
+		@$(CC) $(FLAGS) -I $(INC_PATH) -MMD -o $@ -c $<
+		@echo "$< -> $@"
 
 -include $(DEPS)
 

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 00:45:24 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:32:26 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@
 # include <cerrno>
 # include <csignal>
 # include <fstream>
-# include "Transmission.hpp"
 
 # include "Channel.hpp"
 # include "Message.hpp"
@@ -76,7 +75,6 @@ extern bool g_isRunning;
 /*                                   Class                                    */
 /******************************************************************************/
 
-class Transmission;
 
 class Client;
 typedef std::map<std::string, Client*>     t_clients_map;
@@ -92,7 +90,6 @@ class Server
 
 		std::deque<Client>			_clients;
 		std::vector<pollfd>			_polls;
-		std::vector<Transmission>	_transmission;
 		std::string					_prefixServer;
 
 			
@@ -113,21 +110,15 @@ class Server
 		void						cleanServer();
 
 		std::string const &			getPrefixServer() const;
-		Client* 						getRefClientByFd(int fd);
-		Client* 						getRefClientByName(std::string name);
-		Client* 						getRefClientByNick(std::string nick);
-		void						send_transmission(int pollFd);
-		std::vector<Transmission>	getTransmission();
-		Transmission				getFirstTransmission();
-		void						sendToAll(Client* sender, std::string msg, t_clients_map _clients);
-		void						prepareMsgToClient(Client *cli);
-		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
-		Transmission*				getTransmissionByFd(int fd);
+		Client* 					getRefClientByFd(int fd);
+		Client* 					getRefClientByName(std::string name);
+		Client* 					getRefClientByNick(std::string nick);
 		Channel*					getRefChannelByName(std::string chanName);
 
 
-		Client*	findNickName(std::string nickName);
-void	removeClient(Client& cli);
+		void	removeClient(Client& cli);
+
+
 /******************************************************************************/
 /*                                 Commandes                                  */
 /******************************************************************************/
@@ -142,6 +133,7 @@ void	removeClient(Client& cli);
 		void	cmd_invite(Client* cli, t_message* msg);
 		void	cmd_quit(Client* cli, t_message* msg);
 		void	cmd_kick(Client* cli, t_message* msg);
+		void	cmd_topic(Client* cli, t_message* msg);
 };
 
 
@@ -151,21 +143,6 @@ void	removeClient(Client& cli);
 /*                                 Functions                                  */
 /******************************************************************************/
 
-int			checkElt(std::string serverName, int port, std::string psw);
-
-void    	nickCmd(std::deque<Client>& _clients, int fd, std::string buff);
-
-
-std::string recup_nick_msg(std::string buff);
-std::string recup_msg(std::string buff, int start);
-int    		msgCmd(std::deque<Client>& _clients, std::string buff, int fd);
-void 		pingCmd(std::deque<Client>& _clients, int fd);
-int			checkPwd(std::deque<Client>& _clients, std::string buff, int fd);
-void		exitCmd(std::deque<Client> _clients, std::string buff, int fd);
-void    	recup_nickNamee(Client *cli, std::string buff_str);
-void    	recup_userr(Client *cli, std::string buff_str);
-
-
 bool		expect_N_Params(t_message* msg, size_t n);
 bool		expect_At_Least_N_Params(t_message* msg, size_t n);
 bool		expect_LastParams(t_message* msg);
@@ -174,7 +151,10 @@ std::string	kickMsg(std::string user, std::string channel, std::string kickedUse
 
 
 /*ERRORS*/
-std::string	errChannel(std::string nickname, std::string channel, std::string reason);
-std::string errOperator(std::string nickname, std::string channel, std::string reason);
-std::string errClient(std::string nickname, std::string channel, std::string reason);
+std::string ERR_CHANOPRIVSNEEDED(std::string nickname, std::string channel, std::string reason);
 std::string kickMsg(std::string nickname, std::string channel, std::string reason);
+
+//TOPICS
+std::string ERR_NEEDMOREPARAMS(std::string channel, std::string cmd, std::string reason);
+std::string RPL_NOTOPIC(std::string nickname, std::string channel, std::string reason);
+std::string	RPL_TOPIC(std::string nickname, std::string channel, std::string topic);

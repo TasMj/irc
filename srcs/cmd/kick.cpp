@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   kick.cpp                                           :+:      :+:    :+:   */
+/*   kick_topic.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 00:45:32 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:27:07 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Channel.hpp"
 
-/* Channel *Server::getRefChannelByName(std::string name)
+Channel *Server::getRefChannelByName(std::string name)
 {
 	std::map<std::string, Channel*>::iterator it = _channels.begin();
 
@@ -23,7 +23,7 @@
             return (it->second);
 	}
     return (NULL);
-} */
+}
 
 bool    Channel::checkClientExist(std::string toKick)
 {
@@ -66,6 +66,23 @@ std::string	kickMsg(std::string user, std::string channel, std::string kickedUse
 	return (output.str());
 }
 
+bool    Channel::checkTopicExist()
+{
+    if (this->_topic.empty())
+        return (false);
+    return (true);
+}
+
+void    Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
+
+std::string Channel::getTopic()
+{
+    return (this->_topic);
+}
+
 void	Server::cmd_kick(Client* cli, t_message* msg)
 {
     (void)cli;
@@ -83,22 +100,19 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     else
         toKick.erase(toKick.length() - 1, toKick.length() - 2);
     std::string reason = nameAndReason[1];
-    
-    // std::cout << "Channel: " << channelName << std::endl;
-    // std::cout << "Name: <" << toKick << ">" << std::endl;
-    // std::cout << "Reason: " << reason << std::endl;
+
 	t_channel_map::iterator it;
 	it = _channels.find(channelName);
     Channel *currentChan = it->second; //recup Channel
     std::string ERR;
     std::string output;
     
-    if (it == _channels.end())
-        ERR = errChannel(cli->get_nickName(), channelName, " Channel doesn't exist.");
+    if (currentChan == NULL)
+        ERR = ERR_NOSUCHCHANNEL(cli->get_nickName(), channelName, " Channel doesn't exist.");
     else if (currentChan->checkOperator(cli) == false) // verifier que emitter a le droit de kick
-        ERR = errOperator(cli->get_nickName(), channelName, " Not an operator.");
+        ERR = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), channelName, " Not an operator.");
     else if (currentChan->checkClientExist(toKick) == false) //verifier que le client existe
-        ERR = errClient(cli->get_nickName(), channelName, " Client not present in this channel");
+        ERR = ERR_NOTONCHANNEL(cli->get_nickName(), channelName, " Client not present in this channel");
     else
     {
         currentChan->removeCliFromChan(toKick); //si il existe, le remove de la map channel
@@ -106,8 +120,7 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
         currentChan->sendToAllClients(output, cli);
     }
     if (!ERR.empty())
-        cli->get_Server()->setUpTransmission(cli, ERR, cli->get_fd()); //
+        cli->setBufferOut(ERR);
     else if (!output.empty())
-        cli->get_Server()->setUpTransmission(cli, output, cli->get_fd()); //
-    cli->get_Server()->prepareMsgToClient(cli);
+        cli->setBufferOut(output);
 }
