@@ -6,7 +6,7 @@
 #    By: aclement <aclement@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/25 14:44:36 by tmejri            #+#    #+#              #
-#    Updated: 2024/04/15 21:52:50 by aclement         ###   ########.fr        #
+#    Updated: 2024/04/16 15:19:47 by aclement         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,21 @@ SRC_NAME 	+=	./srcs/cmd/kick_topic.cpp
 SRC_NAME 	+=	./srcs/errors.cpp
 SRC_NAME 	+=	./srcs/cmd/mode.cpp
 SRC_NAME 	+=	./srcs/cmd/invite.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_WELCOME.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_YOURHOST.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_CREATED.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_MYINFO.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_JOIN.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_INVITE.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_NICK.cpp
+SRC_NAME 	+=	./srcs/responses/RPL_MODE.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_NICKNAMEINUSE.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_NEEDMOREPARAMS.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_CHANWRONGPASS.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_CHANPRIVSNEEDED.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_CHANNELUSERNOTINVIT.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_CHANNELISFULL.cpp
+SRC_NAME 	+=	./srcs/responses/ERR_NOTONCHANNEL.cpp
 
 OBJ_NAME 	= $(SRC_NAME:.cpp=.o)
 

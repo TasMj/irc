@@ -1,20 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ERR_NEEDMOREPARAMS.cpp                             :+:      :+:    :+:   */
+/*   ERR_NOSUCHCHAN.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/14 18:03:43 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 18:07:04 by tmalless         ###   ########.fr       */
+/*   Created: 2024/04/16 01:08:17 by tmalless          #+#    #+#             */
+/*   Updated: 2024/04/16 01:12:53 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-461
+#include "../../includes/Responses.hpp"
 
-# include <string>
-
-std::string	ERR_NEEDMOREPARAMS(std::string chan, std::string cmd, std::string reason)
+std::string	ERR_NOSUCHNICK(std::string nick, std::string target, std::string reason)
 {
-	
+	std::stringstream output;
+
+	output << ":" << PREFIXE;
+	output << " 403 " << nick;
+	output << " " << target << " :";
+	output << reason << "\r\n"; 
+
+	return (output.str());
 }

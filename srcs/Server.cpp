@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 01:06:26 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:18:31 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,16 @@ Client* Server::getRefClientByNick(std::string nick)
 	return (NULL);
 } */
 
+void	Server::sendToAll(Client* sender, std::string msg, t_clients_map _clients)
+{
+	t_clients_map::iterator it;
+	
+	for (it = _clients.begin(); it != _clients.end(); it++)
+	{
+		setUpTransmission(sender, msg , it->second->get_fd());
+    	prepareMsgToClient(sender);
+	}
+}
 
 void	Server::prepareMsgToClient(Client *cli)
 {

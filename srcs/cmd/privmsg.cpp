@@ -1,17 +1,5 @@
 #include "Server.hpp"
 
-std::string	PRIVMSG(std::string sender, std::string channel, std::string message)
-{
-	std::stringstream	output;
-
-	output << ":" <<  sender;
-	output << " PRIVMSG ";
-	output << "#" << channel;
-	output << " :" << message;
-	output << "\r\n";
-	return (output.str());
-}
-
 void    Server::cmd_privmsg(Client* cli, t_message* msg) {
 	if (0
 		|| !expect_At_Least_N_Params(msg, 1)
@@ -27,13 +15,18 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
         name.erase(0,1);
         std::map<std::string, Channel*>::iterator it = _channels.find(name);
         if (it == _channels.end()) {
-            // ERROR channel not found
+            setUpTransmission(cli, ERR_NOSUCHCHANNEL(cli->get_nickName(), it->second->getName(), name + "is not an existing channel."), cli->get_fd());
+        	prepareMsgToClient(cli);
             return;
         }
-		
+
 		if (!it->second->isInChannel(cli->get_nickName()))
+		{
+			setUpTransmission(cli, ERR_NOTONCHANNEL(cli->get_nickName(), it->second->getName(), "You're not on that channel."), cli->get_fd());
+        	prepareMsgToClient(cli);
 			return ;
-        response = PRIVMSG(cli->get_nickName(), it->second->getName() ,msg->last_params);
+		}
+        response = RPL_PRIVMSG(cli->get_nickName(), "#" + it->second->getName() ,msg->last_params);
         it->second->sendToAllClients(response, cli);
 	} else {
         /*si nick*/
@@ -43,15 +36,15 @@ void    Server::cmd_privmsg(Client* cli, t_message* msg) {
 		int		fd_to_send;
 		Client* found = findNickName(nick);
         if (found) {
-        	response = prefixe + nick + " :" + response + "\n";
-			fd_to_send = found->get_fd();
+        	setUpTransmission(cli, RPL_PRIVMSG(cli->get_nickName(), nick, msgToSend), cli->get_fd());
+        	prepareMsgToClient(cli);
         }
 		else
         {
-			response = prefixe + nick + " :" + "no nick matching\n";
-			fd_to_send = cli->get_fd();
+			setUpTransmission(cli, ERR_NOSUCHCHANNEL(cli->get_nickName(), nick, "No user matching with" + nick + "."), cli->get_fd());
+        	prepareMsgToClient(cli);
         }
-		cli->get_Server()->setUpTransmission(cli, response, fd_to_send);
-        cli->get_Server()->prepareMsgToClient(cli);
+		setUpTransmission(cli, response, fd_to_send);
+        prepareMsgToClient(cli);
     }
 }

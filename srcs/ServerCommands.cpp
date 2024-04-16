@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerCommands.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/14 19:24:58 by tmejri           ###   ########.fr       */
+/*   Updated: 2024/04/15 22:55:16 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,23 +84,27 @@ void    Server::cmd_nick(Client* cli, t_message* msg) {
 	// CHECKING
     if (findNickName(newNick))
 	{
-		newNick.append("_");
+		/* newNick.append("_");
 		while (findNickName(newNick))
 		{
 			newNick.append("_");
 		}
-		cli->set_nickName(newNick);
-        response = ":localhost NICK " + newNick + " :\nthis nickname has already been taken. Your new nickname is " + newNick + "\n";
+		cli->set_nickName(newNick); */
+        //response = ":localhost NICK " + newNick + " :\nthis nickname has already been taken. Your new nickname is " + newNick + "\n";
+		response = "A user already have this nickname";
+		cli->get_Server()->setUpTransmission(cli, ERR_NICKNAMEINUSE(nickName, newNick, response), cli->get_fd());
+    	cli->get_Server()->prepareMsgToClient(cli);
 	}
 	else {
+		cli->get_Server()->setUpTransmission(cli, RPL_NICK(cli, newNick), cli->get_fd());
+    	cli->get_Server()->prepareMsgToClient(cli);
 		cli->set_nickName(newNick);
-    	response = ":localhost NICK " + newNick + " :\nYour nick name is now : " + newNick + "\n"; 
+		cli->isWelcomed("NICK");
 	}
 
 	// SENDING
-    cli->get_Server()->setUpTransmission(cli, response, cli->get_fd());
-    cli->get_Server()->prepareMsgToClient(cli);
-	cli->isWelcomed("NICK");
+ 
+	
 }
 
 void    Server::cmd_user(Client* cli, t_message* msg) {

@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/15 23:09:13 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:17:40 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 # include "Channel.hpp"
 # include "Message.hpp"
 # include "Utils.hpp"
+# include "Responses.hpp"
 
 /******************************************************************************/
 /*                                  Defines                                   */
@@ -78,6 +79,8 @@ extern bool g_isRunning;
 class Transmission;
 
 class Client;
+typedef std::map<std::string, Client*>     t_clients_map;
+
 class Channel;
 
 class Server
@@ -116,6 +119,7 @@ class Server
 		void						send_transmission(int pollFd);
 		std::vector<Transmission>	getTransmission();
 		Transmission				getFirstTransmission();
+		void						sendToAll(Client* sender, std::string msg, t_clients_map _clients);
 		void						prepareMsgToClient(Client *cli);
 		void						setUpTransmission(Client *cli, std::string msg, int fdDest);
 		Transmission*				getTransmissionByFd(int fd);

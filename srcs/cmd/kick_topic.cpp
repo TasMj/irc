@@ -6,14 +6,14 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 15:14:58 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:19:38 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Channel.hpp"
 
-Channel *Server::getRefChannelByName(std::string name)
+/* Channel *Server::getRefChannelByName(std::string name)
 {
 	std::map<std::string, Channel*>::iterator it = _channels.begin();
 
@@ -23,7 +23,7 @@ Channel *Server::getRefChannelByName(std::string name)
             return (it->second);
 	}
     return (NULL);
-}
+} */
 
 bool    Channel::checkClientExist(std::string toKick)
 {
@@ -123,7 +123,6 @@ void	Server::cmd_topic(Client* cli, t_message* msg)
         currentChan->sendToAllClients(output, cli);
     }
     
-    else if () // verifier que emitter a le droit de kick
        
        
     if (!ERR.empty())
@@ -155,8 +154,9 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     // std::cout << "Channel: " << channelName << std::endl;
     // std::cout << "Name: <" << toKick << ">" << std::endl;
     // std::cout << "Reason: " << reason << std::endl;
-
-    Channel *currentChan = Server::getRefChannelByName(channelName); //recup Channel
+	t_channel_map::iterator it;
+	it = _channels.find(channelName);
+    Channel *currentChan = it->second; //recup Channel
     std::string ERR;
     std::string output;
     
