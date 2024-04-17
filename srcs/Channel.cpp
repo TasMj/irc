@@ -20,7 +20,7 @@ Channel::~Channel() {
 	delete _password;
 }
 
-bool    Channel::join(Client* cli, std::string* password) {
+bool		Channel::join(Client* cli, std::string* password) {
 	std::string nickName = cli->get_nickName();
     if (_password) {
         if (password == NULL || (password != NULL && _password->compare(*password) != 0)) {
@@ -58,7 +58,7 @@ std::string Channel::getName(void) {
     return (_name);
 }
 
-bool	Channel::isInChannel(std::string name)
+bool		Channel::isInChannel(std::string name)
 {
     if (_clients.find(name) != _clients.end())
         return (true);
@@ -67,4 +67,23 @@ bool	Channel::isInChannel(std::string name)
 
 t_channel   Channel::asPair(void) {
     return (std::make_pair(_name, this));
+}
+
+void	Channel::removeClient(Client* cli) {
+	if (cli == NULL)
+		return; // TODO should never happend
+	std::vector<Client*>::iterator invited;
+	invited = std::find(_invited.begin(), _invited.end(), cli);
+	if (invited != _invited.end())
+		_invited.erase(invited);
+
+	std::vector<Client*>::iterator operators;
+	operators = std::find(_operators.begin(), _operators.end(), cli);
+	if (operators != _operators.end())
+		_operators.erase(operators);
+
+	t_clients_map::iterator	it;
+	it = _clients.find(cli->get_nickName());
+	if (it != _clients.end())
+		_clients.erase(it);
 }

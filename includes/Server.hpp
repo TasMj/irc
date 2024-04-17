@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:32:26 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 20:08:00 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,30 +99,26 @@ class Server
 
 		std::map<std::string, Channel*>			_channels;
 				
-	public:
-	
-		Server();
-		Server(std::string password);
+	public:	
+		Server(std::string password, int port);
 		~Server();
-		int							initServer(int port);
-		int							serverLoop();
+		
 		void						addNewClient();
-		void						cleanServer();
+		void						removeClient(Client& cli);
 
-		std::string const &			getPrefixServer() const;
 		Client* 					getRefClientByFd(int fd);
 		Client* 					getRefClientByName(std::string name);
 		Client* 					getRefClientByNick(std::string nick);
 		Channel*					getRefChannelByName(std::string chanName);
 
 
-		void	removeClient(Client& cli);
-
 
 /******************************************************************************/
 /*                                 Commandes                                  */
 /******************************************************************************/
+		int		serverLoop();
 		int		execute_cmd(Client* cli, t_message* msg);
+		
 		void    cmd_nick(Client* cli, t_message* msg);
 		void    cmd_user(Client* cli, t_message* msg);
 		void	cmd_pass(Client* cli, t_message* msg);
@@ -135,9 +131,6 @@ class Server
 		void	cmd_kick(Client* cli, t_message* msg);
 		void	cmd_topic(Client* cli, t_message* msg);
 };
-
-
-
 
 /******************************************************************************/
 /*                                 Functions                                  */
