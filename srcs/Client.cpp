@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/17 02:40:42 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:43:57 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ Client::Client(int fd, Server* server)
 	, _bufferOut("")
 	, _login(UNSET)
 {
-	std::cout << "New Client: " << _fd << std::endl;
 }
 
 Client::~Client() {
@@ -107,7 +106,6 @@ void	Client::isWelcomed(std::string flag) {
 		setBufferOut(RPL_CREATED());
 		setBufferOut(RPL_MYINFO());
 	}
-	std::cout << "nickname : " << _nickName << ", username : " << _userName << "." << std::endl;
 }
 
 t_login			Client::getLogStatus()

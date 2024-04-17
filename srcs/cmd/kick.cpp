@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/17 02:41:36 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:46:41 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ bool    Channel::checkClientExist(std::string toKick)
 		if (it->first == toKick)
             return (true);
 	}
-    std::cout << toKick << " " << std::endl;
     return (false);
 }
 
@@ -47,24 +46,10 @@ void    Channel::removeCliFromChan(std::string toKick)
 		if (it->first == toKick)
         {
             _clients.erase(it);
-            // std::cout << toKick << " has been kicked" << std::endl;
             return ;
         }
 	}
 }
-
-/* std::string	kickMsg(std::string user, std::string channel, std::string kickedUser, std::string reason)
-{
-	std::stringstream	output;
-
-	output << ":" <<  user;
-	output << " KICK ";
-	output << "#" << channel;
-	output << " " << kickedUser;
-	output << " " << reason;
-	output << "\r\n";
-	return (output.str());
-} */
 
 bool    Channel::checkTopicExist()
 {

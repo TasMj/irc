@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/17 02:42:20 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:47:29 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,14 +134,9 @@ bool			Channel::checkOperator(Client* cli)
 	std::vector<Client *>::iterator it;
 	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
-		std::cout << (*it) << std::endl;
 		if ((*it)->get_userName() == cli->get_userName())
-		{
-			std::cout << cli->get_nickName() << " is an operator of this channel." << std::endl;
 			return (true);
-		}
 	}
-	std::cout << cli->get_nickName() << " is not an operator of this channel." << std::endl;
 	return (false);
 };
 
@@ -150,7 +145,6 @@ void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 	std::string msg;
 	if (!receiver)
 	{
-		std::cout << "This user doesn't exist." << std::endl;
 		msg = ERR_NOSUCHNICK(sender->get_nickName(), "", "This user doesn't exist");
 		sender->setBufferOut(msg);
 		return ;
@@ -218,9 +212,7 @@ void			Channel::removeOperator(Client* sender, Client* receiver)
 void			Channel::modPassword(std::string password, Client* cli)
 {
 	std::string msg;
-	//if (!(_mode & (t_mode)K))
 
-	std::cout << "This channel already ask for a password to enter." << std::endl;
 	if (_password)
 		_password->erase();
 	std::string *pwd = new std::string(password);
@@ -228,9 +220,6 @@ void			Channel::modPassword(std::string password, Client* cli)
 	delete pwd;
 
 	_keyModeOn = true;
-		//_mode = (t_mode)_mode | (t_mode)KEY; 
-	/* if ((_mode & (t_login)K))
-		std::cout << "le flag a ete ajoute !" << std::endl; */
 	msg = password + " is the new password of this channel.";
 	msg = RPL_MODE(cli->get_nickName(), _name, "+", "k", msg);
 	sendToAllClients(msg);

@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/17 00:45:53 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:50:45 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 	
 	if (!r_ok)
 	{
-		response = ERR_NOTONCHANNEL(sender->get_nickName(), _name, "User already member of this channel");
+		response = ERR_USERONCHANNEL(sender->get_nickName(), _name, "User already member of this channel");
 		sender->setBufferOut(response);
 		return ;
 	}
@@ -92,7 +92,6 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 	{
 		std::vector<Client*>::iterator jt;
 
-		std::cout << "INVITE ACTIF" << std::endl;
 		for (jt = _operators.begin(); jt != _operators.end(); jt++)
 		{
 			if ((*jt)->get_userName() == sender->get_userName())
@@ -122,11 +121,7 @@ bool			Channel::checkInvited(Client* cli)
 	for (size_t i = 0; i < _invited.size(); i++)
 	{
 		if (_invited[i]->get_nickName() == cli->get_nickName())
-		{
-			std::cout << cli->get_nickName() << " is invited in this channel." << std::endl;
 			return (true);
-		}
 	}
-	std::cout << cli->get_nickName() << " is not invited in this channel." << std::endl;
 	return (false);
 };

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 12:29:36 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 20:08:00 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:44:49 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@
 #define READ_SIZE 10
 #define PREFIXE "localhost"
 
-#define INTERCEPT "                                                                     \n\
+/* #define INTERCEPT "                                                                     \n\
                                                                      \n\
                    Téma la taille du welcome !                       \n\
                                                                      \n\
@@ -60,15 +60,15 @@
                                                                      \n\
                                 par tmejri, aclement et tmalless     \n\
                                                                      \n\
-																	 \n"
-/*\
+																	 \n" */
+
 #define INTERCEPT "                                                         c=====c\n\
                                                             H\n\
    ____________                                         _,,_H__\n\
   (__((__((___()                                       //|     |\n\
  (__((__((___()()_____________________________________// |ACME |\n\
 (__((__((___()()()------------------------------------'  |_____|\n"
-*/
+
 extern bool g_isRunning;
 
 /******************************************************************************/
