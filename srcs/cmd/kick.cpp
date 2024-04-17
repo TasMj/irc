@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/17 02:46:41 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 05:20:16 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ Channel *Server::getRefChannelByName(std::string name)
 
 bool    Channel::checkClientExist(std::string toKick)
 {
-    t_clients_map::iterator it = _clients.begin();
+    std::deque<Client*>::iterator it = _clients.begin();
     
     for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->first == toKick)
+		if ((*it)->get_nickName() == toKick)
             return (true);
 	}
     return (false);
@@ -39,11 +39,11 @@ bool    Channel::checkClientExist(std::string toKick)
 
 void    Channel::removeCliFromChan(std::string toKick)
 {
-    t_clients_map::iterator it = _clients.begin();
+    std::deque<Client*>::iterator it = _clients.begin();
     
     for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->first == toKick)
+		if ((*it)->get_nickName() == toKick)
         {
             _clients.erase(it);
             return ;

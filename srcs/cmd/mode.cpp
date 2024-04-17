@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/17 02:47:29 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 05:20:40 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ bool			Channel::checkOperator(Client* cli)
 	std::vector<Client *>::iterator it;
 	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
-		if ((*it)->get_userName() == cli->get_userName())
+		if ((*it)->get_nickName() == cli->get_nickName())
 			return (true);
 	}
 	return (false);
@@ -152,11 +152,11 @@ void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 		
 	if (!creation)
 	{
-		t_clients_map::iterator it;
+		std::deque<Client*>::iterator it;
 		
 		for (it = _clients.begin(); it != _clients.end(); it++)
 		{
-			if (it->second->get_nickName() == receiver->get_nickName())
+			if ((*it)->get_nickName() == receiver->get_nickName())
 				break ;
 		}
 		

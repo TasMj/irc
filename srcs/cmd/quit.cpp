@@ -2,7 +2,7 @@
 
 void	Server::cmd_quit(Client* cli, t_message* msg) {
 	if (0
-		|| !expect_N_Params(msg, 1)
+		|| !expect_LastParams(msg)
 	) { return; }
 	removeClient(*cli);
 }

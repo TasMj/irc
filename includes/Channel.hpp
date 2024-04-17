@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 19:29:06 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 20:08:10 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 05:17:20 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef std::map<std::string, Channel*>     t_channel_map;
 /*                                  Class                                     */
 /******************************************************************************/
 class Client;
-typedef std::map<std::string, Client*>     t_clients_map;
 
 class Channel;
 typedef std::pair<std::string, Channel*>    t_channel;
@@ -44,7 +43,7 @@ class Channel {
     private:
         std::string    				_name;
         std::string*   				_password;
-        t_clients_map  				_clients;
+		std::deque<Client*>			_clients;
 		std::vector<Client*>		_operators;
 		std::vector<Client*>		_invited;
 		size_t						_limit;
@@ -99,4 +98,9 @@ class Channel {
 		bool						_limitModeOn;
 
 		void			removeClient(Client* cli);
+
+
+
+std::deque<Client*>::iterator		findClientByNIckName(std::string name);
+
 };

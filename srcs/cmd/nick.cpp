@@ -13,9 +13,10 @@ void    Server::cmd_nick(Client* cli, t_message* msg) {
     if (getRefClientByNick(newNick))
 		response = ERR_NICKNAMEINUSE(nickName, newNick, "A user already have this nickname");
 	else {
-		response = RPL_NICK(cli, newNick);
+		response = RPL_NICK(cli, nickName);
 		cli->set_nickName(newNick);
 		cli->isWelcomed("NICK");
 	}
+	response = RPL_NICK(cli, nickName);
 	cli->setBufferOut(response);
 }

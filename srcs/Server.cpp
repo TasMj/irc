@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/17 02:41:27 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 04:20:19 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ void	Server::removeClient(Client& cli) {
 	std::deque<Client>::iterator	it;
 	for (it = _clients.begin(); it != _clients.end(); it++) {
 		if (it->get_fd() == fd) {
+			it->leaveAllChannels();
 			_clients.erase(it);
 			close(fd);
 			break;
@@ -138,12 +139,14 @@ int		Server::serverLoop() {
 			if (cli) {
 				if (event & POLLIN) {
 					std::deque<t_message*> messages;					
-					if (cli && cli->read_stream(messages)) {
+					if (cli->read_stream(messages)) {
 						for (size_t i = 0; i < messages.size(); i++) {
-							std::cout << GRE << *messages[i] << WHI << std::endl;
+							std::cout << GRE << fd << ": " << *messages[i] << WHI << std::endl;
 							execute_cmd(cli, messages[i]);
 							delete messages[i];
 						}
+					} else {
+						removeClient(*cli);
 					}
 				}
 				else if (event & POLLOUT) {

@@ -38,19 +38,33 @@ bool		Channel::join(Client* cli, std::string* password) {
 		return (false);
 	}
 
-    _clients.insert(std::make_pair(cli->get_nickName(), cli));
+    _clients.push_back(cli);
 	sendToAllClients(RPL_JOIN(cli, _name));
     return (true);
 }
 
+std::deque<Client*>::iterator		Channel::findClientByNIckName(std::string name) {
+	std::deque<Client*>::iterator	it;
+	for (it = _clients.begin(); it != _clients.end(); it++)
+	{
+		if ((*it)->get_nickName() == name)
+			return (it);
+	}
+	return (_clients.end());
+}
+
 void        Channel::sendToAllClients(std::string msg, Client* cli) {
-	t_clients_map::iterator	it;
+	if (cli == NULL)
+		return;
+	std::deque<Client*>::iterator	it;
 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second == cli)
+		if ((*it)->get_nickName() == cli->get_nickName())
 			continue ;
-		it->second->setBufferOut(msg);
+		(*it)->setBufferOut(msg); /* ERROR
+			je pense que c'est parce le client n'existe plus
+		*/ 
 	}
 }
 
@@ -60,8 +74,11 @@ std::string Channel::getName(void) {
 
 bool		Channel::isInChannel(std::string name)
 {
-    if (_clients.find(name) != _clients.end())
-        return (true);
+	std::deque<Client*>::iterator it;
+	for (it = _clients.begin(); it != _clients.end(); it++) {
+		if ((*it)->get_nickName() == name)
+			return (true);
+	}
     return (false);
 }
 
@@ -82,8 +99,7 @@ void	Channel::removeClient(Client* cli) {
 	if (operators != _operators.end())
 		_operators.erase(operators);
 
-	t_clients_map::iterator	it;
-	it = _clients.find(cli->get_nickName());
+	std::deque<Client*>::iterator	it = findClientByNIckName(cli->get_nickName());
 	if (it != _clients.end())
 		_clients.erase(it);
 }

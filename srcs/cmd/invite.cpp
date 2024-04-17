@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   invite.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/17 02:50:45 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 05:21:07 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,16 +50,16 @@ void	Server::cmd_invite(Client *cli, t_message *msg)
 
 void	Channel::inviteCmd(Client *sender, Client *receiver)
 {
-	t_clients_map::iterator it;
+	std::deque<Client*>::iterator it;
 	bool					s_ok = false, r_ok = true; /* need_ops = false */
 
 	std::string				response;
 	
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second->get_nickName() == sender->get_nickName())
+		if ((*it)->get_nickName() == sender->get_nickName())
 			s_ok = true;
-		if (it->second->get_nickName() == receiver->get_nickName())
+		if ((*it)->get_nickName() == receiver->get_nickName())
 			r_ok = false;
 	}
 	
@@ -94,7 +94,7 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 
 		for (jt = _operators.begin(); jt != _operators.end(); jt++)
 		{
-			if ((*jt)->get_userName() == sender->get_userName())
+			if ((*jt)->get_nickName() == sender->get_nickName())
 			{
 				response = RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name);
 				sender->setBufferOut(response);	

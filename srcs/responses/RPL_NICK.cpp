@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RPL_NICK.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 22:50:14 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/15 23:13:15 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 05:25:10 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ std::string	RPL_NICK(Client *cli, std::string newNick)
 {
 	std::stringstream output;
 
-	output << ":" << cli->get_nickName();
-	output << "!" << cli->get_userName();
-	output << "@" << PREFIXE ;
-	output << " NICK :" << newNick << "\r\n";
+	output << ":" << newNick;
+	//output << "!" << cli->get_userName();
+	//output << "@" << PREFIXE ;
+	output << " NICK " << cli->get_nickName()  << "\r\n";
 
 	return (output.str());
 }

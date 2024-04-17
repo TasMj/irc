@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmejri <tmejri@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/17 02:43:57 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 04:29:51 by tmejri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ bool	Client::read_stream(std::deque<t_message*>& output) {
 	ssize_t bytes = recv(_fd, buff, sizeof(buff) - 1, 0);
 
 	if (bytes <= 0) {
-		_server->removeClient(*this);
+		//_server->removeClient(*this);
 		return (false);
 	}
 	_bufferIn.append(buff);
