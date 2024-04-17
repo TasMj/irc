@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   kick_topic.cpp                                     :+:      :+:    :+:   */
+/*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 17:27:07 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 18:38:31 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void    Channel::removeCliFromChan(std::string toKick)
 	}
 }
 
-std::string	kickMsg(std::string user, std::string channel, std::string kickedUser, std::string reason)
+/* std::string	kickMsg(std::string user, std::string channel, std::string kickedUser, std::string reason)
 {
 	std::stringstream	output;
 
@@ -64,7 +64,7 @@ std::string	kickMsg(std::string user, std::string channel, std::string kickedUse
 	output << " " << reason;
 	output << "\r\n";
 	return (output.str());
-}
+} */
 
 bool    Channel::checkTopicExist()
 {
@@ -95,6 +95,8 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     std::string &channelName = msg->params[1];
     std::string toKick = nameAndReason[0];
 
+	if (!channelName.empty() && (channelName[0] == '#' || channelName[0] == '&'))
+		channelName.erase(0,1);
     if (toKick.size() == 2)
         toKick.erase(1, 2);
     else
@@ -110,13 +112,13 @@ void	Server::cmd_kick(Client* cli, t_message* msg)
     if (currentChan == NULL)
         ERR = ERR_NOSUCHCHANNEL(cli->get_nickName(), channelName, " Channel doesn't exist.");
     else if (currentChan->checkOperator(cli) == false) // verifier que emitter a le droit de kick
-        ERR = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), channelName, " Not an operator.");
+        ERR = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), channelName);
     else if (currentChan->checkClientExist(toKick) == false) //verifier que le client existe
         ERR = ERR_NOTONCHANNEL(cli->get_nickName(), channelName, " Client not present in this channel");
     else
     {
         currentChan->removeCliFromChan(toKick); //si il existe, le remove de la map channel
-        output = kickMsg(cli->get_nickName(), channelName, toKick, reason);
+        output = RPL_KICK(cli->get_nickName(), toKick, channelName, reason);
         currentChan->sendToAllClients(output, cli);
     }
     if (!ERR.empty())

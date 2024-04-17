@@ -15,6 +15,6 @@ void	Server::cmd_pass(Client* cli, t_message* msg) {
 		return ;
 	}
 
-	std::string err_msg =":localhost Wrong password.\n";
+	std::string err_msg = ERR_PASSWDMISMATCH(cli->get_nickName(), msg->params[0]);
 	cli->setBufferOut(err_msg);
 }

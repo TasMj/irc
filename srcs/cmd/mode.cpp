@@ -3,35 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:25:38 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 01:22:45 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../../includes/Server.hpp"
 # include "../../includes/Channel.hpp"
-
-/* ************************************************************************** */
-// UTILS
-/* ************************************************************************** */
-
-/* static void	modeError(char c)
-{
-	if (c == 'o')
-	{
-		std::cout << "Flag 'o' for command Mode need a user as parameter"<< std::endl;
-	}
-	if (c == 'k')
-	{
-		std::cout << "Flag 'k' for command Mode need a password as parameter"<< std::endl;
-	}
-	if (c == 'l')
-	{
-		std::cout << "Flag 'l' for command Mode need a number as parameter"<< std::endl;
-	}
-}; */
 
 /* ************************************************************************** */
 // MODE COMMAND LOGIC
@@ -108,8 +88,6 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 				chan->topicModeOff(cli);
 		}
 	}
-	
-	std::cout << "Channel mode " << cli->get_nickName() << " " << msg->command << chan->getName() << std::endl;
 }
 
 void	Server::cmd_mode(Client* cli, t_message* msg) {
@@ -124,13 +102,13 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 	{
 		if (!it->second->checkOperator(cli))
 		{
-			response = ERR_CHANPRIVSNEEDED(cli->get_nickName(), it->second->getName()), cli->get_fd();
+			response = ERR_CHANOPRIVSNEEDED(cli->get_nickName(), it->second->getName()), cli->get_fd();
 			cli->setBufferOut(response);
 			return ;
 		}
 		if (msg->params[1].find_first_not_of("+-itkol", 0) != std::string::npos)
 		{
-			response = ":localhost Flags are incorect ([+|-]i|t|k|o|l).\n";
+			response = ERR_UNKNOWNMODE(cli->get_nickName(), it->second->getName());
 			cli->setBufferOut(response);
 		}
 		else
@@ -138,7 +116,7 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 	}
 	else
 	{
-		response = ":localhost Please specify a valid channel for MODE command.\n";
+		response = ERR_NOSUCHCHANNEL(cli->get_nickName(), msg->params[0], "This channel doesn't exist.");
 		cli->setBufferOut(response);
 	}
 }
@@ -153,13 +131,13 @@ bool			Channel::checkOperator(Client* cli)
 		return (false);
 	for (size_t i = 0; i < _operators.size(); i++)
 	{
-		if (_operators[i]->get_userName() == cli->get_userName())
+		if (_operators[i]->get_nickName() == cli->get_nickName())
 		{
-			std::cout << cli->get_userName() << " is an operator of this channel." << std::endl;
+			std::cout << cli->get_nickName() << " is an operator of this channel." << std::endl;
 			return (true);
 		}
 	}
-	std::cout << cli->get_userName() << " is not an operator of this channel." << std::endl;
+	std::cout << cli->get_nickName() << " is not an operator of this channel." << std::endl;
 	return (false);
 };
 
@@ -169,6 +147,8 @@ void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 	if (!receiver)
 	{
 		std::cout << "This user doesn't exist." << std::endl;
+		msg = ERR_NOSUCHNICK(sender->get_nickName(), "", "This user doesn't exist");
+		sender->setBufferOut(msg);
 		return ;
 	}
 		
@@ -178,26 +158,28 @@ void			Channel::addOperator(Client* sender, Client* receiver, bool creation)
 		
 		for (it = _clients.begin(); it != _clients.end(); it++)
 		{
-			if (it->second->get_userName() == receiver->get_userName())
+			if (it->second->get_nickName() == receiver->get_nickName())
 				break ;
 		}
 		
 		if (it == _clients.end())
 		{
-			std::cout << receiver->get_userName() << " : this user is not in this channel." << std::endl;
+			msg = ERR_NOTONCHANNEL(sender->get_nickName(), _name, "This user is not in this channel.");
+			sender->setBufferOut(msg);
 			return ;
 		}
 	}
 	
 	for (size_t i = 0; i < _operators.size(); i++)
 	{
-		if (_operators[i]->get_userName() == receiver->get_userName())
+		if (_operators[i]->get_nickName() == receiver->get_nickName())
 		{
-			std::cout << receiver->get_userName() << " is already an operator of this channel." << std::endl;
+			msg = ERR_ISOPERATOR(sender->get_nickName(), receiver->get_nickName());
+			sender->setBufferOut(msg);
 			return ;
 		}
 	}
-	msg = receiver->get_userName() + " is a new operator of this channel.";
+	msg = receiver->get_nickName() + " is a new operator of this channel.";
 	msg = RPL_MODE(sender->get_nickName(), _name, "+", "o", msg);
 	sendToAllClients(msg);
 	_operators.push_back(receiver);
@@ -208,25 +190,21 @@ void			Channel::removeOperator(Client* sender, Client* receiver)
 	std::string msg;
 	if (!receiver)
 		return ;
-	/* if (!cli->get_Server()->getRefClientByName(cli->get_userName()))
-	{
-		std::cout << cli->get_userName() << " : this user doesn't exist." << std::endl;
-		return ;
-	} */
+
 	std::vector<Client*>::iterator it;
 	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
-		if ((*it)->get_userName() == receiver->get_userName())
+		if ((*it)->get_nickName() == receiver->get_nickName())
 		{
 			_operators.erase(it);
-			msg = receiver->get_userName() + " is no more an operator of this channel.";
+			msg = receiver->get_nickName() + " is no more an operator of this channel.";
 			msg = RPL_MODE(sender->get_nickName(), _name, "-", "o", msg);
 			sendToAllClients(msg);
 			return ;
 		}
 	}
-	
-	std::cout << receiver->get_userName() << " was not an operator of this channel." << std::endl;
+	msg = ERR_NOTOPERATOR(sender->get_nickName(), receiver->get_nickName());
+	sender->setBufferOut(msg);
 };
 
 /* ************************************************************************** */
@@ -237,17 +215,15 @@ void			Channel::modPassword(std::string password, Client* cli)
 {
 	std::string msg;
 	//if (!(_mode & (t_mode)K))
-	if (_keyModeOn)
-	{
-		std::cout << "This channel already ask for a password to enter." << std::endl;
-		if (_password)
-			_password->erase();
-		std::string *pwd = new std::string(password);
-		_password = pwd;
-		delete pwd;
-	}
-	else
-		_keyModeOn = true;
+
+	std::cout << "This channel already ask for a password to enter." << std::endl;
+	if (_password)
+		_password->erase();
+	std::string *pwd = new std::string(password);
+	_password = pwd;
+	delete pwd;
+
+	_keyModeOn = true;
 		//_mode = (t_mode)_mode | (t_mode)KEY; 
 	/* if ((_mode & (t_login)K))
 		std::cout << "le flag a ete ajoute !" << std::endl; */
@@ -259,15 +235,17 @@ void			Channel::modPassword(std::string password, Client* cli)
 
 void			Channel::removePassword(Client* cli)
 {
+	std::string msg;
 	if (!_keyModeOn)
 	{
-		std::cout << "This channel already doesn't have any password." << std::endl;
+		msg = ERR_NOPASSWORD(cli->get_nickName(), _name);
+		cli->setBufferOut(msg);
 		return ;
 	}
 	else
 		_keyModeOn = false;	
 
-	std::string msg = RPL_MODE(cli->get_nickName(), _name, "-", "k", "This channel has no more password.");
+	msg = RPL_MODE(cli->get_nickName(), _name, "-", "k", "This channel has no more password.");
 	sendToAllClients(msg);
 	if (_password)
 		_password->erase();

@@ -6,11 +6,11 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 01:08:21 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 13:46:22 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 01:00:16 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Responses.hpp"
+#include "Responses.hpp"
 
 std::string	ERR_NOSUCHNICK(std::string nick, std::string target, std::string reason)
 {

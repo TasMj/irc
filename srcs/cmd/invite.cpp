@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 13:32:13 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:30:51 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 00:45:53 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	Server::cmd_invite(Client *cli, t_message *msg)
 		|| !expect_N_Params(msg, 2)
 	) { return; }
 	
-	std::string	chan, user;
+	std::string	chan, user, response;
 
 	user = msg->params[0];
 	chan = msg->params[1];
@@ -31,16 +31,18 @@ void	Server::cmd_invite(Client *cli, t_message *msg)
 
 	if (it == _channels.end())
 	{
-		std::cout << "This channel doesn't exist." << std::endl;
+		response = ERR_NOSUCHCHANNEL(cli->get_nickName(), chan, "This channel doesn't exist.");
+		cli->setBufferOut(response);
 		return ;
 	}
 	
-	Channel *chanRef = it->second;//cli->get_Server()->getRefChannelByName(chan);
+	Channel *chanRef = it->second;
 	Client	*userRef = getRefClientByNick(user);
 	
 	if (!userRef)
 	{
-		std::cout << "The user you try to invite doesn't exist." << std::endl;
+		response = ERR_NOSUCHNICK(cli->get_nickName(), user, "The user you try to invite doesn't exist.");
+		cli->setBufferOut(response);
 		return ;
 	}
 	chanRef->inviteCmd(cli, userRef);
@@ -50,7 +52,7 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 {
 	t_clients_map::iterator it;
 	bool					s_ok = false, r_ok = true; /* need_ops = false */
-	std::string				password;
+
 	std::string				response;
 	
 	for (it = _clients.begin(); it != _clients.end(); it++)
@@ -64,34 +66,29 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 
 	if (!s_ok)
 	{
-		std::cout << "You need to be a member of the channel to invite a user." << std::endl;
+		response = ERR_NOTONCHANNEL(sender->get_nickName(), _name, "You're not on this channel.");
+			sender->setBufferOut(response);
 		return ;
 	}
 	
 	if (!r_ok)
 	{
-		std::cout << "The user you try to invite is already a member of this channel." << std::endl;
+		response = ERR_NOTONCHANNEL(sender->get_nickName(), _name, "User already member of this channel");
+		sender->setBufferOut(response);
 		return ;
 	}
 
-	if (_limitModeOn/* _mode & (t_mode)LIMIT */)
+	if (_limitModeOn)
 	{
 		if (_clients.size() + 1 > _limit)
 		{
 			response = ERR_CHANNELISFULL(sender->get_nickName(), _name, "Cannot invite in this channel, it is full.");
 			sender->setBufferOut(response);
+			return ;
 		}
 	}
 
-	if (_keyModeOn/* _mode & (t_mode)KEY */)
-	{
-		std::cout << "KEY PAS ACTIF" << std::endl;
-		password = 	_password->c_str();
-		//need_ops = true;
-		std::cout << "KEY ACTIF" << std::endl;
-	}
-
-	if (/* (_mode & (t_mode)INVITE) */_inviteModeOn || _keyModeOn /* need_ops */)
+	if (_inviteModeOn || _keyModeOn)
 	{
 		std::vector<Client*>::iterator jt;
 
@@ -100,25 +97,19 @@ void	Channel::inviteCmd(Client *sender, Client *receiver)
 		{
 			if ((*jt)->get_userName() == sender->get_userName())
 			{
-				if (!password.empty())
-				{
-					response = "Invitation send to " + receiver->get_nickName() +", password is : " + password;
-					response = RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name);
-					sender->setBufferOut(response);
-				}
-				else	
-					std::cout << receiver->get_nickName() << " join " << _name << std::endl;
+				response = RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name);
+				sender->setBufferOut(response);	
+
 				if (!checkInvited(receiver))
 					_invited.push_back(receiver);
 				return ;
 			}
 		}
-		response = ERR_CHANPRIVSNEEDED(sender->get_nickName(), _name);
+		response = ERR_CHANOPRIVSNEEDED(sender->get_nickName(), _name);
 		sender->setBufferOut(response);
 	}
 	else
 	{
-		response = " Invitation send to " + receiver->get_nickName();
 		response = RPL_INVITE(sender->get_nickName(), receiver->get_nickName(), _name);
 		sender->setBufferOut(response);
 	}

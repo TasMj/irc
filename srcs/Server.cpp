@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:13:28 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 00:29:03 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ Server::Server(std::string password)
 {
 	_cmd_list["NICK"]		= &Server::cmd_nick;
 	_cmd_list["USER"]		= &Server::cmd_user;
-	_cmd_list["userhost"]	= &Server::cmd_user;
 	_cmd_list["PASS"]		= &Server::cmd_pass;
 	_cmd_list["PING"]		= &Server::cmd_ping;
 	_cmd_list["JOIN"]		= &Server::cmd_join;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 17:23:47 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/16 20:25:01 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,7 @@ void	Client::isWelcomed(std::string flag) {
 		setBufferOut(RPL_CREATED());
 		setBufferOut(RPL_MYINFO());
 	}
+	std::cout << "nickname : " << _nickName << ", username : " << _userName << "." << std::endl;
 }
 
 t_login			Client::getLogStatus()

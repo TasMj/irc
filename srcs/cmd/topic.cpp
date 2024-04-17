@@ -39,7 +39,7 @@ void	Server::cmd_topic(Client* cli, t_message* msg)
     }
 
     if (currentChan->_topicModeOn && currentChan->checkOperator(cli) == false) {//modif topic mode operator??
-        response = ERR_CHANOPRIVSNEEDED(nickname, channelName, " Not an operator.");
+        response = ERR_CHANOPRIVSNEEDED(nickname, channelName);
         cli->setBufferOut(response);
         return ;
     }

@@ -1,25 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ERR_CHANPRIVSNEEDED.cpp                            :+:      :+:    :+:   */
+/*   RPL_KICK.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 23:41:30 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/15 23:43:54 by tmalless         ###   ########.fr       */
+/*   Created: 2024/04/16 18:19:10 by tmalless          #+#    #+#             */
+/*   Updated: 2024/04/16 18:19:27 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Responses.hpp"
+#include "Responses.hpp"
 
-std::string	ERR_CHANPRIVSNEEDED(std::string nick, std::string chan)
+std::string RPL_KICK(std::string kicker, std::string kicked, std::string channel, std::string reason)
 {
-	std::stringstream output;
-
-	output << ":" << PREFIXE;
-	output << " 482 #" << chan;
-	output << " " << nick << " :";
-	output << "You need to be an operator on this channel." << "\r\n"; 
-
+    std::stringstream	output;
+    
+    output << ":" << kicker;
+	output << " KICK";
+	output << " " << kicked;
+	output << " #" << channel;
+	output << " :" << reason;
+	output << "\r\n";
 	return (output.str());
 }

@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ERR_CHANWRONGPASS.cpp                              :+:      :+:    :+:   */
+/*   ERR_CHANOPRIVSNEEDED.cpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 22:22:11 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 19:22:33 by tmalless         ###   ########.fr       */
+/*   Created: 2024/04/15 23:41:30 by tmalless          #+#    #+#             */
+/*   Updated: 2024/04/16 19:22:29 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Responses.hpp"
 
-std::string	ERR_CHANWRONGPASS(std::string nick, std::string chan, std::string reason)
+std::string	ERR_CHANOPRIVSNEEDED(std::string nick, std::string chan)
 {
 	std::stringstream output;
 
 	output << ":" << PREFIXE;
-	output << " 475 " << nick;
-	output << " #" << chan << " :";
-	output << reason << "\r\n"; 
+	output << " 482 #" << chan;
+	output << " " << nick << " :";
+	output << "You need to be an operator on this channel." << "\r\n"; 
 
 	return (output.str());
 }

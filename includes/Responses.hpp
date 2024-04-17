@@ -6,7 +6,7 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 18:53:37 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 17:30:19 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:36:55 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,19 @@ std::string	RPL_WELCOME(Client *cli); //001
 std::string	RPL_YOURHOST(); //002
 std::string	RPL_CREATED();//003
 std::string	RPL_MYINFO();//004
+std::string	ERR_PASSWDMISMATCH(std::string nick, std::string pwd);
 
 /* ************************************************************************** */
-// NICK
+// UTILS
 /* ************************************************************************** */
 
-std::string	ERR_NICKNAMEINUSE(std::string oldNick, std::string newNick, std::string reason);
+std::string	ERR_TOOMANYTARGETS(std::string nick, std::string command);
+
+/* ************************************************************************** */
+// KICK
+/* ************************************************************************** */
+
+std::string RPL_KICK(std::string kicker, std::string kicked, std::string channel, std::string reason);
 
 /* ************************************************************************** */
 // JOIN
@@ -62,6 +69,7 @@ std::string	RPL_JOIN(Client *cli, std::string chan);
 std::string	ERR_CHANWRONGPASS(std::string nick, std::string chan, std::string reason);
 std::string	ERR_CHANNELISFULL(std::string nick, std::string chan, std::string reason);
 std::string	ERR_CHANNELUSERNOTINVIT(std::string nick, std::string chan, std::string reason);
+std::string	ERR_BADCHANMASK(std::string nick, std::string chan);
 
 /* ************************************************************************** */
 // INVITE
@@ -75,13 +83,18 @@ std::string	RPL_INVITE(std::string sender, std::string receiver, std::string cha
 /* ************************************************************************** */
 
 std::string	RPL_MODE(std::string nick, std::string chan, std::string sign, std::string flag, std::string reason);
-std::string	ERR_CHANPRIVSNEEDED(std::string nick, std::string chan);
+std::string	ERR_CHANOPRIVSNEEDED(std::string nick, std::string chan);
+std::string	ERR_UNKNOWNMODE(std::string nick, std::string chan);
+std::string	ERR_ISOPERATOR(std::string nick, std::string target);
+std::string	ERR_NOTOPERATOR(std::string nick, std::string target);
+std::string	ERR_NOPASSWORD(std::string nick, std::string chan);
 
 /* ************************************************************************** */
 // NICK
 /* ************************************************************************** */
 
 std::string	RPL_NICK(Client *cli, std::string newNick);
+std::string	ERR_NICKNAMEINUSE(std::string oldNick, std::string newNick, std::string reason);
 
 /* ************************************************************************** */
 // PRIVMSG
@@ -91,3 +104,10 @@ std::string	ERR_NOTONCHANNEL(std::string nick, std::string chan, std::string rea
 std::string	ERR_NOSUCHCHANNEL(std::string nick, std::string chan, std::string reason);
 std::string	ERR_NOSUCHNICK(std::string nick, std::string target, std::string reason);
 std::string	RPL_PRIVMSG(std::string sender, std::string target, std::string message);
+
+/* ************************************************************************** */
+// TOPIC
+/* ************************************************************************** */
+
+std::string	RPL_TOPIC(std::string nickname, std::string channel, std::string topic);
+std::string RPL_NOTOPIC(std::string nickname, std::string channel, std::string reason);

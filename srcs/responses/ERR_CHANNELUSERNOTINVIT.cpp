@@ -6,11 +6,11 @@
 /*   By: tmalless <tmalless@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 23:33:06 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/15 23:36:47 by tmalless         ###   ########.fr       */
+/*   Updated: 2024/04/16 19:22:05 by tmalless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Responses.hpp"
+#include "Responses.hpp"
 
 std::string	ERR_CHANNELUSERNOTINVIT(std::string nick, std::string chan, std::string reason)
 {
