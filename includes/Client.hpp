@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:23:57 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 19:30:03 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:04:35 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,6 @@ public:
 	bool			receive(std::deque<t_message*>& output);
 	void			isWelcomed(std::string flag);
 	
-	void			remove();
-
 	void			setBufferOut(std::string buff);
 	void			join(Channel* channel, std::string* password);
 
@@ -88,6 +86,9 @@ public:
 /******************************************************************************/
 	bool			read_stream(std::deque<t_message*>& output);
 	void			write_stream(void);
+
+	void			leaveAllChannels(void);
+
 };
 
 t_login			operator|(t_login oldFlag, t_login newFlag);

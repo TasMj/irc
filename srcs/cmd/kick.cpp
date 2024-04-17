@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   kick_topic.cpp                                     :+:      :+:    :+:   */
+/*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 17:26:42 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 17:27:07 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 01:46:33 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,24 +85,24 @@ std::string Channel::getTopic()
 
 void	Server::cmd_kick(Client* cli, t_message* msg)
 {
-    (void)cli;
-    
-    if (0 || !expect_At_Least_N_Params(msg, 1))
-        return ;
+    if (0
+        || !expect_At_Least_N_Params(msg, 2)
+        || !expect_LastParams(msg)
+    ) return ;
         
-    std::deque<std::string> nameAndReason = split(msg->last_params, ":");
-
-    std::string &channelName = msg->params[1];
-    std::string toKick = nameAndReason[0];
+    std::string channelName = msg->params[0];
+    std::string toKick = msg->params[1];
 
     if (toKick.size() == 2)
         toKick.erase(1, 2);
     else
         toKick.erase(toKick.length() - 1, toKick.length() - 2);
-    std::string reason = nameAndReason[1];
+    std::string reason = msg->last_params;
 
 	t_channel_map::iterator it;
 	it = _channels.find(channelName);
+    if (it == _channels.end())
+        return;
     Channel *currentChan = it->second; //recup Channel
     std::string ERR;
     std::string output;

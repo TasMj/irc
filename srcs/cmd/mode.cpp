@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 18:28:10 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 18:14:12 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 01:43:08 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,11 @@ static void	cmd_mode_chan(Client* cli, t_message* msg, Channel* chan) {
 				response = ERR_NEEDMOREPARAMS(cli->get_nickName(), "MODE", "Please provide a username (o).");
 				cli->setBufferOut(response);
 			}
-			else if (op == '+')
-				chan->addOperator(cli, cli->get_Server()->getRefClientByName(msg->params[n]), false);
+			else if (op == '+') {
+				Client* newOperator = cli->get_Server()->getRefClientByName(msg->params[n]);
+				if (newOperator)
+					chan->addOperator(cli, newOperator, false);
+			}
 			else
 				chan->removeOperator(cli, cli->get_Server()->getRefClientByName(msg->params[n]));
 			n++;
@@ -119,7 +122,6 @@ void	Server::cmd_mode(Client* cli, t_message* msg) {
 		msg->params[0].erase(0,1);
 
 	it = _channels.find(msg->params[0]);
-	//std::cout << "Channel : " << this->_channels[msg->params[0]] << std::endl << "Client : " << this->getRefClientByName(msg->params[0])->get_userName() << std::endl;
 	if (it != _channels.end())
 	{
 		if (!it->second->checkOperator(cli))
@@ -151,9 +153,11 @@ bool			Channel::checkOperator(Client* cli)
 {
 	if (!cli)
 		return (false);
-	for (size_t i = 0; i < _operators.size(); i++)
+	std::vector<Client *>::iterator it;
+	for (it = _operators.begin(); it != _operators.end(); it++)
 	{
-		if (_operators[i]->get_userName() == cli->get_userName())
+		std::cout << (*it) << std::endl;
+		if ((*it)->get_userName() == cli->get_userName())
 		{
 			std::cout << cli->get_userName() << " is an operator of this channel." << std::endl;
 			return (true);

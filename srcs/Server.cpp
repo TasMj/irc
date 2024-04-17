@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/22 13:26:50 by tmalless          #+#    #+#             */
-/*   Updated: 2024/04/16 20:01:03 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:04:02 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,10 @@ Server::~Server() {
 		close(it->fd);
 	}
 	
+	std::deque<Client>::iterator	jt;
+	for (jt = _clients.begin(); jt != _clients.end(); jt++)
+		jt->leaveAllChannels();
+
 	std::map<std::string, Channel*>::iterator	ite;
 	for (ite = _channels.begin(); ite != _channels.end(); ite++) {
         delete ite->second;
@@ -88,10 +92,11 @@ void	Server::removeClient(Client& cli) {
 	int	fd = cli.get_fd();
 
 	std::deque<Client>::iterator	it;
-	for (it = _clients.begin(); it != _clients.end(); ++it) {
+	for (it = _clients.begin(); it != _clients.end(); it++) {
 		if (it->get_fd() == fd) {
 			_clients.erase(it);
 			close(fd);
+			break;
 		}
 	}
 	

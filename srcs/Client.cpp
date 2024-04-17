@@ -6,7 +6,7 @@
 /*   By: aclement <aclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/26 16:26:00 by tmejri            #+#    #+#             */
-/*   Updated: 2024/04/16 20:00:13 by aclement         ###   ########.fr       */
+/*   Updated: 2024/04/17 02:03:34 by aclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,6 @@ Client::Client(int fd, Server* server)
 }
 
 Client::~Client() {
-	std::map<std::string, Channel*>::iterator	it;
-	for (it = _channels.begin(); it != _channels.end(); it++)
-		it->second->removeClient(this);
 }
 
 Server*		Client::get_Server()
@@ -37,13 +34,11 @@ int			Client::get_fd()
 	return (this->_fd);
 }
 
-void		Client::set_nickName(std::string nick)
-{
+void		Client::set_nickName(std::string nick) {
 	this->_nickName = nick;
 }
 
-std::string Client::get_nickName()
-{
+std::string Client::get_nickName() {
 	return (this->_nickName);
 }
 
@@ -124,3 +119,8 @@ t_login			operator|(t_login oldFlag, t_login newFlag)
 	return ((t_login)((int)oldFlag | (int)newFlag));
 }
 
+void	Client::leaveAllChannels(void) {
+	std::map<std::string, Channel*>::iterator	it;
+	for (it = _channels.begin(); it != _channels.end(); it++)
+		it->second->removeClient(this);
+}
